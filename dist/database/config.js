@@ -1,24 +1,17 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose = require('mongoose');
-//import mongoose from 'mongoose'
-const dbConnection = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        yield mongoose.connect(process.env.MONGODB_CN);
-        console.log("Base de datos ONLINE");
-    }
-    catch (error) {
-        throw new Error("Error al conectarse BD");
-    }
+const sequelize_1 = require("sequelize");
+//import { connect } from "mongoose";
+//export const MONGOcn = connect(process.env.MONGODB_CN||'');
+const dbName = process.env.DB_NAME;
+const dbUser = process.env.DB_USER;
+const dbHost = process.env.DB_HOST;
+const dbPassword = process.env.DB_PASSWORD;
+console.log(process.env.DB_NAME);
+const SQLcn = new sequelize_1.Sequelize('GRIFO', 'sa', '1Secure*Password1', {
+    host: '192.168.1.11',
+    dialect: 'mssql',
+    //logging: false//
 });
-exports.default = dbConnection;
+exports.default = SQLcn;
 //# sourceMappingURL=config.js.map

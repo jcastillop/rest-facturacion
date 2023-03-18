@@ -14,22 +14,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const usuarios_1 = __importDefault(require("../routes/usuarios"));
+const abastecimientos_1 = __importDefault(require("../routes/abastecimientos"));
 const cors_1 = __importDefault(require("cors"));
+///import dbConnection from '../database/config';
 const config_1 = __importDefault(require("../database/config"));
 class Server {
     constructor() {
         this.apiPaths = {
-            usuarios: '/api/usuarios'
+            usuarios: '/api/usuarios',
+            abastecimientos: '/api/abastecimientos'
         };
         this.app = (0, express_1.default)();
-        this.port = process.env.PORT || '8000';
+        this.port = process.env.PORT || '8800';
         this.conectarDB();
         this.middlewares();
         this.routes();
     }
     conectarDB() {
         return __awaiter(this, void 0, void 0, function* () {
-            yield (0, config_1.default)();
+            //await dbConnection()
+            try {
+                yield config_1.default.authenticate();
+                console.log('database on lines');
+            }
+            catch (error) {
+            }
         });
     }
     middlewares() {
@@ -42,6 +51,7 @@ class Server {
     }
     routes() {
         this.app.use(this.apiPaths.usuarios, usuarios_1.default);
+        this.app.use(this.apiPaths.abastecimientos, abastecimientos_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {

@@ -1,14 +1,16 @@
-const mongoose = require('mongoose');
-//import mongoose from 'mongoose'
+import { Sequelize } from "sequelize";
+//import { connect } from "mongoose";
 
-const dbConnection = async () => {
-    try {
-        await mongoose.connect(process.env.MONGODB_CN)
-        console.log("Base de datos ONLINE")
-    } catch (error) {
-        throw new Error("Error al conectarse BD");
-        
-    }
-}
+//export const MONGOcn = connect(process.env.MONGODB_CN||'');
+const dbName = process.env.DB_NAME as string
+const dbUser = process.env.DB_USER as string
+const dbHost = process.env.DB_HOST
+const dbPassword = process.env.DB_PASSWORD
+console.log(process.env.DB_NAME);
+const SQLcn = new Sequelize('GRIFO', 'sa', '1Secure*Password1', {
+    host: '192.168.1.11',
+    dialect:'mssql',
+    //logging: false//
+});
 
-export default dbConnection;
+export default SQLcn;

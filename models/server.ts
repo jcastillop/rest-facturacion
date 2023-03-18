@@ -1,7 +1,9 @@
 import express, { Application } from 'express';
 import userRoutes from '../routes/usuarios';
+import abastecimientoRoutes from '../routes/abastecimientos';
 import cors from 'cors'
-import dbConnection from '../database/config';
+///import dbConnection from '../database/config';
+import db from '../database/config';
 
 
 class Server{
@@ -9,19 +11,26 @@ class Server{
     private app: Application;
     private port: string;
     private apiPaths = {
-        usuarios: '/api/usuarios'
+        usuarios: '/api/usuarios',
+        abastecimientos: '/api/abastecimientos'
     }
 
     constructor(){
         this.app = express();
-        this.port = process.env.PORT || '8000';
+        this.port = process.env.PORT || '8800';
         this.conectarDB();
         this.middlewares();
         this.routes();
     }
 
     async conectarDB(){
-        await dbConnection()
+        //await dbConnection()
+        try {
+            await db.authenticate();
+            console.log('database on lines')
+        } catch (error) {
+            
+        }
     }
 
     middlewares(){
@@ -34,7 +43,8 @@ class Server{
     }
 
     routes(){
-        this.app.use(this.apiPaths.usuarios, userRoutes)
+        this.app.use(this.apiPaths.usuarios, userRoutes);
+        this.app.use(this.apiPaths.abastecimientos, abastecimientoRoutes);
     }
 
     listen(){
