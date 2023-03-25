@@ -1,7 +1,7 @@
 import { DataTypes } from "sequelize";
-import db from '../database/config';
+import { ControladorSQL } from '../database/config';
 
-const Abastecimiento = db.define('Abastecimientos', {
+const Abastecimiento = ControladorSQL.define('Abastecimientos', {
     idAbastecimiento:{
         type: DataTypes.TINYINT,
         primaryKey: true

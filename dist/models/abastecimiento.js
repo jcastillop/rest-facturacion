@@ -1,11 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
-const config_1 = __importDefault(require("../database/config"));
-const Abastecimiento = config_1.default.define('Abastecimientos', {
+const config_1 = require("../database/config");
+const Abastecimiento = config_1.ControladorSQL.define('Abastecimientos', {
     idAbastecimiento: {
         type: sequelize_1.DataTypes.TINYINT,
         primaryKey: true

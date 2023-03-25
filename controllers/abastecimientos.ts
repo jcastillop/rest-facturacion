@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Abastecimiento from "../models/abastecimiento";
-import { Op, QueryTypes, Sequelize, TinyIntegerDataType } from "sequelize";
+import { Op } from "sequelize";
+import { Sqlcn } from '../database/config';
 
 interface ServiceParams {
     pistola?: number;

@@ -1,9 +1,10 @@
 import express, { Application } from 'express';
 import userRoutes from '../routes/usuarios';
 import abastecimientoRoutes from '../routes/abastecimientos';
+import comprobanteRoutes from '../routes/comprobantes';
 import cors from 'cors'
 ///import dbConnection from '../database/config';
-import db from '../database/config';
+import { Sqlcn } from '../database/config';
 
 
 class Server{
@@ -12,7 +13,8 @@ class Server{
     private port: string;
     private apiPaths = {
         usuarios: '/api/usuarios',
-        abastecimientos: '/api/abastecimientos'
+        abastecimientos: '/api/abastecimientos',
+        comprobantes: '/api/comprobantes'
     }
 
     constructor(){
@@ -26,7 +28,7 @@ class Server{
     async conectarDB(){
         //await dbConnection()
         try {
-            await db.authenticate();
+            await Sqlcn.authenticate();
             console.log('database on lines')
         } catch (error) {
             
@@ -45,6 +47,7 @@ class Server{
     routes(){
         this.app.use(this.apiPaths.usuarios, userRoutes);
         this.app.use(this.apiPaths.abastecimientos, abastecimientoRoutes);
+        this.app.use(this.apiPaths.comprobantes, comprobanteRoutes);
     }
 
     listen(){
