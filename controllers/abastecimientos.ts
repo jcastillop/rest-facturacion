@@ -14,6 +14,7 @@ interface ServiceParams {
 export const getAbastecimientos = async (req: Request, res: Response) => {
 
     const serviceParams: ServiceParams = req.query;
+    //const { body } = req;
     const queryWhere = [];
     if(serviceParams.pistola){
         queryWhere.push({ pistola: Number(serviceParams.pistola) });
@@ -50,15 +51,22 @@ export const getAbastecimiento = async (req: Request, res: Response) => {
 
     const { id } = req.params;
 
-    const abastecimiento = await Abastecimiento.findByPk(id);
-
-    if(abastecimiento){
-        res.json(abastecimiento);
-    }else{
+    try {
+        const abastecimiento = await Abastecimiento.findByPk(id);
+        if(abastecimiento){
+            res.json(abastecimiento);
+        }else{
+            res.status(404).json({
+                msg: `No existe usuarioZZZZ con el id ${ id }`
+            });
+        }             
+    } catch (error) {
         res.status(404).json({
-            msg: `No existe usuario con el id ${ id }`
-        });
+            msg: `No existe usuario con el123 id ${ id }`
+        }); 
     }
+    
+
 
     
 }

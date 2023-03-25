@@ -68,7 +68,9 @@ export const generaComprobante = async (req: Request, res: Response) => {
     //TODO: Almacenar el archivo XML
 
     if(resultado = '000'){
-        res.json(resultado);
+        res.json({
+            factura.
+        });
     }else{
         res.status(404).json({
             msg: `Existen errores ${resultado}`, resultado

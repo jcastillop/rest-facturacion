@@ -2,9 +2,9 @@
 <Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <cbc:UBLVersionID>2.1</cbc:UBLVersionID>
   <cbc:CustomizationID schemeAgencyName="PE:SUNAT">2.1</cbc:CustomizationID>
-  <cbc:ID>F001-000096</cbc:ID>
-  <cbc:IssueDate>2023-03-20</cbc:IssueDate>
-  <cbc:DueDate>2023-03-20</cbc:DueDate>
+  <cbc:ID>F001-000098</cbc:ID>
+  <cbc:IssueDate>2023-03-24</cbc:IssueDate>
+  <cbc:DueDate>2023-03-24</cbc:DueDate>
   <cbc:InvoiceTypeCode listAgencyName="PE:SUNAT" listID="0101" listName="Tipo de Documento" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01">01</cbc:InvoiceTypeCode>
   <cbc:DocumentCurrencyCode listAgencyName="United Nations Economic Commission for Europe" listID="ISO 4217 Alpha" listName="Currency">PEN</cbc:DocumentCurrencyCode>
   <cac:AccountingSupplierParty>
@@ -82,16 +82,16 @@
       <cac:TaxSubtotal>
         <cbc:TaxableAmount currencyID="PEN"/>
         <cbc:TaxAmount currencyID="PEN">14.59</cbc:TaxAmount>
-        <cac:TaxSubtotal>
+        <cac:TaxCategory>
           <cbc:ID schemeAgencyName="United Nations Economic Commission for Europe" schemeID="UN/ECE 5305" schemeName="Tax Category Identifier">S</cbc:ID>
-          <cbc:Percent>18</cbc:Percent>
+          <cbc:Percent>18.00</cbc:Percent>
           <cbc:TaxExemptionReasonCode listAgencyName="PE:SUNAT" listName="Afectacion del IGV" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo07">10</cbc:TaxExemptionReasonCode>
           <cac:TaxScheme>
             <cbc:ID schemeAgencyName="PE:SUNAT" schemeName="Codigo de tributos" schemeURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo05">1000</cbc:ID>
             <cbc:Name>IGV</cbc:Name>
             <cbc:TaxTypeCode>VAT</cbc:TaxTypeCode>
           </cac:TaxScheme>
-        </cac:TaxSubtotal>
+        </cac:TaxCategory>
       </cac:TaxSubtotal>
     </cac:TaxTotal>
     <cac:Item>
@@ -99,11 +99,11 @@
       <cac:SellersItemIdentification>
         <cbc:ID>07</cbc:ID>
       </cac:SellersItemIdentification>
-      <cac:Item>
+      <cac:AdditionalItemProperty>
         <cbc:Name>PLACA</cbc:Name>
         <cbc:ID listAgencyName="PE:SUNAT" listName="Propiedad del item" listURI="urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo55">5010</cbc:ID>
         <cbc:Value>4298-PA</cbc:Value>
-      </cac:Item>
+      </cac:AdditionalItemProperty>
     </cac:Item>
     <cac:Price>
       <cbc:PriceAmount currencyID="PEN">81.0423728814</cbc:PriceAmount>

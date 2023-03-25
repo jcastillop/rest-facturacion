@@ -70,7 +70,9 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
     */
     //TODO: Almacenar el archivo XML
     if (resultado = '000') {
-        res.json(resultado);
+        res.json({
+            factura, : .
+        });
     }
     else {
         res.status(404).json({
