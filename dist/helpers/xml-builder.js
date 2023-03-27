@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.crearFactura = void 0;
+exports.makeXMLFactura = void 0;
 const xmlbuilder_1 = require("xmlbuilder");
-const crearFactura = (comprobante) => {
+const makeXMLFactura = (comprobante) => {
     var tot_valor_venta = 0;
     var tot_precio_unitario = 0;
     comprobante.Items.forEach((item) => {
@@ -111,5 +111,5 @@ const crearFactura = (comprobante) => {
     });
     return xml.end({ pretty: true });
 };
-exports.crearFactura = crearFactura;
+exports.makeXMLFactura = makeXMLFactura;
 //# sourceMappingURL=xml-builder.js.map

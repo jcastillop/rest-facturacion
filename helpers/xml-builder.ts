@@ -1,7 +1,7 @@
 import { create } from "xmlbuilder";
 import {  } from "../models/comprobante";
 
-export const crearFactura = ( comprobante: any ) => {
+export const makeXMLFactura = ( comprobante: any ) => {
 
     var tot_valor_venta = 0;
     var tot_precio_unitario = 0;

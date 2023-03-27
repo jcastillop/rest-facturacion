@@ -14,17 +14,20 @@ const helpers_1 = require("../helpers");
 const models_1 = require("../models");
 const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { body } = req;
+    const serie = '001';
     //Obtiene correlativo
-    const correlativo = yield (0, models_1.generaCorrelativo)(body.tipo, '001');
+    const correlativo = yield (0, models_1.generaCorrelativo)(body.tipo, serie);
     //Completar la información requerida en un modelo 
     // TODO: registro receptor
     // TODO: registro de correo de cliente (opcional)
     const comprobante = yield (0, models_1.nuevoComprobante)(body.id, body.tipo, correlativo);
     //Completar la información de la factura 
-    const factura = (0, helpers_1.crearFactura)(comprobante);
-    const arrFile = [process.env.EMISOR_RUC, body.tipo, correlativo];
-    const file = arrFile.join('-') + '.xml';
-    (0, helpers_1.asyncWriteFile)(file, factura);
+    const facturaXML = (0, helpers_1.makeXMLFactura)(comprobante);
+    //Firmar digitalmente
+    //const facturaXMLSign = signXml(facturaXML);
+    //Guardar el documento
+    const file = [process.env.EMISOR_RUC, body.tipo, correlativo].join('-') + '.xml';
+    (0, helpers_1.asyncWriteFile)(file, facturaXML);
     //TODO: Firma digital
     res.json({
         file
