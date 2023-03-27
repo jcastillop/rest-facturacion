@@ -15,15 +15,21 @@ const path_1 = require("path");
 const asyncWriteFile = (filename, data) => __awaiter(void 0, void 0, void 0, function* () {
     //extensionesValidas = ['txt','xml'], carpeta:string = '',
     try {
-        yield fs_1.promises.writeFile((0, path_1.join)(__dirname, filename), data, {
+        // await fsPromises.writeFile(join( __dirname, filename), data, {
+        yield fs_1.promises.writeFile((0, path_1.join)('D:\\Fuentes\\Facturacion\\rest-facturacion\\xml\\', filename), data, {
             flag: 'w',
         });
-        const contents = yield fs_1.promises.readFile((0, path_1.join)(__dirname, filename), 'utf-8');
-        console.log(contents);
-        return contents;
+        /*
+        const contents = await fsPromises.readFile(
+          join(__dirname, filename),
+          'utf-8',
+        );
+        */
+        //console.log(contents);
+        //return contents;
     }
     catch (err) {
-        console.log(err);
+        //console.log(err);
         return 'Something went wrong';
     }
 });
