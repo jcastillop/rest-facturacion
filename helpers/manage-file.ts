@@ -4,19 +4,21 @@ import { join } from 'path';
 export const asyncWriteFile = async ( filename: string, data: any ) => {
     //extensionesValidas = ['txt','xml'], carpeta:string = '',
     try {
-        await fsPromises.writeFile(join(__dirname, filename), data, {
+        // await fsPromises.writeFile(join( __dirname, filename), data, {
+        await fsPromises.writeFile(join( 'D:\\Fuentes\\Facturacion\\rest-facturacion\\xml\\', filename), data, {
           flag: 'w',
         });
-    
+        /*
         const contents = await fsPromises.readFile(
           join(__dirname, filename),
           'utf-8',
         );
-        console.log(contents);
+        */
+        //console.log(contents);
     
-        return contents;
+        //return contents;
       } catch (err) {
-        console.log(err);
+        //console.log(err);
         return 'Something went wrong';
       }
 }

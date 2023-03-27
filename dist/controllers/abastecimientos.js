@@ -17,6 +17,7 @@ const abastecimiento_1 = __importDefault(require("../models/abastecimiento"));
 const sequelize_1 = require("sequelize");
 const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const serviceParams = req.query;
+    //const { body } = req;
     const queryWhere = [];
     if (serviceParams.pistola) {
         queryWhere.push({ pistola: Number(serviceParams.pistola) });
@@ -49,13 +50,20 @@ const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, funct
 exports.getAbastecimientos = getAbastecimientos;
 const getAbastecimiento = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const abastecimiento = yield abastecimiento_1.default.findByPk(id);
-    if (abastecimiento) {
-        res.json(abastecimiento);
+    try {
+        const abastecimiento = yield abastecimiento_1.default.findByPk(id);
+        if (abastecimiento) {
+            res.json(abastecimiento);
+        }
+        else {
+            res.status(404).json({
+                msg: `No existe usuarioZZZZ con el id ${id}`
+            });
+        }
     }
-    else {
+    catch (error) {
         res.status(404).json({
-            msg: `No existe usuario con el id ${id}`
+            msg: `No existe usuario con el123 id ${id}`
         });
     }
 });

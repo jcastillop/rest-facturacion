@@ -17,7 +17,6 @@ const usuarios_1 = __importDefault(require("../routes/usuarios"));
 const abastecimientos_1 = __importDefault(require("../routes/abastecimientos"));
 const comprobantes_1 = __importDefault(require("../routes/comprobantes"));
 const cors_1 = __importDefault(require("cors"));
-///import dbConnection from '../database/config';
 const config_1 = require("../database/config");
 class Server {
     constructor() {

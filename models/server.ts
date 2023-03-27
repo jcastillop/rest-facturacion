@@ -3,7 +3,6 @@ import userRoutes from '../routes/usuarios';
 import abastecimientoRoutes from '../routes/abastecimientos';
 import comprobanteRoutes from '../routes/comprobantes';
 import cors from 'cors'
-///import dbConnection from '../database/config';
 import { Sqlcn } from '../database/config';
 
 
