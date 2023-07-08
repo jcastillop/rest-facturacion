@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import Usuario from "../models/usuario";
+import { Op } from "sequelize";
 
 export const getUsuarios = (req: Request, res: Response) => {
     res.json({
@@ -8,21 +10,46 @@ export const getUsuarios = (req: Request, res: Response) => {
 
 export const getUsuario = (req: Request, res: Response) => {
 
-    const { id } = req.params;
+    const { user, password } = req.params;
 
-    res.json({
-        msg: 'getUsuario'
-    })
+    try {
+        const usuario = Usuario.findAll({ where: {[Op.and]: [{ usuario: user },{ password: password }]}});
+        if(usuario){
+            res.json(usuario);
+        }else{
+            res.status(404).json({
+                msg: `Usuario y/o password incorrecto: ${ user }`
+            });
+        }         
+    } catch (error) {
+        res.status(404).json({
+            msg: `Error no identificado ${ error }`
+        });         
+    }
+    res.json("");
 }
 
-export const postUsuario = (req: Request, res: Response) => {
+export const postUsuario = async (req: Request, res: Response) => {
 
     const { body } = req;
+    
+    console.log(body);
 
-    res.json({
-        msg: 'postUsuario',
-        body
-    })
+    try {
+        const usuario = await Usuario.findOne({ attributes: ['id', 'nombre', 'usuario', 'correo', 'rol', 'grifo', 'isla', 'jornada'], where: {[Op.and]: [{ usuario: body.user },{ password: body.password }]}});
+    
+        if(usuario){
+            res.json({usuario});            
+        }else{
+            res.status(404).json({
+                msg: `Usuario y/o password incorrecto`
+            });
+        }         
+    } catch (error) {
+        res.status(404).json({
+            msg: `Error no identificado ${ error }`
+        });         
+    }
 }
 
 export const putUsuario = (req: Request, res: Response) => {

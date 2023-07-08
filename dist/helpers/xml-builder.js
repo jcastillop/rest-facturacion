@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeXMLFactura = void 0;
 const xmlbuilder_1 = require("xmlbuilder");
-const makeXMLFactura = (comprobante) => {
+const makeXMLFactura = (comprobante, receptor) => {
     var tot_valor_venta = 0;
     var tot_precio_unitario = 0;
     comprobante.Items.forEach((item) => {
@@ -44,14 +44,14 @@ const makeXMLFactura = (comprobante) => {
     direccion_emisor.ele('cac:Country')
         .ele('cbc:IdentificationCode', { 'listAgencyID': 'United Nations Economic Commission for Europe', 'listID': 'ISO 3166-1', 'listName': 'Country' }, 'PE');
     //receptor
-    var receptor = xml.ele('cac:AccountingCustomerParty').ele('cac:Party');
-    receptor.ele('cac:PartyIdentification')
-        .ele('cbc:ID', { 'schemeAgencyName': 'PE:SUNAT', 'schemeID': '6', 'schemeName': 'Documento de Identidad', 'schemeURI': 'urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06' }, process.env.EMISOR_RUC);
-    var datos_receptor = receptor.ele('cac:PartyLegalEntity');
-    datos_receptor.ele('cbc:RegistrationName', 'EMPRESA DE TRANSPOR');
+    var xml_receptor = xml.ele('cac:AccountingCustomerParty').ele('cac:Party');
+    xml_receptor.ele('cac:PartyIdentification')
+        .ele('cbc:ID', { 'schemeAgencyName': 'PE:SUNAT', 'schemeID': receptor.tipo_documento, 'schemeName': 'Documento de Identidad', 'schemeURI': 'urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo06' }, receptor.numero_documento);
+    var datos_receptor = xml_receptor.ele('cac:PartyLegalEntity');
+    datos_receptor.ele('cbc:RegistrationName', receptor.razon_social);
     var direccion_receptor = datos_receptor.ele('cac:RegistrationAddress');
     direccion_receptor.ele('cbc:AddressTypeCode', '0000');
-    direccion_receptor.ele('cbc:StreetName', 'CAL.ANTARES NRO. 119 URB. ALMTE. MIGUEL GRAU - VENTANILLA - CALLAO - CALLAO');
+    direccion_receptor.ele('cbc:StreetName', receptor.direccion);
     //paymentterms
     var payment = xml.ele('cac:PaymentTerms');
     payment.ele('cbc:ID', 'FormaPago');

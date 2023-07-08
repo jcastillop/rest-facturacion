@@ -1,57 +1,79 @@
 "use strict";
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
 };
-const { Schema, model } = require('mongoose');
-const UsuarioSchema = Schema({
-    nombre: {
-        type: String,
-        required: [true, 'El nombre es obligatorio']
+Object.defineProperty(exports, "__esModule", { value: true });
+const sequelize_1 = require("sequelize");
+const config_1 = require("../database/config");
+const comprobante_1 = require("./comprobante");
+const Usuario = config_1.Sqlcn.define('Usuarios', {
+    id: {
+        type: sequelize_1.DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
     },
-    correo: {
-        type: String,
-        required: [true, 'El correo es obligatorio'],
+    nombre: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false
+    },
+    usuario: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
         unique: true
     },
+    correo: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false
+    },
     password: {
-        type: String,
-        required: [true, 'El password es obligatorio']
+        type: sequelize_1.DataTypes.STRING(64),
+        allowNull: false
     },
     img: {
-        type: String,
+        type: sequelize_1.DataTypes.BLOB,
     },
     rol: {
-        type: String,
-        required: true,
-        enum: ['ADMIN_ROLE', 'USER_ROLE', 'SUPERV_ROLE']
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            isIn: [['ADMIN_ROLE', 'USER_ROLE', 'SUPERV_ROLE']]
+        }
     },
-    application: {
-        type: Schema.Types.ObjectId,
-        ref: 'Application',
-        required: true
+    grifo: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false
+    },
+    isla: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false
+    },
+    jornada: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false
+    },
+    AplicationId: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false
     },
     estado: {
-        type: Boolean,
-        default: true
-    },
-    google: {
-        type: Boolean,
-        default: false
-    },
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: true,
+    }
+}, {
+    timestamps: false
 });
-UsuarioSchema.methods.toJSON = function () {
-    //tiene que ser una funcion normal
-    const _a = this.toObject(), { __v, password, _id } = _a, data = __rest(_a, ["__v", "password", "_id"]);
-    data.uid = _id;
-    return data;
-};
-module.exports = model('Usuario', UsuarioSchema);
+Usuario.hasMany(comprobante_1.Comprobante, {
+    foreignKey: 'UsuarioId'
+});
+(() => __awaiter(void 0, void 0, void 0, function* () {
+    yield config_1.Sqlcn.sync({ force: false });
+    // Code here
+}))();
+exports.default = Usuario;
 //# sourceMappingURL=usuario.js.map

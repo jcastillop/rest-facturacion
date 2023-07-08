@@ -3,17 +3,20 @@ import { Sqlcn } from '../database/config';
 import { numbersToLetters } from "../helpers/numeros-letras";
 import Abastecimiento from "./abastecimiento";
 import Item from "./item";
+import Receptor from "./receptor";
 
   
-export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, correlativo: string): Promise<any> => {
+export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number): Promise<any> => {
 
     const abastecimiento: any = await Abastecimiento.findByPk(idAbastecimiento);
 
     var valor_unitario = (parseFloat(abastecimiento.precioUnitario)/1.18).toFixed(10);
-    var igv_unitario =(parseFloat(valor_unitario) * 0.18).toFixed(2);
+    var igv_unitario =((parseFloat(abastecimiento.valorTotal)/1.18)*0.18).toFixed(2);
     var total_gravadas = (parseFloat(valor_unitario) * abastecimiento.volTotal).toFixed(2);
 
     const comprobante = Comprobante.build({ 
+        ReceptorId: receptor.id,
+        UsuarioId: usuario,
         tipo_comprobante: tipo,
         numeracion_documento_afectado: correlativo,
         total_gravadas: total_gravadas,
@@ -26,14 +29,13 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, co
             precio_unitario: abastecimiento.precioUnitario,
             igv:igv_unitario,
             descripcion:'GLP',
-            codigo_producto:'07',
-            placa:'4298-PA',
+            codigo_producto:abastecimiento.codigoCombustible,
+            placa: placa,
         }]
     }, {
-        include: [{
-            model: Item,
-            as: 'Items'
-        }]
+        include: [
+            { model: Item, as: 'Items' }
+        ]
       });
 
     await comprobante.save();
@@ -41,12 +43,21 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, co
     return comprobante;
 }
 
+
 export const Comprobante  = Sqlcn.define('Comprobantes', {
     id:{
         type: DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
     },
+    ReceptorId:{
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },      
+    UsuarioId:{
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },       
     tipo_comprobante:{
         type: DataTypes.STRING,
         allowNull: false

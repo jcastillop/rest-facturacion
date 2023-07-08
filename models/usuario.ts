@@ -1,47 +1,70 @@
-const {Schema, model} = require('mongoose')
+import { DataTypes } from "sequelize";
+import { Sqlcn } from '../database/config';
+import { Comprobante } from "./comprobante";
 
-const UsuarioSchema = Schema({
+const Usuario = Sqlcn.define('Usuarios', {
+    id:{
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true
+    },      
     nombre:{
-        type: String,
-        required:[true, 'El nombre es obligatorio']
+        type: DataTypes.STRING,
+        allowNull: false
     },
+    usuario:{
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true
+    },    
     correo:{
-        type:String,
-        required:[true, 'El correo es obligatorio'],
-        unique:true
+        type: DataTypes.STRING,
+        allowNull: false
     },
     password:{
-        type: String,
-        required:[true, 'El password es obligatorio']
+        type: DataTypes.STRING(64),
+        allowNull: false
     },
     img:{
-        type: String,
+        type: DataTypes.BLOB,
     },
     rol:{
-        type: String,
-        required:true,
-        enum:['ADMIN_ROLE', 'USER_ROLE', 'SUPERV_ROLE']
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            isIn: [['ADMIN_ROLE', 'USER_ROLE', 'SUPERV_ROLE']]
+        }
     },
-    application:{
-        type: Schema.Types.ObjectId,
-        ref:'Application',
-        required: true
-    },    
+    grifo:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    isla:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    jornada:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },            
+    AplicationId:{
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },          
     estado:{
-        type: Boolean,
-        default:true
-    },
-    google:{
-        type: Boolean,
-        default:false
-    },
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+    }
+}, {
+    timestamps: false
+});
+Usuario.hasMany(Comprobante, {
+    foreignKey: 'UsuarioId'
 });
 
-UsuarioSchema.methods.toJSON = function () {
-    //tiene que ser una funcion normal
-    const {__v, password, _id, ...data} = this.toObject();
-    data.uid = _id;
-    return data;
-}
+(async () => {
+    await Sqlcn.sync({ force: false });
+    // Code here
+  })();
 
-module.exports = model('Usuario', UsuarioSchema);
+  export default Usuario;

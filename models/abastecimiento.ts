@@ -1,6 +1,11 @@
 import { DataTypes } from "sequelize";
 import { ControladorSQL } from '../database/config';
 
+export const actualizaAbastecimiento = async (idAbastecimiento: string): Promise<any> => {
+    const updateRow = await Abastecimiento.update({estado:1},{where:{idAbastecimiento: idAbastecimiento}});
+    return updateRow;
+}
+
 const Abastecimiento = ControladorSQL.define('Abastecimientos', {
     idAbastecimiento:{
         type: DataTypes.TINYINT,
@@ -47,7 +52,10 @@ const Abastecimiento = ControladorSQL.define('Abastecimientos', {
     },  
     volTanque:{
         type: DataTypes.TINYINT
-    },                            
+    },     
+    estado:{
+        type: DataTypes.TINYINT
+    },                             
 }, {
     timestamps: false
 });

@@ -18,4 +18,5 @@ __exportStar(require("./abastecimiento"), exports);
 __exportStar(require("./comprobante"), exports);
 __exportStar(require("./item"), exports);
 __exportStar(require("./correlativo"), exports);
+__exportStar(require("./usuario"), exports);
 //# sourceMappingURL=index.js.map

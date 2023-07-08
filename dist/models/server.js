@@ -13,17 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const usuarios_1 = __importDefault(require("../routes/usuarios"));
 const abastecimientos_1 = __importDefault(require("../routes/abastecimientos"));
 const comprobantes_1 = __importDefault(require("../routes/comprobantes"));
+const usuarios_1 = __importDefault(require("../routes/usuarios"));
+const receptores_1 = __importDefault(require("../routes/receptores"));
 const cors_1 = __importDefault(require("cors"));
-const config_1 = require("../database/config");
 class Server {
     constructor() {
         this.apiPaths = {
-            usuarios: '/api/usuarios',
             abastecimientos: '/api/abastecimientos',
-            comprobantes: '/api/comprobantes'
+            comprobantes: '/api/comprobantes',
+            usuarios: '/api/usuarios',
+            receptores: '/api/receptores'
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '8800';
@@ -35,7 +36,7 @@ class Server {
         return __awaiter(this, void 0, void 0, function* () {
             //await dbConnection()
             try {
-                yield config_1.Sqlcn.authenticate();
+                //await Sqlcn().authenticate();
                 console.log('database on lines');
             }
             catch (error) {
@@ -51,9 +52,10 @@ class Server {
         this.app.use(express_1.default.static('public'));
     }
     routes() {
-        this.app.use(this.apiPaths.usuarios, usuarios_1.default);
         this.app.use(this.apiPaths.abastecimientos, abastecimientos_1.default);
         this.app.use(this.apiPaths.comprobantes, comprobantes_1.default);
+        this.app.use(this.apiPaths.usuarios, usuarios_1.default);
+        this.app.use(this.apiPaths.receptores, receptores_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {
