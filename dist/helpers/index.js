@@ -17,4 +17,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./manage-file"), exports);
 __exportStar(require("./validar-campos"), exports);
 __exportStar(require("./xml-builder"), exports);
+__exportStar(require("./log4js"), exports);
 //# sourceMappingURL=index.js.map

@@ -1,0 +1,32 @@
+2023-07-12 11:36:39 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2023-07-12 11:36:39 - Started 15832
+2023-07-12 11:37:36 - Stopping restfacturacion.exe
+2023-07-12 11:37:36 - ProcessKill 15832
+2023-07-12 11:37:36 - Found child process: 1272 Name: conhost.exe
+2023-07-12 11:37:36 - Found child process: 21588 Name: node.exe
+2023-07-12 11:37:36 - Stopping process 1272
+2023-07-12 11:37:36 - Send SIGINT 1272
+2023-07-12 11:37:36 - SIGINT to 1272 failed - Killing as fallback
+2023-07-12 11:37:36 - Stopping process 21588
+2023-07-12 11:37:36 - Send SIGINT 21588
+2023-07-12 11:37:36 - SIGINT to 21588 failed - Killing as fallback
+2023-07-12 11:37:36 - Stopping process 15832
+2023-07-12 11:37:36 - Send SIGINT 15832
+2023-07-12 11:37:36 - SIGINT to 15832 failed - Killing as fallback
+2023-07-12 11:37:36 - Finished restfacturacion.exe
+2023-07-12 11:37:46 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2023-07-12 11:37:46 - Started 20092
+2023-07-12 12:54:42 - Stopping restfacturacion.exe
+2023-07-12 12:54:42 - ProcessKill 20092
+2023-07-12 12:54:42 - Found child process: 15968 Name: conhost.exe
+2023-07-12 12:54:42 - Found child process: 7456 Name: node.exe
+2023-07-12 12:54:42 - Stopping process 15968
+2023-07-12 12:54:42 - Send SIGINT 15968
+2023-07-12 12:54:42 - SIGINT to 15968 failed - Killing as fallback
+2023-07-12 12:54:42 - Stopping process 7456
+2023-07-12 12:54:42 - Send SIGINT 7456
+2023-07-12 12:54:42 - SIGINT to 7456 failed - Killing as fallback
+2023-07-12 12:54:42 - Stopping process 20092
+2023-07-12 12:54:42 - Send SIGINT 20092
+2023-07-12 12:54:42 - SIGINT to 20092 failed - Killing as fallback
+2023-07-12 12:54:42 - Finished restfacturacion.exe

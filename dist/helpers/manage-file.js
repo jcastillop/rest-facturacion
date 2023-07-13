@@ -16,7 +16,7 @@ const asyncWriteFile = (filename, data) => __awaiter(void 0, void 0, void 0, fun
     //extensionesValidas = ['txt','xml'], carpeta:string = '',
     try {
         // await fsPromises.writeFile(join( __dirname, filename), data, {
-        yield fs_1.promises.writeFile((0, path_1.join)('D:\\Fuentes\\Facturacion\\rest-facturacion\\xml\\', filename), data, {
+        yield fs_1.promises.writeFile((0, path_1.join)('D:\\SolucionesOP\\FacturacionOP\\Fuentes\\rest-facturacion\\data\\xml\\', filename), data, {
             flag: 'w',
         });
         /*

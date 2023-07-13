@@ -18,12 +18,14 @@ const config_1 = require("../database/config");
 const numeros_letras_1 = require("../helpers/numeros-letras");
 const abastecimiento_1 = __importDefault(require("./abastecimiento"));
 const item_1 = __importDefault(require("./item"));
-const nuevoComprobante = (idAbastecimiento, tipo, correlativo) => __awaiter(void 0, void 0, void 0, function* () {
+const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario) => __awaiter(void 0, void 0, void 0, function* () {
     const abastecimiento = yield abastecimiento_1.default.findByPk(idAbastecimiento);
     var valor_unitario = (parseFloat(abastecimiento.precioUnitario) / 1.18).toFixed(10);
-    var igv_unitario = (parseFloat(valor_unitario) * 0.18).toFixed(2);
+    var igv_unitario = ((parseFloat(abastecimiento.valorTotal) / 1.18) * 0.18).toFixed(2);
     var total_gravadas = (parseFloat(valor_unitario) * abastecimiento.volTotal).toFixed(2);
     const comprobante = exports.Comprobante.build({
+        ReceptorId: receptor.id,
+        UsuarioId: usuario,
         tipo_comprobante: tipo,
         numeracion_documento_afectado: correlativo,
         total_gravadas: total_gravadas,
@@ -36,14 +38,13 @@ const nuevoComprobante = (idAbastecimiento, tipo, correlativo) => __awaiter(void
                 precio_unitario: abastecimiento.precioUnitario,
                 igv: igv_unitario,
                 descripcion: 'GLP',
-                codigo_producto: '07',
-                placa: '4298-PA',
+                codigo_producto: abastecimiento.codigoCombustible,
+                placa: placa,
             }]
     }, {
-        include: [{
-                model: item_1.default,
-                as: 'Items'
-            }]
+        include: [
+            { model: item_1.default, as: 'Items' }
+        ]
     });
     yield comprobante.save();
     return comprobante;
@@ -54,6 +55,14 @@ exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
         type: sequelize_1.DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
+    },
+    ReceptorId: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false
+    },
+    UsuarioId: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false
     },
     tipo_comprobante: {
         type: sequelize_1.DataTypes.STRING,

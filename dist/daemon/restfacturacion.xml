@@ -1,0 +1,31 @@
+<service>
+	<id>restfacturacion.exe</id>
+	<name>RESTFACTURACION</name>
+	<description>Servidor rest de fuelhub para facturacion</description>
+	<executable>D:\Programas\nodejs\node.exe</executable>
+	<argument>--harmony</argument>
+	<argument>D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js</argument>
+	<argument>--file</argument>
+	<argument>D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js</argument>
+	<argument>--scriptoptions=</argument>
+	<argument>--log</argument>
+	<argument>RESTFACTURACION wrapper</argument>
+	<argument>--grow</argument>
+	<argument>0.25</argument>
+	<argument>--wait</argument>
+	<argument>1</argument>
+	<argument>--maxrestarts</argument>
+	<argument>3</argument>
+	<argument>--abortonerror</argument>
+	<argument>n</argument>
+	<argument>--stopparentfirst</argument>
+	<argument>undefined</argument>
+	<logmode>rotate</logmode>
+	<stoptimeout>30sec</stoptimeout>
+	<serviceaccount>
+		<domain>HAZE</domain>
+		<user>LocalSystem</user>
+		<password></password>
+	</serviceaccount>
+	<workingdirectory>D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion</workingdirectory>
+</service>

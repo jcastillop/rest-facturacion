@@ -5,7 +5,7 @@ export const asyncWriteFile = async ( filename: string, data: any ) => {
     //extensionesValidas = ['txt','xml'], carpeta:string = '',
     try {
         // await fsPromises.writeFile(join( __dirname, filename), data, {
-        await fsPromises.writeFile(join( 'D:\\Fuentes\\Facturacion\\rest-facturacion\\xml\\', filename), data, {
+        await fsPromises.writeFile(join( 'D:\\SolucionesOP\\FacturacionOP\\Fuentes\\rest-facturacion\\data\\xml\\', filename), data, {
           flag: 'w',
         });
         /*

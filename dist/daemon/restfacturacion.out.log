@@ -1,0 +1,76 @@
+database on lines
+Servidor ejecutandose en el puerto: 8000
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';
+Executing (default): SELECT [id], [nombre], [usuario], [correo], [rol], [grifo], [isla], [jornada] FROM [Usuarios] AS [Usuarios] WHERE ([Usuarios].[usuario] = N'jcastillo' AND [Usuarios].[password] = N'MTIzNA==') ORDER BY [Usuarios].[id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY;
+Executing (default): SELECT [id], [nombre], [usuario], [correo], [rol], [grifo], [isla], [jornada] FROM [Usuarios] AS [Usuarios] WHERE ([Usuarios].[usuario] = N'jcastillo' AND [Usuarios].[password] = N'MTIzNA==') ORDER BY [Usuarios].[id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY;
+Executing (default): SELECT [id], [nombre], [usuario], [correo], [rol], [grifo], [isla], [jornada] FROM [Usuarios] AS [Usuarios] WHERE ([Usuarios].[usuario] = N'jcastillo' AND [Usuarios].[password] = N'MTIzNA==') ORDER BY [Usuarios].[id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY;
+database on lines
+Servidor ejecutandose en el puerto: 8000
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'
+Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';
+Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';
+Executing (default): SELECT [id], [nombre], [usuario], [correo], [rol], [grifo], [isla], [jornada] FROM [Usuarios] AS [Usuarios] WHERE ([Usuarios].[usuario] = N'jcastillo' AND [Usuarios].[password] = N'MTIzNA==') ORDER BY [Usuarios].[id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY;
+Executing (default): SELECT [idAbastecimiento], [registro], [pistola], [codigoCombustible], [numeroTanque], [valorTotal], [volTotal], [precioUnitario], [tiempo], [fechaHora], [totInicio], [totFinal], [IDoperador], [IDcliente], [volTanque], [estado] FROM [Abastecimientos] AS [Abastecimientos] WHERE [Abastecimientos].[idAbastecimiento] = N'13001';
+Executing (default): SELECT [idAbastecimiento], [registro], [pistola], [codigoCombustible], [numeroTanque], [valorTotal], [volTotal], [precioUnitario], [tiempo], [fechaHora], [totInicio], [totFinal], [IDoperador], [IDcliente], [volTanque], [estado] FROM [Abastecimientos] AS [Abastecimientos] WHERE [Abastecimientos].[idAbastecimiento] = N'13001';
+Executing (default): SELECT [idAbastecimiento], [registro], [pistola], [codigoCombustible], [numeroTanque], [valorTotal], [volTotal], [precioUnitario], [tiempo], [fechaHora], [totInicio], [totFinal], [IDoperador], [IDcliente], [volTanque], [estado] FROM [Abastecimientos] AS [Abastecimientos] WHERE [Abastecimientos].[idAbastecimiento] = N'13001';
+Executing (default): SELECT [idAbastecimiento], [registro], [pistola], [codigoCombustible], [numeroTanque], [valorTotal], [volTotal], [precioUnitario], [tiempo], [fechaHora], [totInicio], [totFinal], [IDoperador], [IDcliente], [volTanque], [estado] FROM [Abastecimientos] AS [Abastecimientos] WHERE [Abastecimientos].[idAbastecimiento] = N'13001';
