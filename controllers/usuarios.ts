@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Usuario from "../models/usuario";
 import { Op } from "sequelize";
+import { log4js } from "../helpers";
 
 export const getUsuarios = (req: Request, res: Response) => {
     res.json({
@@ -14,14 +15,17 @@ export const getUsuario = (req: Request, res: Response) => {
 
     try {
         const usuario = Usuario.findAll({ where: {[Op.and]: [{ usuario: user },{ password: password }]}});
-        if(usuario){
+
+        if(usuario){            
             res.json(usuario);
         }else{
             res.status(404).json({
                 msg: `Usuario y/o password incorrecto: ${ user }`
             });
         }         
+
     } catch (error) {
+        log4js( error, 'error');
         res.status(404).json({
             msg: `Error no identificado ${ error }`
         });         
@@ -33,11 +37,11 @@ export const postUsuario = async (req: Request, res: Response) => {
 
     const { body } = req;
     
-    console.log(body);
 
     try {
         const usuario = await Usuario.findOne({ attributes: ['id', 'nombre', 'usuario', 'correo', 'rol', 'grifo', 'isla', 'jornada'], where: {[Op.and]: [{ usuario: body.user },{ password: body.password }]}});
-    
+        
+        log4js( usuario, 'debug');
         if(usuario){
             res.json({usuario});            
         }else{
@@ -46,6 +50,8 @@ export const postUsuario = async (req: Request, res: Response) => {
             });
         }         
     } catch (error) {
+        console.log(error);
+        log4js( error, 'error');
         res.status(404).json({
             msg: `Error no identificado ${ error }`
         });         

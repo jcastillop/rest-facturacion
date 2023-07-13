@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteUsuario = exports.putUsuario = exports.postUsuario = exports.getUsuario = exports.getUsuarios = void 0;
 const usuario_1 = __importDefault(require("../models/usuario"));
 const sequelize_1 = require("sequelize");
+const helpers_1 = require("../helpers");
 const getUsuarios = (req, res) => {
     res.json({
         msg: 'getUsuarios'
@@ -35,6 +36,7 @@ const getUsuario = (req, res) => {
         }
     }
     catch (error) {
+        (0, helpers_1.log4js)(error, 'error');
         res.status(404).json({
             msg: `Error no identificado ${error}`
         });
@@ -44,9 +46,9 @@ const getUsuario = (req, res) => {
 exports.getUsuario = getUsuario;
 const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { body } = req;
-    console.log(body);
     try {
         const usuario = yield usuario_1.default.findOne({ attributes: ['id', 'nombre', 'usuario', 'correo', 'rol', 'grifo', 'isla', 'jornada'], where: { [sequelize_1.Op.and]: [{ usuario: body.user }, { password: body.password }] } });
+        (0, helpers_1.log4js)(usuario, 'debug');
         if (usuario) {
             res.json({ usuario });
         }
@@ -57,6 +59,8 @@ const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         }
     }
     catch (error) {
+        console.log(error);
+        (0, helpers_1.log4js)(error, 'error');
         res.status(404).json({
             msg: `Error no identificado ${error}`
         });

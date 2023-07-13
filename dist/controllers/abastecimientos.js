@@ -18,7 +18,6 @@ const sequelize_1 = require("sequelize");
 const helpers_1 = require("../helpers");
 const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const serviceParams = req.query;
-    console.log(serviceParams);
     const queryAnd = [];
     var arrPistolas = [];
     var queryWhere = {};
@@ -39,18 +38,11 @@ const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, funct
         queryWhere = { [sequelize_1.Op.and]: queryAnd };
     }
     const queryParams = {
-        //where: { pistola: serviceParams.pistola },
         where: queryWhere,
         attributes: ['idAbastecimiento', 'registro', 'pistola', 'codigoCombustible', 'valorTotal', 'volTotal', 'precioUnitario', 'tiempo', 'fechaHora', 'totInicio', 'totFinal', 'IDoperador', 'IDcliente', 'volTanque'],
         offset: Number(serviceParams.offset),
         limit: Number(serviceParams.limit)
     };
-    /*
-    const [total, abastecimientos] = await Promise.all([
-        Abastecimiento.count(),
-        Abastecimiento.findAll(queryParams)
-    ]);
-    */
     const { count, rows } = yield abastecimiento_1.default.findAndCountAll(queryParams);
     res.json({
         total: count,
@@ -62,6 +54,7 @@ const getAbastecimiento = (req, res) => __awaiter(void 0, void 0, void 0, functi
     const { id } = req.params;
     try {
         const abastecimiento = yield abastecimiento_1.default.findByPk(id);
+        (0, helpers_1.log4js)(abastecimiento, 'debug');
         if (abastecimiento) {
             res.json(abastecimiento);
         }
@@ -72,6 +65,7 @@ const getAbastecimiento = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
     catch (error) {
+        (0, helpers_1.log4js)(error, 'error');
         res.status(404).json({
             msg: `No existe abastecimiento con el123 id ${id}`
         });

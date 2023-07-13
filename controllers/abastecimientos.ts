@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import Abastecimiento from "../models/abastecimiento";
 import { Op } from "sequelize";
-import { onlyNumbers } from "../helpers";
+import { log4js, onlyNumbers } from "../helpers";
+
 
 interface ServiceParams {
     pistola?: String;
@@ -14,7 +15,6 @@ interface ServiceParams {
 export const getAbastecimientos = async (req: Request, res: Response) => {
     
     const serviceParams: ServiceParams = req.query;
-    console.log(serviceParams);
 
     const queryAnd = [];
 
@@ -38,22 +38,13 @@ export const getAbastecimientos = async (req: Request, res: Response) => {
    }else{
         queryWhere = { [Op.and] : queryAnd }
    }
-    
 
     const queryParams = {
-        //where: { pistola: serviceParams.pistola },
         where: queryWhere,
         attributes:['idAbastecimiento','registro','pistola','codigoCombustible','valorTotal','volTotal','precioUnitario','tiempo','fechaHora','totInicio','totFinal','IDoperador','IDcliente','volTanque'],
         offset: Number(serviceParams.offset),
         limit: Number(serviceParams.limit)
     }
-    /*
-    const [total, abastecimientos] = await Promise.all([
-        Abastecimiento.count(),
-        Abastecimiento.findAll(queryParams)
-    ]);
-    */
-
     const { count, rows } = await Abastecimiento.findAndCountAll(queryParams);
 
     res.json({
@@ -68,6 +59,7 @@ export const getAbastecimiento = async (req: Request, res: Response) => {
 
     try {
         const abastecimiento = await Abastecimiento.findByPk(id);
+        log4js( abastecimiento, 'debug');
         if(abastecimiento){
             res.json(abastecimiento);
         }else{
@@ -76,6 +68,7 @@ export const getAbastecimiento = async (req: Request, res: Response) => {
             });
         }             
     } catch (error) {
+        log4js( error, 'error');
         res.status(404).json({
             msg: `No existe abastecimiento con el123 id ${ id }`
         }); 

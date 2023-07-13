@@ -12,6 +12,9 @@ exports.Sqlcn = new sequelize_1.Sequelize('AUXILIAR', 'sa', '1Secure*Password1',
 exports.ControladorSQL = new sequelize_1.Sequelize('DEMOSQL', 'sa', '1Secure*Password1', {
     host: process.env.SQL_CONTR_HOST,
     dialect: 'mssql',
+    // logging: function (str) {
+    //     log4js(str, 'debug');
+    // }        
     //logging: false//
 });
 //# sourceMappingURL=config.js.map
