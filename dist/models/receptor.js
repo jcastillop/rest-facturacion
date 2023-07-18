@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.obtieneReceptor = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
-const comprobante_1 = require("./comprobante");
 const obtieneReceptor = (numero_documento, tipo_documento, razon_social, direccion, correo) => __awaiter(void 0, void 0, void 0, function* () {
     const [receptor, created] = yield Receptor.findOrCreate({
         where: { numero_documento: numero_documento },
@@ -54,9 +53,6 @@ const Receptor = config_1.Sqlcn.define('Receptores', {
     },
 }, {
     timestamps: false
-});
-Receptor.hasMany(comprobante_1.Comprobante, {
-    foreignKey: 'ReceptorId'
 });
 (() => __awaiter(void 0, void 0, void 0, function* () {
     yield config_1.Sqlcn.sync({ force: false });

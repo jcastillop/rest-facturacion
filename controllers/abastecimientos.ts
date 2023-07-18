@@ -2,8 +2,7 @@ import { Request, Response } from "express";
 import Abastecimiento from "../models/abastecimiento";
 import { Op } from "sequelize";
 import { log4js, onlyNumbers } from "../helpers";
-
-
+import ipaddr from "ipaddr.js";
 interface ServiceParams {
     pistola?: String;
     desde?:Date;
@@ -13,6 +12,11 @@ interface ServiceParams {
 }
 
 export const getAbastecimientos = async (req: Request, res: Response) => {
+
+    let remoteAddress = req.ip;
+    if (ipaddr.isValid(req.ip)) {
+      remoteAddress = ipaddr.process(req.ip).toString();
+    }
     
     const serviceParams: ServiceParams = req.query;
 

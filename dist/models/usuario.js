@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
-const comprobante_1 = require("./comprobante");
 const Usuario = config_1.Sqlcn.define('Usuarios', {
     id: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -68,12 +67,10 @@ const Usuario = config_1.Sqlcn.define('Usuarios', {
 }, {
     timestamps: false
 });
-Usuario.hasMany(comprobante_1.Comprobante, {
-    foreignKey: 'UsuarioId'
-});
 (() => __awaiter(void 0, void 0, void 0, function* () {
     yield config_1.Sqlcn.sync({ force: false });
     // Code here
+    //console.log("no")
 }))();
 exports.default = Usuario;
 //# sourceMappingURL=usuario.js.map

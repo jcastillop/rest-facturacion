@@ -58,13 +58,12 @@ const Usuario = Sqlcn.define('Usuarios', {
 }, {
     timestamps: false
 });
-Usuario.hasMany(Comprobante, {
-    foreignKey: 'UsuarioId'
-});
+
 
 (async () => {
     await Sqlcn.sync({ force: false });
     // Code here
+    //console.log("no")
   })();
 
   export default Usuario;
