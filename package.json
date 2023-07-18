@@ -22,6 +22,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "express-validator": "^6.15.0",
+    "ipaddr.js": "^2.1.0",
     "log4js": "^6.9.1",
     "mongoose": "^7.0.1",
     "node-windows": "^1.0.0-beta.8",

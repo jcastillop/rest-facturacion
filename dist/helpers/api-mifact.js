@@ -84,6 +84,7 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
         "COD_TIP_OPE_SUNAT": "0101",
         "items": arr_items
     };
+    console.log(comprobante.Items, body);
     try {
         const { data } = yield api_1.posApi.post(`${process.env.MIFACT_API}/api/invoiceService.svc/SendInvoice`, body);
         //console.log(process.env.MIFACT_API);

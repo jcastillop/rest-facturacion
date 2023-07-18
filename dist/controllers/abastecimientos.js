@@ -16,7 +16,12 @@ exports.getAbastecimiento = exports.getAbastecimientos = void 0;
 const abastecimiento_1 = __importDefault(require("../models/abastecimiento"));
 const sequelize_1 = require("sequelize");
 const helpers_1 = require("../helpers");
+const ipaddr_js_1 = __importDefault(require("ipaddr.js"));
 const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let remoteAddress = req.ip;
+    if (ipaddr_js_1.default.isValid(req.ip)) {
+        remoteAddress = ipaddr_js_1.default.process(req.ip).toString();
+    }
     const serviceParams = req.query;
     const queryAnd = [];
     var arrPistolas = [];

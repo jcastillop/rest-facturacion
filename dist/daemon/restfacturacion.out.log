@@ -74,3 +74,9 @@ Executing (default): SELECT [idAbastecimiento], [registro], [pistola], [codigoCo
 Executing (default): SELECT [idAbastecimiento], [registro], [pistola], [codigoCombustible], [numeroTanque], [valorTotal], [volTotal], [precioUnitario], [tiempo], [fechaHora], [totInicio], [totFinal], [IDoperador], [IDcliente], [volTanque], [estado] FROM [Abastecimientos] AS [Abastecimientos] WHERE [Abastecimientos].[idAbastecimiento] = N'13001';
 Executing (default): SELECT [idAbastecimiento], [registro], [pistola], [codigoCombustible], [numeroTanque], [valorTotal], [volTotal], [precioUnitario], [tiempo], [fechaHora], [totInicio], [totFinal], [IDoperador], [IDcliente], [volTanque], [estado] FROM [Abastecimientos] AS [Abastecimientos] WHERE [Abastecimientos].[idAbastecimiento] = N'13001';
 Executing (default): SELECT [idAbastecimiento], [registro], [pistola], [codigoCombustible], [numeroTanque], [valorTotal], [volTotal], [precioUnitario], [tiempo], [fechaHora], [totInicio], [totFinal], [IDoperador], [IDcliente], [volTanque], [estado] FROM [Abastecimientos] AS [Abastecimientos] WHERE [Abastecimientos].[idAbastecimiento] = N'13001';
+database on lines
+Servidor ejecutandose en el puerto: 8000
+database on lines
+Servidor ejecutandose en el puerto: 8000
+database on lines
+Servidor ejecutandose en el puerto: 8000

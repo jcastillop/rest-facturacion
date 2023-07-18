@@ -45,10 +45,6 @@ const Receptor = Sqlcn.define('Receptores', {
 }, {
     timestamps: false
 });
-Receptor.hasMany(Comprobante, {
-    foreignKey: 'ReceptorId'
-});
-
 
 (async () => {
     await Sqlcn.sync({ force: false });

@@ -12,16 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Comprobante = exports.nuevoComprobante = void 0;
+exports.Comprobante = exports.actualizarComprobante = exports.nuevoComprobante = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const numeros_letras_1 = require("../helpers/numeros-letras");
 const abastecimiento_1 = __importDefault(require("./abastecimiento"));
 const item_1 = __importDefault(require("./item"));
+const receptor_1 = __importDefault(require("./receptor"));
+const usuario_1 = __importDefault(require("./usuario"));
 const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario) => __awaiter(void 0, void 0, void 0, function* () {
     const abastecimiento = yield abastecimiento_1.default.findByPk(idAbastecimiento);
     var valor_unitario = (parseFloat(abastecimiento.precioUnitario) / 1.18).toFixed(10);
-    var igv_unitario = ((parseFloat(abastecimiento.valorTotal) / 1.18) * 0.18).toFixed(2);
+    var igv_unitario = ((parseFloat(valor_unitario) * parseFloat(abastecimiento.volTotal)) * 0.18).toFixed(2);
     var total_gravadas = (parseFloat(valor_unitario) * abastecimiento.volTotal).toFixed(2);
     const comprobante = exports.Comprobante.build({
         ReceptorId: receptor.id,
@@ -50,19 +52,27 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
     return comprobante;
 });
 exports.nuevoComprobante = nuevoComprobante;
+const actualizarComprobante = (props, idComprobante) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = yield exports.Comprobante.update({
+        cadena_para_codigo_qr: props.response.cadena_para_codigo_qr,
+        codigo_hash: props.response.codigo_hash,
+        pdf_bytes: props.response.pdf_bytes,
+        url: props.response.url,
+        errors: props.response.errors,
+    }, {
+        where: { id: idComprobante },
+        returning: true
+    });
+    if (data) {
+        return data[1][0];
+    }
+});
+exports.actualizarComprobante = actualizarComprobante;
 exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
     id: {
         type: sequelize_1.DataTypes.INTEGER,
         autoIncrement: true,
         primaryKey: true
-    },
-    ReceptorId: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false
-    },
-    UsuarioId: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false
     },
     tipo_comprobante: {
         type: sequelize_1.DataTypes.STRING,
@@ -108,9 +118,33 @@ exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
     monto_letras: {
         type: sequelize_1.DataTypes.STRING
     },
+    cadena_para_codigo_qr: {
+        type: sequelize_1.DataTypes.STRING
+    },
+    codigo_hash: {
+        type: sequelize_1.DataTypes.STRING
+    },
+    pdf_bytes: {
+        type: sequelize_1.DataTypes.STRING
+    },
+    url: {
+        type: sequelize_1.DataTypes.STRING
+    },
+    errors: {
+        type: sequelize_1.DataTypes.STRING
+    },
 });
 exports.Comprobante.hasMany(item_1.default, {
     foreignKey: 'ComprobanteId'
+});
+receptor_1.default.hasMany(exports.Comprobante, {
+    foreignKey: 'ReceptorId'
+});
+exports.Comprobante.belongsTo(receptor_1.default, {
+    foreignKey: 'ReceptorId'
+});
+usuario_1.default.hasMany(exports.Comprobante, {
+    foreignKey: 'UsuarioId'
 });
 (() => __awaiter(void 0, void 0, void 0, function* () {
     yield config_1.Sqlcn.sync({ force: false });

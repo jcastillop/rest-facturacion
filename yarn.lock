@@ -1043,6 +1043,11 @@
   "resolved" "https://registry.npmjs.org/ip/-/ip-2.0.0.tgz"
   "version" "2.0.0"
 
+"ipaddr.js@^2.1.0":
+  "integrity" "sha512-LlbxQ7xKzfBusov6UMi4MFpEg0m+mAm9xyNGEduwXMEDuf4WfzB/RZwMVYEd7IKGvh4IUkEXYxtAVu9T3OelJQ=="
+  "resolved" "https://registry.npmjs.org/ipaddr.js/-/ipaddr.js-2.1.0.tgz"
+  "version" "2.1.0"
+
 "ipaddr.js@1.9.1":
   "integrity" "sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g=="
   "resolved" "https://registry.npmjs.org/ipaddr.js/-/ipaddr.js-1.9.1.tgz"

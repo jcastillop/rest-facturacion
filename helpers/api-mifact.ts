@@ -1,7 +1,13 @@
 import axios from 'axios';
 import { posApi } from '../api';
 
-export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo_comprobante: string, correlativo: string): Promise<{ transactionOk: boolean; message: string; response: any}> => {
+export interface PropsMiFact {
+    transactionOk: boolean; 
+    message: string; 
+    response: any
+}
+
+export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo_comprobante: string, correlativo: string): Promise<PropsMiFact> => {
     var splitted = correlativo.split("-");
     
     var tot_valor_venta = 0;
@@ -75,7 +81,7 @@ export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo
         "items": arr_items
     }
     
-
+    console.log(comprobante.Items,body);
     try {
 
         const { data } = await posApi.post(`${process.env.MIFACT_API}/api/invoiceService.svc/SendInvoice`, body);
