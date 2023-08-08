@@ -18,6 +18,7 @@ const comprobantes_1 = __importDefault(require("../routes/comprobantes"));
 const usuarios_1 = __importDefault(require("../routes/usuarios"));
 const receptores_1 = __importDefault(require("../routes/receptores"));
 const cors_1 = __importDefault(require("cors"));
+const config_1 = require("../database/config");
 class Server {
     constructor() {
         this.apiPaths = {
@@ -37,6 +38,7 @@ class Server {
             //await dbConnection()
             try {
                 //await Sqlcn().authenticate();
+                config_1.Sqlcn.sync();
                 console.log('database on lines');
             }
             catch (error) {

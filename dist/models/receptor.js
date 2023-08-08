@@ -12,17 +12,44 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.obtieneReceptor = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
-const obtieneReceptor = (numero_documento, tipo_documento, razon_social, direccion, correo) => __awaiter(void 0, void 0, void 0, function* () {
-    const [receptor, created] = yield Receptor.findOrCreate({
-        where: { numero_documento: numero_documento },
-        defaults: {
-            tipo_documento: tipo_documento,
-            razon_social: razon_social,
-            direccion: direccion,
-            correo: correo
-        }
-    });
-    return receptor;
+const helpers_1 = require("../helpers");
+const obtieneReceptor = (numero_documento, tipo_documento, razon_social, direccion, correo, placa) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio obtieneReceptor");
+    try {
+        const [receptor, created] = yield Receptor.findOrCreate({
+            where: { numero_documento: numero_documento },
+            defaults: {
+                tipo_documento: tipo_documento,
+                razon_social: razon_social,
+                direccion: direccion,
+                correo: correo,
+                placa: placa,
+            }
+            // const [receptor, created] = await Receptor.upsert({
+            //     where: { numero_documento: numero_documento },
+            //     defaults: {
+            //         tipo_documento: tipo_documento,
+            //         razon_social: razon_social,
+            //         direccion: direccion,
+            //         correo: correo,
+            //         placa: placa,
+            //     }
+        });
+        (0, helpers_1.log4js)("Fin obtieneReceptor");
+        return {
+            hasErrorReceptor: false,
+            messageReceptor: `Receptor ${created ? "creado" : "actualizado"} correctamente`,
+            receptor: receptor
+        };
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("obtieneReceptor: " + error.toString(), 'error');
+        (0, helpers_1.log4js)("Fin obtieneReceptor");
+        return {
+            hasErrorReceptor: true,
+            messageReceptor: "obtieneReceptor: " + error.toString(),
+        };
+    }
 });
 exports.obtieneReceptor = obtieneReceptor;
 const Receptor = config_1.Sqlcn.define('Receptores', {
@@ -51,12 +78,12 @@ const Receptor = config_1.Sqlcn.define('Receptores', {
         type: sequelize_1.DataTypes.STRING,
         allowNull: true,
     },
+    placa: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true,
+    },
 }, {
     timestamps: false
 });
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield config_1.Sqlcn.sync({ force: false });
-    // Code here
-}))();
 exports.default = Receptor;
 //# sourceMappingURL=receptor.js.map

@@ -1,7 +1,16 @@
 import { DataTypes } from "sequelize";
 import { Sqlcn } from '../database/config';
-import { Comprobante } from "./comprobante";
 
+export const validaUsuarios = async (usuario: string): Promise<any> =>{
+    const data = await Usuario.findAll({
+        where: { usuario: usuario}
+    })
+    if(data.length > 0){
+        return false;
+    }else{
+        return true;
+    }
+}
 const Usuario = Sqlcn.define('Usuarios', {
     id:{
         type: DataTypes.INTEGER,
@@ -34,23 +43,7 @@ const Usuario = Sqlcn.define('Usuarios', {
         validate: {
             isIn: [['ADMIN_ROLE', 'USER_ROLE', 'SUPERV_ROLE']]
         }
-    },
-    grifo:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    isla:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    jornada:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },            
-    AplicationId:{
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },          
+    },       
     estado:{
         type: DataTypes.BOOLEAN,
         defaultValue: true,
@@ -59,11 +52,5 @@ const Usuario = Sqlcn.define('Usuarios', {
     timestamps: false
 });
 
+export default Usuario;
 
-(async () => {
-    await Sqlcn.sync({ force: false });
-    // Code here
-    //console.log("no")
-  })();
-
-  export default Usuario;

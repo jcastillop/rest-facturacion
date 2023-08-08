@@ -9,8 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.validaUsuarios = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
+const validaUsuarios = (usuario) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = yield Usuario.findAll({
+        where: { usuario: usuario }
+    });
+    if (data.length > 0) {
+        return false;
+    }
+    else {
+        return true;
+    }
+});
+exports.validaUsuarios = validaUsuarios;
 const Usuario = config_1.Sqlcn.define('Usuarios', {
     id: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -44,22 +57,6 @@ const Usuario = config_1.Sqlcn.define('Usuarios', {
             isIn: [['ADMIN_ROLE', 'USER_ROLE', 'SUPERV_ROLE']]
         }
     },
-    grifo: {
-        type: sequelize_1.DataTypes.STRING,
-        allowNull: false
-    },
-    isla: {
-        type: sequelize_1.DataTypes.STRING,
-        allowNull: false
-    },
-    jornada: {
-        type: sequelize_1.DataTypes.STRING,
-        allowNull: false
-    },
-    AplicationId: {
-        type: sequelize_1.DataTypes.INTEGER,
-        allowNull: false
-    },
     estado: {
         type: sequelize_1.DataTypes.BOOLEAN,
         defaultValue: true,
@@ -67,10 +64,5 @@ const Usuario = config_1.Sqlcn.define('Usuarios', {
 }, {
     timestamps: false
 });
-(() => __awaiter(void 0, void 0, void 0, function* () {
-    yield config_1.Sqlcn.sync({ force: false });
-    // Code here
-    //console.log("no")
-}))();
 exports.default = Usuario;
 //# sourceMappingURL=usuario.js.map

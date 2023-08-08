@@ -1,9 +1,31 @@
 import { DataTypes } from "sequelize";
 import { ControladorSQL } from '../database/config';
+import { log4js } from "../helpers";
+
+
 
 export const actualizaAbastecimiento = async (idAbastecimiento: string): Promise<any> => {
-    const updateRow = await Abastecimiento.update({estado:1},{where:{idAbastecimiento: idAbastecimiento}});
-    return updateRow;
+    try {
+        const abastecimento = await Abastecimiento.update({estado:1},{where:{idAbastecimiento: idAbastecimiento}});
+        if(abastecimento){
+            return {
+                hasErrorActualizaAbastecimiento: false,
+                messageActualizaAbastecimiento: `Abastecimiento actualizado correctamente`
+            };
+        }else{
+            return {
+                hasErrorActualizaAbastecimiento: true,
+                messageActualizaAbastecimiento: `No se actualizó ningún registro`
+            };
+        } 
+    } catch (error: any) {
+        log4js( "actualizaAbastecimiento: " + error.toString(), 'error');
+        return {
+            hasErrorActualizaAbastecimiento: true,
+            messageActualizaAbastecimiento: error.toString(),
+        };
+    }
+
 }
 
 const Abastecimiento = ControladorSQL.define('Abastecimientos', {

@@ -12,9 +12,30 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.actualizaAbastecimiento = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
+const helpers_1 = require("../helpers");
 const actualizaAbastecimiento = (idAbastecimiento) => __awaiter(void 0, void 0, void 0, function* () {
-    const updateRow = yield Abastecimiento.update({ estado: 1 }, { where: { idAbastecimiento: idAbastecimiento } });
-    return updateRow;
+    try {
+        const abastecimento = yield Abastecimiento.update({ estado: 1 }, { where: { idAbastecimiento: idAbastecimiento } });
+        if (abastecimento) {
+            return {
+                hasErrorActualizaAbastecimiento: false,
+                messageActualizaAbastecimiento: `Abastecimiento actualizado correctamente`
+            };
+        }
+        else {
+            return {
+                hasErrorActualizaAbastecimiento: true,
+                messageActualizaAbastecimiento: `No se actualizó ningún registro`
+            };
+        }
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("actualizaAbastecimiento: " + error.toString(), 'error');
+        return {
+            hasErrorActualizaAbastecimiento: true,
+            messageActualizaAbastecimiento: error.toString(),
+        };
+    }
 });
 exports.actualizaAbastecimiento = actualizaAbastecimiento;
 const Abastecimiento = config_1.ControladorSQL.define('Abastecimientos', {

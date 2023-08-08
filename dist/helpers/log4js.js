@@ -34,7 +34,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.log4js = void 0;
 const log4jsConfigure = __importStar(require("log4js"));
-const log4js = (data, logLevel) => __awaiter(void 0, void 0, void 0, function* () {
+const log4js = (data, logLevel = 'debug') => __awaiter(void 0, void 0, void 0, function* () {
     log4jsConfigure.configure('./data/config/log4js.json');
     const logger = log4jsConfigure.getLogger();
     logger.level = logLevel;

@@ -1,4 +1,27 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -12,15 +35,33 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUsuario = exports.putUsuario = exports.postUsuario = exports.getUsuario = exports.getUsuarios = void 0;
-const usuario_1 = __importDefault(require("../models/usuario"));
+exports.adminAuthorize = exports.deleteUsuario = exports.changePassword = exports.resetPassword = exports.putUsuario = exports.postUsuario = exports.postUsuarioLogin = exports.getUsuario = exports.getUsuarios = void 0;
+const usuario_1 = __importStar(require("../models/usuario"));
 const sequelize_1 = require("sequelize");
 const helpers_1 = require("../helpers");
-const getUsuarios = (req, res) => {
-    res.json({
-        msg: 'getUsuarios'
-    });
-};
+const isla_1 = __importDefault(require("../models/isla"));
+const ipaddr_js_1 = __importDefault(require("ipaddr.js"));
+const login_1 = require("../models/login");
+const terminal_1 = __importDefault(require("../models/terminal"));
+const getUsuarios = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { count, rows } = yield usuario_1.default.findAndCountAll();
+        if (rows) {
+            res.json({ usuarios: rows });
+        }
+        else {
+            res.status(404).json({
+                msg: `No existen usuarios`
+            });
+        }
+    }
+    catch (error) {
+        (0, helpers_1.log4js)(error, 'error');
+        res.status(404).json({
+            msg: `Error no identificado ${error}`
+        });
+    }
+});
 exports.getUsuarios = getUsuarios;
 const getUsuario = (req, res) => {
     const { user, password } = req.params;
@@ -44,10 +85,24 @@ const getUsuario = (req, res) => {
     res.json("");
 };
 exports.getUsuario = getUsuario;
-const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const postUsuarioLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { body } = req;
+    let remoteAddress = req.ip;
+    if (ipaddr_js_1.default.isValid(req.ip)) {
+        remoteAddress = ipaddr_js_1.default.process(req.ip).toString();
+    }
+    var today = new Date();
+    var curHr = today.getHours();
+    var turno = 'TURNO3';
+    if (curHr < 12) {
+        turno = 'TURNO1';
+    }
+    else if (curHr < 18) {
+        turno = 'TURNO2';
+    }
     try {
-        const usuario = yield usuario_1.default.findOne({ attributes: ['id', 'nombre', 'usuario', 'correo', 'rol', 'grifo', 'isla', 'jornada'], where: { [sequelize_1.Op.and]: [{ usuario: body.user }, { password: body.password }] } });
+        const isla = yield isla_1.default.findOne({ where: { ip: remoteAddress }, include: [{ model: terminal_1.default }] });
+        const usuario = yield (0, login_1.nuevoLogin)(body.user, body.password, isla.Terminale.nombre, isla.nombre, turno, remoteAddress, today);
         (0, helpers_1.log4js)(usuario, 'debug');
         if (usuario) {
             res.json({ usuario });
@@ -66,16 +121,93 @@ const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
 });
+exports.postUsuarioLogin = postUsuarioLogin;
+const postUsuario = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { body } = req;
+    try {
+        if (yield (0, usuario_1.validaUsuarios)(body.usuario)) {
+            const usuario = yield usuario_1.default.create({
+                nombre: body.nombre,
+                usuario: body.usuario,
+                correo: body.correo,
+                password: 'MTIzNA==',
+                rol: body.rol,
+                EmisorId: body.EmisorId
+            });
+            res.json({
+                message: `Usuario creado correctamente`,
+                usuario: usuario,
+                hasError: false
+            });
+        }
+        else {
+            res.json({
+                message: `Usuario ya existe`,
+                hasError: true
+            });
+        }
+    }
+    catch (error) {
+        (0, helpers_1.log4js)(error, 'error');
+        res.status(404).json({
+            hasError: true,
+            message: `Error no identificado ${error}`
+        });
+    }
+});
 exports.postUsuario = postUsuario;
 const putUsuario = (req, res) => {
     const { id } = req.params;
     const { body } = req;
-    res.json({
-        msg: 'putUsuario',
-        body
-    });
 };
 exports.putUsuario = putUsuario;
+const resetPassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { body } = req;
+    try {
+        const data = yield usuario_1.default.update({
+            password: 'MTIzNA=='
+        }, {
+            where: { id: body.id },
+            returning: true
+        });
+        res.json({
+            message: `Password reiniciado correctamente`,
+            hasError: false
+        });
+    }
+    catch (error) {
+        (0, helpers_1.log4js)(error, 'error');
+        res.status(404).json({
+            message: `Error no identificado ${error}`,
+            hasError: true
+        });
+    }
+});
+exports.resetPassword = resetPassword;
+const changePassword = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { body } = req;
+    const encoded = Buffer.from(body.password, 'utf8').toString('base64');
+    try {
+        const data = yield usuario_1.default.update({
+            password: encoded
+        }, {
+            where: { id: body.id },
+            returning: true
+        });
+        res.json({
+            message: `Password cambiado correctamente`,
+            hasError: false
+        });
+    }
+    catch (error) {
+        (0, helpers_1.log4js)(error, 'error');
+        res.status(404).json({
+            msg: `Error no identificado ${error}`,
+            hasError: true
+        });
+    }
+});
+exports.changePassword = changePassword;
 const deleteUsuario = (req, res) => {
     const { id } = req.params;
     res.json({
@@ -84,4 +216,31 @@ const deleteUsuario = (req, res) => {
     });
 };
 exports.deleteUsuario = deleteUsuario;
+const adminAuthorize = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { body } = req;
+    try {
+        const encoded = Buffer.from(body.password, 'utf8').toString('base64');
+        const data = yield usuario_1.default.findOne({ where: { password: encoded, rol: 'ADMIN_ROLE' } });
+        if (data) {
+            res.json({
+                message: `Contaseña correcta`,
+                hasSuccess: true
+            });
+        }
+        else {
+            res.json({
+                message: `La contraseña proporcionada no coincide`,
+                hasSuccess: false
+            });
+        }
+    }
+    catch (error) {
+        (0, helpers_1.log4js)(error, 'error');
+        res.status(404).json({
+            message: `Error no identificado ${error}`,
+            hasSuccess: false
+        });
+    }
+});
+exports.adminAuthorize = adminAuthorize;
 //# sourceMappingURL=usuarios.js.map

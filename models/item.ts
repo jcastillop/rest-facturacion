@@ -37,11 +37,8 @@ const Item = Sqlcn.define('Items', {
     placa:{
         type: DataTypes.STRING
     },                                                                             
+}, {
+    timestamps: false
 });
-
-(async () => {
-    await Sqlcn.sync({ force: false });
-    // Code here
-  })();
 
 export default Item;

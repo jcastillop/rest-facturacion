@@ -25,7 +25,6 @@ const autocompletarRuc = (req, res) => __awaiter(void 0, void 0, void 0, functio
         },
         raw: true
     });
-    console.log(receptores);
     res.json({
         receptores
     });

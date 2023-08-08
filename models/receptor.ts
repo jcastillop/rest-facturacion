@@ -1,18 +1,43 @@
 import { DataTypes, Model, Op } from "sequelize";
 import { Sqlcn } from '../database/config';
-import { Comprobante } from "./comprobante";
+import { log4js } from "../helpers";
 
-export const obtieneReceptor = async (numero_documento: string, tipo_documento: string, razon_social: string, direccion: string, correo: string) => {
-    const [receptor, created] = await Receptor.findOrCreate({
-        where: { numero_documento: numero_documento },
-        defaults: {
-            tipo_documento: tipo_documento,
-            razon_social: razon_social,
-            direccion: direccion,
-            correo: correo
-        }
-      });
-      return receptor;
+export const obtieneReceptor = async (numero_documento: string, tipo_documento: string, razon_social: string, direccion: string, correo: string, placa: string) => {
+    log4js( "Inicio obtieneReceptor");
+    try {
+        const [receptor, created] = await Receptor.findOrCreate({
+            where: { numero_documento: numero_documento },
+            defaults: {
+                tipo_documento: tipo_documento,
+                razon_social: razon_social,
+                direccion: direccion,
+                correo: correo,
+                placa: placa,
+            }        
+        // const [receptor, created] = await Receptor.upsert({
+        //     where: { numero_documento: numero_documento },
+        //     defaults: {
+        //         tipo_documento: tipo_documento,
+        //         razon_social: razon_social,
+        //         direccion: direccion,
+        //         correo: correo,
+        //         placa: placa,
+        //     }
+          });
+        log4js( "Fin obtieneReceptor");
+        return {
+            hasErrorReceptor: false,
+            messageReceptor: `Receptor ${created? "creado":"actualizado"} correctamente`,
+            receptor: receptor
+        };
+    } catch (error: any) {
+        log4js( "obtieneReceptor: " + error.toString(), 'error');
+        log4js( "Fin obtieneReceptor");
+        return {
+            hasErrorReceptor: true,
+            messageReceptor: "obtieneReceptor: " + error.toString(),
+        };
+    }
 }
 
 const Receptor = Sqlcn.define('Receptores', {
@@ -42,14 +67,13 @@ const Receptor = Sqlcn.define('Receptores', {
         allowNull: true,
 
     },    
+    placa:{
+        type: DataTypes.STRING,
+        allowNull: true,
+
+    },      
 }, {
     timestamps: false
 });
-
-(async () => {
-    await Sqlcn.sync({ force: false });
-    // Code here
-  })();
-
 
 export default Receptor;

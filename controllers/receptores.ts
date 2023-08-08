@@ -14,7 +14,6 @@ export const autocompletarRuc = async (req: Request, res: Response) => {
         }, 
         raw: true
       });
-    console.log(receptores);
     res.json({
         receptores
     });  

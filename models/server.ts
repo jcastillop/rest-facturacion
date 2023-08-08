@@ -4,6 +4,7 @@ import comprobanteRoutes from '../routes/comprobantes';
 import userRoutes from '../routes/usuarios';
 import receptorRoutes from '../routes/receptores';
 import cors from 'cors'
+import { Sqlcn } from '../database/config';
 
 class Server{
 
@@ -28,6 +29,7 @@ class Server{
         //await dbConnection()
         try {
             //await Sqlcn().authenticate();
+            Sqlcn.sync()
             console.log('database on lines')
         } catch (error) {
             

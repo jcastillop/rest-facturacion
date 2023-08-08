@@ -3,68 +3,130 @@ import { Sqlcn } from '../database/config';
 import { numbersToLetters } from "../helpers/numeros-letras";
 import Abastecimiento from "./abastecimiento";
 import Item from "./item";
-import Receptor from './receptor';
-import Usuario from "./usuario";
+
 import { PropsMiFact } from "../helpers/api-mifact";
+import Receptor from "./receptor";
+import Terminal from "./terminal";
+import Cierreturno from "./cierreturno";
+import Isla from "./isla";
+import Pistola from "./pistola";
+import Usuario from "./usuario";
+import Login from "./login";
+import Cierredia from "./cierredia";
+import Emisor from "./emisor";
+import { log4js } from "../helpers";
 
 
-export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number): Promise<any> => {
+export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number, producto: string, comentario: string, tarjeta: number = 0, efectivo: number = 0, billete: number = 0): Promise<any> => {
+    log4js( "Inicio nuevoComprobante");
+    try {
+        const abastecimiento: any = await Abastecimiento.findByPk(idAbastecimiento);
 
-    const abastecimiento: any = await Abastecimiento.findByPk(idAbastecimiento);
+        var valor_unitario = (parseFloat(abastecimiento.precioUnitario)/1.18).toFixed(10);
+        var igv_unitario =((parseFloat(valor_unitario)*parseFloat(abastecimiento.volTotal))*0.18).toFixed(2);
+        var total_gravadas = (parseFloat(valor_unitario) * abastecimiento.volTotal).toFixed(2);
+    
+        const comprobante = Comprobante.build({ 
+            ReceptorId:                     receptor.id,
+            UsuarioId:                      usuario,
+            tipo_comprobante:               tipo,
+            numeracion_documento_afectado:  correlativo,
+            total_gravadas:                 total_gravadas,
+            total_igv:                      igv_unitario,
+            total_venta:                    abastecimiento.valorTotal,
+            monto_letras:                   numbersToLetters(abastecimiento.valorTotal),
+            comentario:                     comentario,
+            id_abastecimiento:              abastecimiento.idAbastecimiento,
+            pistola:                        abastecimiento.pistola,
+            codigo_combustible:             abastecimiento.codigoCombustible,
+            dec_combustible:                producto,
+            volumen:                        abastecimiento.volTotal,
+            fecha_abastecimiento:           abastecimiento.fechaHora,
+            tiempo_abastecimiento:          abastecimiento.tiempo,
+            volumen_tanque:                 abastecimiento.volTanque,
+            pago_tarjeta:                   tarjeta,
+            pago_efectivo:                  efectivo,
+            placa:                          placa,
+            billete:                        billete,
+            producto_precio:                abastecimiento.precioUnitario,
+            Items:[{
+                cantidad:           abastecimiento.volTotal,
+                valor_unitario:     valor_unitario,
+                precio_unitario:    abastecimiento.precioUnitario,
+                igv:                igv_unitario,
+                descripcion:        producto,
+                codigo_producto:    abastecimiento.codigoCombustible,
+                placa:              placa,
+            }]
+        }, {
+            include: [
+                { model: Item, as: 'Items' }
+            ]
+          });
+    
+        await comprobante.save();
+        log4js( "Fin nuevoComprobante");
+        if(comprobante){
+            return {
+                hasErrorComprobante: false,
+                messageComprobante: `Comprobante creado correctamente`,
+                comprobante: comprobante
+            };
+        }else{
+            return {
+                hasErrorComprobante: true,
+                messageComprobante: "nuevoComprobante: " + `Ocurrió un error durante la creación del comprobante`
+            };            
+        }
+        
+    } catch (error: any) {
+        log4js( "nuevoComprobante: " + error.toString(), 'error');
+        log4js( "Fin nuevoComprobante");
+        return {
+            hasErrorComprobante: true,
+            messageComprobante: "nuevoComprobante: " + error.toString(),
+        };
+    }
 
-    var valor_unitario = (parseFloat(abastecimiento.precioUnitario)/1.18).toFixed(10);
-    var igv_unitario =((parseFloat(valor_unitario)*parseFloat(abastecimiento.volTotal))*0.18).toFixed(2);
-    var total_gravadas = (parseFloat(valor_unitario) * abastecimiento.volTotal).toFixed(2);
-
-    const comprobante = Comprobante.build({ 
-        ReceptorId: receptor.id,
-        UsuarioId: usuario,
-        tipo_comprobante: tipo,
-        numeracion_documento_afectado: correlativo,
-        total_gravadas: total_gravadas,
-        total_igv:igv_unitario,
-        total_venta:abastecimiento.valorTotal,
-        monto_letras:numbersToLetters(abastecimiento.valorTotal),
-        Items:[{
-            cantidad: abastecimiento.volTotal,
-            valor_unitario: valor_unitario,
-            precio_unitario: abastecimiento.precioUnitario,
-            igv:igv_unitario,
-            descripcion:'GLP',
-            codigo_producto:abastecimiento.codigoCombustible,
-            placa: placa,
-        }]
-    }, {
-        include: [
-            { model: Item, as: 'Items' }
-        ]
-      });
-
-    await comprobante.save();
-
-    return comprobante;
 }
 
-export const actualizarComprobante = async (props: PropsMiFact, idComprobante: number): Promise<any> => {
-
-
+export const actualizarComprobante = async (props: any, idComprobante: number, createOrderMiFact: boolean): Promise<any> => {
+    log4js( "Inicio actualizarComprobante");
+    try {
         const data = await Comprobante.update(
             {
-                cadena_para_codigo_qr: props.response.cadena_para_codigo_qr,
-                codigo_hash: props.response.codigo_hash,
-                pdf_bytes: props.response.pdf_bytes,
-                url: props.response.url,
-                errors: props.response.errors,
+                cadena_para_codigo_qr:  createOrderMiFact? props.cadena_para_codigo_qr:'',
+                codigo_hash:            createOrderMiFact? props.codigo_hash:'',
+                pdf_bytes:              createOrderMiFact? props.pdf_bytes:'',
+                url:                    createOrderMiFact? props.url:'',
+                errors:                 createOrderMiFact? props.errors:'',
             },
             {
                 where: { id: idComprobante },
                 returning: true      
             }
         );
-
+        log4js( "Fin actualizarComprobante: " + JSON.stringify(data));
         if(data){
-            return data[1][0];
-        }
+            return {
+                hasErrorActualizaComprobante: false,
+                messageActualizaComprobante: `Comprobante actualizado correctamente`,
+                comprobanteUpdate: data[1][0]
+            }                 
+        }else{
+            return {
+                hasErrorActualizaComprobante: true,
+                messageActualizaComprobante: `No actualizo ningún comprobante`
+            } 
+        }                     
+    } catch (error: any) {
+        log4js( "actualizarComprobante: " + error.toString(), 'error');
+        return {
+            hasErrorActualizaComprobante: true,
+            messageActualizaComprobante: error.toString(),
+        };
+    }
+
 
 }
 
@@ -132,22 +194,124 @@ export const Comprobante  = Sqlcn.define('Comprobantes', {
     },     
     errors:{
         type: DataTypes.STRING
-    },                                                             
+    },
+    id_abastecimiento:{
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    pistola:{
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },         
+    codigo_combustible:{
+        type: DataTypes.TEXT('tiny'),
+        allowNull: false
+    }, 
+    dec_combustible:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },                                                               
+    volumen:{
+        type: DataTypes.FLOAT,
+        allowNull: false
+    }, 
+    fecha_abastecimiento:{
+        type: DataTypes.DATE,
+        allowNull: false
+    },    
+    tiempo_abastecimiento:{
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    volumen_tanque:{
+        type: DataTypes.BIGINT,
+        allowNull: false
+    },         
+    comentario:{
+        type: DataTypes.STRING
+    },
+    pago_tarjeta:{
+        type: DataTypes.FLOAT
+    },
+    pago_efectivo:{
+        type: DataTypes.FLOAT
+    },
+    placa:{
+        type: DataTypes.STRING
+    },
+    billete:{
+        type: DataTypes.FLOAT
+    },
+    producto_precio:{
+        type: DataTypes.FLOAT
+    },                          
+}, {
+    timestamps: false
 });
+
 Comprobante.hasMany(Item, {
     foreignKey: 'ComprobanteId'
-});
-Receptor.hasMany(Comprobante, {
-    foreignKey: 'ReceptorId'
 });
 Comprobante.belongsTo(Receptor, {
     foreignKey: 'ReceptorId'
 });
-Usuario.hasMany(Comprobante, {
-    foreignKey: 'UsuarioId'
+Comprobante.belongsTo(Usuario, {
+    foreignKey: {
+        name:'UsuarioId',
+        allowNull: false
+    }
+});
+Comprobante.belongsTo(Cierreturno, {
+    foreignKey: {
+        name:'CierreturnoId',
+        allowNull: true
+    }
+});
+Comprobante.belongsTo(Receptor, {
+    foreignKey: {
+        name:'ReceptorId',
+        allowNull: true
+    }
+});
+/*
+Receptor.hasMany(Comprobante, {
+    foreignKey: 'ReceptorId'
+});
+*/
+Emisor.hasMany(Terminal, {
+    foreignKey: 'EmisorId'
+});
+Terminal.hasMany(Isla, {
+    foreignKey: 'TerminalId'
+});
+Isla.belongsTo(Terminal, {
+    foreignKey: {
+        name:'TerminalId',
+        allowNull: false
+    }
 });
 
-
+Isla.hasMany(Pistola, {
+    foreignKey: 'IslaId'
+});
+Login.belongsTo(Usuario, {
+    foreignKey: 'UsuarioId'
+});
+Cierreturno.belongsTo(Cierredia, {
+    foreignKey: {
+        name:'CierrediaId',
+        allowNull: true
+    }
+});
+Cierreturno.belongsTo(Usuario, {
+    foreignKey: 'UsuarioId'
+});
+Usuario.belongsTo(Emisor, {
+    foreignKey: {
+        name:'EmisorId',
+        allowNull: false
+    }
+});
 
 (async () => {
     await Sqlcn.sync({ force: false });
