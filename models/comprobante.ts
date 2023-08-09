@@ -30,7 +30,7 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
             ReceptorId:                     receptor.id,
             UsuarioId:                      usuario,
             tipo_comprobante:               tipo,
-            numeracion_documento_afectado:  correlativo,
+            numeracion_comprobante:         correlativo,
             total_gravadas:                 total_gravadas,
             total_igv:                      igv_unitario,
             total_venta:                    abastecimiento.valorTotal,
@@ -140,6 +140,10 @@ export const Comprobante  = Sqlcn.define('Comprobantes', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    numeracion_comprobante:{
+        type: DataTypes.STRING,
+        allowNull: true
+    },    
     fecha_emision:{
         type: DataTypes.DATEONLY,
         defaultValue: DataTypes.NOW

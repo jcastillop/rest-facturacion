@@ -39,7 +39,7 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
             ReceptorId: receptor.id,
             UsuarioId: usuario,
             tipo_comprobante: tipo,
-            numeracion_documento_afectado: correlativo,
+            numeracion_comprobante: correlativo,
             total_gravadas: total_gravadas,
             total_igv: igv_unitario,
             total_venta: abastecimiento.valorTotal,
@@ -144,6 +144,10 @@ exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
     tipo_comprobante: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false
+    },
+    numeracion_comprobante: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: true
     },
     fecha_emision: {
         type: sequelize_1.DataTypes.DATEONLY,

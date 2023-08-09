@@ -23,7 +23,7 @@ export const makeXMLFactura = ( comprobante: any, receptor: any ) => {
     .att('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
     xml.ele('cbc:UBLVersionID','2.1');
     xml.ele('cbc:CustomizationID', {'schemeAgencyName': 'PE:SUNAT'},'2.0');
-    xml.ele('cbc:ID',comprobante.numeracion_documento_afectado);
+    xml.ele('cbc:ID',comprobante.numeracion_comprobante);
     xml.ele('cbc:IssueDate',comprobante.fecha_emision);
     xml.ele('cbc:DueDate',comprobante.fecha_emision); 
     xml.ele('cbc:InvoiceTypeCode', {'listAgencyName': 'PE:SUNAT','listID': '0101','listName': 'Tipo de Documento','listURI': 'urn:pe:gob:sunat:cpe:see:gem:catalogos:catalogo01'},'01'); 

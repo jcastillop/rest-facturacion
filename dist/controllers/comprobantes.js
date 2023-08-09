@@ -98,9 +98,8 @@ const historicoComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, fu
     const queryAnd = [];
     var queryWhere = {};
     const usuario = yield usuario_1.default.findByPk(comprobanteParams.idUsuario, { raw: true });
-    console.log(usuario);
     if (usuario.rol == 'ADMIN_ROLE') {
-        queryAnd.push({ numeracion_documento_afectado: { [sequelize_1.Op.ne]: null } });
+        queryAnd.push({ numeracion_comprobante: { [sequelize_1.Op.ne]: null } });
     }
     else if (usuario.rol == 'USER_ROLE') {
         queryAnd.push({ UsuarioId: comprobanteParams.idUsuario });

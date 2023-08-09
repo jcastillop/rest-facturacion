@@ -73,10 +73,8 @@ export const historicoComprobantes = async (req: Request, res: Response) => {
 
     const usuario: any = await Usuario.findByPk(comprobanteParams.idUsuario,{ raw: true });
 
-    console.log(usuario);
-
     if(usuario.rol == 'ADMIN_ROLE'){
-        queryAnd.push({ numeracion_documento_afectado: { [Op.ne]: null } });
+        queryAnd.push({ numeracion_comprobante: { [Op.ne]: null } });
     }else if(usuario.rol == 'USER_ROLE'){
         queryAnd.push({ UsuarioId: comprobanteParams.idUsuario });
         queryAnd.push({ CierreturnoId: null });
