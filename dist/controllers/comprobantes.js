@@ -40,7 +40,7 @@ const receptor_1 = __importStar(require("../models/receptor"));
 const abastecimiento_1 = require("../models/abastecimiento");
 const comprobante_1 = require("../models/comprobante");
 const correlativo_1 = require("../models/correlativo");
-const cierreturno_1 = require("../models/cierreturno");
+const cierreturno_1 = __importStar(require("../models/cierreturno"));
 const api_mifact_1 = require("../helpers/api-mifact");
 const constantes_1 = __importDefault(require("../helpers/constantes"));
 const sequelize_1 = require("sequelize");
@@ -98,6 +98,7 @@ const historicoComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, fu
     const queryAnd = [];
     var queryWhere = {};
     const usuario = yield usuario_1.default.findByPk(comprobanteParams.idUsuario, { raw: true });
+    console.log(usuario);
     if (usuario.rol == 'ADMIN_ROLE') {
         queryAnd.push({ numeracion_documento_afectado: { [sequelize_1.Op.ne]: null } });
     }
@@ -111,7 +112,9 @@ const historicoComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, fu
     queryWhere = { [sequelize_1.Op.and]: queryAnd };
     const queryParams = {
         include: [
-            { model: receptor_1.default, required: true }
+            { model: receptor_1.default, required: true },
+            { model: cierreturno_1.default, required: false },
+            { model: usuario_1.default, required: true }
         ],
         where: queryWhere,
         offset: Number(comprobanteParams.offset),

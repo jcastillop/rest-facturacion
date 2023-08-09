@@ -6,7 +6,7 @@ import Receptor, { obtieneReceptor } from "../models/receptor";
 import { actualizaAbastecimiento } from "../models/abastecimiento";
 import { Comprobante, actualizarComprobante, nuevoComprobante } from "../models/comprobante";
 import { generaCorrelativo } from "../models/correlativo";
-import { cerrarTurno, obtenerCierreTurno } from "../models/cierreturno";
+import Cierreturno, { cerrarTurno, obtenerCierreTurno } from "../models/cierreturno";
 
 import { createOrderApiMiFact } from "../helpers/api-mifact";
 import Constantes from "../helpers/constantes";
@@ -73,6 +73,8 @@ export const historicoComprobantes = async (req: Request, res: Response) => {
 
     const usuario: any = await Usuario.findByPk(comprobanteParams.idUsuario,{ raw: true });
 
+    console.log(usuario);
+
     if(usuario.rol == 'ADMIN_ROLE'){
         queryAnd.push({ numeracion_documento_afectado: { [Op.ne]: null } });
     }else if(usuario.rol == 'USER_ROLE'){
@@ -86,7 +88,9 @@ export const historicoComprobantes = async (req: Request, res: Response) => {
 
     const queryParams = {
         include: [
-            { model: Receptor, required: true }
+            { model: Receptor, required: true },
+            { model: Cierreturno, required: false },
+            { model: Usuario, required: true }
         ],
         where:  queryWhere,
         offset: Number(comprobanteParams.offset),
