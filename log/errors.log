@@ -16,3 +16,10 @@
 [2023-08-02T12:36:53.797] [ERROR] default - {"name":"SequelizeConnectionError","parent":{"code":"ETIMEOUT"},"original":{"code":"ETIMEOUT"}}
 [2023-08-02T12:36:54.901] [ERROR] default - {"name":"SequelizeConnectionError","parent":{"code":"ETIMEOUT"},"original":{"code":"ETIMEOUT"}}
 [2023-08-09T14:10:20.676] [ERROR] default - {}
+[2023-08-11T14:33:54.091] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."
+[2023-08-11T14:35:23.017] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."
+[2023-08-11T14:39:01.917] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."
+[2023-08-11T14:41:46.896] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."
+[2023-08-11T14:43:13.373] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."
+[2023-08-11T14:47:21.202] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."
+[2023-08-11T14:48:18.873] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."

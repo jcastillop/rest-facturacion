@@ -16,11 +16,13 @@ exports.createOrderApiMiFact = void 0;
 const axios_1 = __importDefault(require("axios"));
 const api_1 = require("../api");
 const log4js_1 = require("./log4js");
+const constantes_1 = __importDefault(require("./constantes"));
 const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlativo) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     (0, log4js_1.log4js)("Inicio createOrderApiMiFact");
     try {
         var splitted = correlativo.split("-");
+        const splitedAfectado = comprobante.numeracion_documento_afectado.split("-");
         var tot_valor_venta = 0;
         var tot_precio_unitario = 0;
         comprobante.Items.forEach((item) => {
@@ -85,10 +87,20 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
             "TXT_VERS_ESTRUCT_UBL": "2.0",
             "COD_ANEXO_EMIS": "0000",
             "COD_TIP_OPE_SUNAT": "0101",
-            "items": arr_items
+            "items": arr_items,
+            "docs_referenciado": [
+                {
+                    "COD_TIP_DOC_REF": (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) ? comprobante.tipo_documento_afectado : "",
+                    "NUM_SERIE_CPE_REF": (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) ? splitedAfectado[0] : "",
+                    "NUM_CORRE_CPE_REF": (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) ? splitedAfectado[1] : "",
+                    "FEC_DOC_REF": (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) ? comprobante.fecha_documento_afectado : "",
+                }
+            ]
         };
+        (0, log4js_1.log4js)(`createOrderApiMiFact: ${correlativo} : ${JSON.stringify(body)}`);
         const { data } = yield api_1.posApi.post(`${process.env.MIFACT_API}/api/invoiceService.svc/SendInvoice`, body);
         //console.log(process.env.MIFACT_API);
+        (0, log4js_1.log4js)(`reponse data : ${JSON.stringify(data)}`);
         (0, log4js_1.log4js)("Fin createOrderApiMiFact");
         if (data.errors) {
             return {

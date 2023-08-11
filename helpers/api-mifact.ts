@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { posApi } from '../api';
 import { log4js } from './log4js';
+import Constantes from './constantes';
 
 export interface PropsMiFact {
     hasErrorMiFact: boolean; 
@@ -13,7 +14,7 @@ export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo
     try {
 
         var splitted = correlativo.split("-");
-        
+        const splitedAfectado =  comprobante.numeracion_documento_afectado.split("-");
         var tot_valor_venta = 0;
         var tot_precio_unitario = 0;
 
@@ -84,12 +85,22 @@ export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo
             "TXT_VERS_ESTRUCT_UBL":"2.0",
             "COD_ANEXO_EMIS":"0000",
             "COD_TIP_OPE_SUNAT": "0101",
-            "items": arr_items
+            "items": arr_items,
+            "docs_referenciado": [
+                {
+                      "COD_TIP_DOC_REF": (tipo_comprobante == Constantes.TipoComprobante.NotaCredito)?comprobante.tipo_documento_afectado:"",
+                      "NUM_SERIE_CPE_REF": (tipo_comprobante == Constantes.TipoComprobante.NotaCredito)?splitedAfectado[0]:"",
+                      "NUM_CORRE_CPE_REF":(tipo_comprobante == Constantes.TipoComprobante.NotaCredito)?splitedAfectado[1]:"",
+                      "FEC_DOC_REF":(tipo_comprobante == Constantes.TipoComprobante.NotaCredito)?comprobante.fecha_documento_afectado:"",
+                }
+          ]
         }
-
+        
+        log4js(`createOrderApiMiFact: ${correlativo} : ${JSON.stringify(body)}`);
 
         const { data } = await posApi.post(`${process.env.MIFACT_API}/api/invoiceService.svc/SendInvoice`, body);
         //console.log(process.env.MIFACT_API);
+        log4js(`reponse data : ${JSON.stringify(data)}`);
         log4js( "Fin createOrderApiMiFact");
         if(data.errors){
             return {

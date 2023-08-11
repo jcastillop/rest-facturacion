@@ -29,7 +29,7 @@ export const generaComprobante = async (req: Request, res: Response) => {
     const {hasErrorReceptor, messageReceptor, receptor} = await obtieneReceptor(body.numero_documento?body.numero_documento:0, body.tipo_documento, body.razon_social, body.direccion, body.correo, body.placa);
     if(hasErrorReceptor){ res.json({ hasError: true, respuesta: messageReceptor}); return; }
 
-    const {hasErrorComprobante, messageComprobante, comprobante} = await nuevoComprobante(body.id, body.tipo, receptor, correlativo, body.placa, body.usuario, body.producto, body.comentario, body.tarjeta, body.efectivo, body.billete);
+    const {hasErrorComprobante, messageComprobante, comprobante} = await nuevoComprobante(body.id, body.tipo, receptor, correlativo, body.placa, body.usuario, body.producto, body.comentario, body.tipo_afectado, body.numeracion_afectado, body.fecha_afectado, body.tarjeta, body.efectivo, body.billete);
     if(hasErrorComprobante){ res.json({ hasError: true, respuesta: messageComprobante}); return; }
     
     if(bCreateOrderMiFact){

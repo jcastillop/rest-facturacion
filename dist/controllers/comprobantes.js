@@ -61,7 +61,7 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.json({ hasError: true, respuesta: messageReceptor });
         return;
     }
-    const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobante)(body.id, body.tipo, receptor, correlativo, body.placa, body.usuario, body.producto, body.comentario, body.tarjeta, body.efectivo, body.billete);
+    const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobante)(body.id, body.tipo, receptor, correlativo, body.placa, body.usuario, body.producto, body.comentario, body.tipo_afectado, body.numeracion_afectado, body.fecha_afectado, body.tarjeta, body.efectivo, body.billete);
     if (hasErrorComprobante) {
         res.json({ hasError: true, respuesta: messageComprobante });
         return;

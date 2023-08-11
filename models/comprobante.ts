@@ -17,7 +17,7 @@ import Emisor from "./emisor";
 import { log4js } from "../helpers";
 
 
-export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number, producto: string, comentario: string, tarjeta: number = 0, efectivo: number = 0, billete: number = 0): Promise<any> => {
+export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number, producto: string, comentario: string, tipo_afectado: string, numeracion_afectado: string, fecha_afectado: string, tarjeta: number = 0, efectivo: number = 0, billete: number = 0): Promise<any> => {
     log4js( "Inicio nuevoComprobante");
     try {
         const abastecimiento: any = await Abastecimiento.findByPk(idAbastecimiento);
@@ -31,6 +31,9 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
             UsuarioId:                      usuario,
             tipo_comprobante:               tipo,
             numeracion_comprobante:         correlativo,
+            tipo_documento_afectado:        tipo_afectado,
+            numeracion_documento_afectado:  numeracion_afectado,
+            fecha_documento_afectado:       fecha_afectado?fecha_afectado:null,
             total_gravadas:                 total_gravadas,
             total_igv:                      igv_unitario,
             total_venta:                    abastecimiento.valorTotal,
@@ -168,6 +171,10 @@ export const Comprobante  = Sqlcn.define('Comprobantes', {
         type: DataTypes.STRING,
         allowNull: true
     },
+    fecha_documento_afectado:{
+        type: DataTypes.DATEONLY,
+        allowNull: true
+    },       
     motivo_documento_afectado:{
         type: DataTypes.STRING,
         allowNull: true

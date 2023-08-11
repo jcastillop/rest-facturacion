@@ -28,7 +28,7 @@ const login_1 = __importDefault(require("./login"));
 const cierredia_1 = __importDefault(require("./cierredia"));
 const emisor_1 = __importDefault(require("./emisor"));
 const helpers_1 = require("../helpers");
-const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tarjeta = 0, efectivo = 0, billete = 0) => __awaiter(void 0, void 0, void 0, function* () {
+const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tipo_afectado, numeracion_afectado, fecha_afectado, tarjeta = 0, efectivo = 0, billete = 0) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio nuevoComprobante");
     try {
         const abastecimiento = yield abastecimiento_1.default.findByPk(idAbastecimiento);
@@ -40,6 +40,9 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
             UsuarioId: usuario,
             tipo_comprobante: tipo,
             numeracion_comprobante: correlativo,
+            tipo_documento_afectado: tipo_afectado,
+            numeracion_documento_afectado: numeracion_afectado,
+            fecha_documento_afectado: fecha_afectado ? fecha_afectado : null,
             total_gravadas: total_gravadas,
             total_igv: igv_unitario,
             total_venta: abastecimiento.valorTotal,
@@ -171,6 +174,10 @@ exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
     },
     numeracion_documento_afectado: {
         type: sequelize_1.DataTypes.STRING,
+        allowNull: true
+    },
+    fecha_documento_afectado: {
+        type: sequelize_1.DataTypes.DATEONLY,
         allowNull: true
     },
     motivo_documento_afectado: {
