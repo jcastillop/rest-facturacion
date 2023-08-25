@@ -19,7 +19,7 @@ export const generaComprobante = async (req: Request, res: Response) => {
 
     const { body } = req;
     const serie: string = '001';
-    const bCreateOrderMiFact = (body.tipo == Constantes.TipoComprobante.Boleta || body.tipo == Constantes.TipoComprobante.Factura)
+    const bCreateOrderMiFact = (body.tipo == Constantes.TipoComprobante.Boleta || body.tipo == Constantes.TipoComprobante.Factura || body.tipo == Constantes.TipoComprobante.NotaCredito)
     var responseMiFact;
 
 

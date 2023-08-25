@@ -4,7 +4,7 @@ import { log4js } from '../helpers';
 
 
 export const generaCorrelativo = async (tipo: string, serie: string): Promise<{ hasErrorCorrelativo: boolean; messageCorrelativo: string; correlativo: string; }> => {
-
+    log4js( "Inicio generaCorrelativo");
     var correlativo= '';
     try {
         await Sqlcn.query(
@@ -16,6 +16,7 @@ export const generaCorrelativo = async (tipo: string, serie: string): Promise<{ 
             }).then((results: any)=>{
                 correlativo= results.correlativo
             });
+        log4js( "Fin generaCorrelativo " + correlativo);
             return {
                 hasErrorCorrelativo: false,
                 messageCorrelativo: "Correlativo generado satisfactoriamente",
@@ -30,6 +31,6 @@ export const generaCorrelativo = async (tipo: string, serie: string): Promise<{ 
         };
     }
 
-
+    
         
 }

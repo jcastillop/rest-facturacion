@@ -23,3 +23,7 @@
 [2023-08-11T14:43:13.373] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."
 [2023-08-11T14:47:21.202] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."
 [2023-08-11T14:48:18.873] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."
+[2023-08-21T15:09:56.857] [ERROR] default - {}
+[2023-08-21T15:10:06.823] [ERROR] default - {}
+[2023-08-21T15:11:21.633] [ERROR] default - {}
+[2023-08-24T07:38:41.945] [ERROR] default - {}

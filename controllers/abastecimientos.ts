@@ -122,23 +122,16 @@ export const getAbastecimiento = async (req: Request, res: Response) => {
       remoteAddress = ipaddr.process(req.ip).toString();
     }
 
-    const isla: any = await Isla.findAll({
-        include: [
-            { 
-                model: Pistola, 
-                as: 'Pistolas'
-            }
-        ],
-        where:{
-            [Op.and]: [{ ip: remoteAddress },{ estado: 1 }]
-        }, 
+    const pistolas: any = await Pistola.findAll({
+        where:{ estado: 1 }, 
     });    
 
     try {
         const abastecimiento: any = await Abastecimiento.findByPk(id,{ raw: true });
 
         if(abastecimiento){
-            const pistola = isla[0].Pistolas.find((obj: { codigo: any; }) => { return obj.codigo === abastecimiento.pistola; });
+            const pistola = pistolas.find((obj: { codigo: any; }) => { return obj.codigo === abastecimiento.pistola; });
+            console.log(pistola);
             abastecimiento.descripcionCombustible = pistola.desc_producto
             abastecimiento.styleCombustible = pistola.color
         }

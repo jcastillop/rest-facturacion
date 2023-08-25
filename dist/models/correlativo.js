@@ -14,6 +14,7 @@ const config_1 = require("../database/config");
 const sequelize_1 = require("sequelize");
 const helpers_1 = require("../helpers");
 const generaCorrelativo = (tipo, serie) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio generaCorrelativo");
     var correlativo = '';
     try {
         yield config_1.Sqlcn.query('DECLARE @correlativo NVARCHAR(11);DECLARE @resultado CHAR(3);EXEC spCorrelativoObtener :tipo, :serie, @correlativo output, @resultado output;SELECT @correlativo as correlativo,@resultado as resultado;', {
@@ -23,6 +24,7 @@ const generaCorrelativo = (tipo, serie) => __awaiter(void 0, void 0, void 0, fun
         }).then((results) => {
             correlativo = results.correlativo;
         });
+        (0, helpers_1.log4js)("Fin generaCorrelativo " + correlativo);
         return {
             hasErrorCorrelativo: false,
             messageCorrelativo: "Correlativo generado satisfactoriamente",

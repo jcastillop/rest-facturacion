@@ -11,6 +11,7 @@ export interface PropsMiFact {
 
 export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo_comprobante: string, correlativo: string): Promise<PropsMiFact> => {
     log4js( "Inicio createOrderApiMiFact");
+    log4js(comprobante);
     try {
 
         var splitted = correlativo.split("-");
@@ -85,7 +86,8 @@ export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo
             "TXT_VERS_ESTRUCT_UBL":"2.0",
             "COD_ANEXO_EMIS":"0000",
             "COD_TIP_OPE_SUNAT": "0101",
-            "items": arr_items,
+            "TXT_DESC_MTVO": (tipo_comprobante == Constantes.TipoComprobante.NotaCredito)?"anulacion de comprobante":"",
+            //"items": arr_items,
             "docs_referenciado": [
                 {
                       "COD_TIP_DOC_REF": (tipo_comprobante == Constantes.TipoComprobante.NotaCredito)?comprobante.tipo_documento_afectado:"",
@@ -104,7 +106,7 @@ export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo
         log4js( "Fin createOrderApiMiFact");
         if(data.errors){
             return {
-                hasErrorMiFact: true,
+                hasErrorMiFact: false,
                 messageMiFact: data.errors ,
                 response: data
             }

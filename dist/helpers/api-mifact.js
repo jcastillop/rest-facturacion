@@ -20,6 +20,7 @@ const constantes_1 = __importDefault(require("./constantes"));
 const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlativo) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     (0, log4js_1.log4js)("Inicio createOrderApiMiFact");
+    (0, log4js_1.log4js)(comprobante);
     try {
         var splitted = correlativo.split("-");
         const splitedAfectado = comprobante.numeracion_documento_afectado.split("-");
@@ -87,7 +88,8 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
             "TXT_VERS_ESTRUCT_UBL": "2.0",
             "COD_ANEXO_EMIS": "0000",
             "COD_TIP_OPE_SUNAT": "0101",
-            "items": arr_items,
+            "TXT_DESC_MTVO": (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) ? "anulacion de comprobante" : "",
+            //"items": arr_items,
             "docs_referenciado": [
                 {
                     "COD_TIP_DOC_REF": (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) ? comprobante.tipo_documento_afectado : "",
@@ -104,7 +106,7 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
         (0, log4js_1.log4js)("Fin createOrderApiMiFact");
         if (data.errors) {
             return {
-                hasErrorMiFact: true,
+                hasErrorMiFact: false,
                 messageMiFact: data.errors,
                 response: data
             };

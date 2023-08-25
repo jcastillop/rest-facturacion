@@ -110,21 +110,14 @@ const getAbastecimiento = (req, res) => __awaiter(void 0, void 0, void 0, functi
     if (ipaddr_js_1.default.isValid(req.ip)) {
         remoteAddress = ipaddr_js_1.default.process(req.ip).toString();
     }
-    const isla = yield isla_1.default.findAll({
-        include: [
-            {
-                model: pistola_1.default,
-                as: 'Pistolas'
-            }
-        ],
-        where: {
-            [sequelize_1.Op.and]: [{ ip: remoteAddress }, { estado: 1 }]
-        },
+    const pistolas = yield pistola_1.default.findAll({
+        where: { estado: 1 },
     });
     try {
         const abastecimiento = yield abastecimiento_1.default.findByPk(id, { raw: true });
         if (abastecimiento) {
-            const pistola = isla[0].Pistolas.find((obj) => { return obj.codigo === abastecimiento.pistola; });
+            const pistola = pistolas.find((obj) => { return obj.codigo === abastecimiento.pistola; });
+            console.log(pistola);
             abastecimiento.descripcionCombustible = pistola.desc_producto;
             abastecimiento.styleCombustible = pistola.color;
         }
