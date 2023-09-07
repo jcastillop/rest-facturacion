@@ -67,11 +67,11 @@ export const getAbastecimientos = async (req: Request, res: Response) => {
 
     queryAnd.push({ estado: 0 });
     
-    if(arrPistolas.length > 0 && onlyNumbers(arrPistolas)){
-        queryWhere = { [Op.and] : queryAnd, pistola: { [Op.in]: arrPistolas } }            
-    }else{
-        queryWhere = { [Op.and] : queryAnd }
-    }
+    // if(arrPistolas.length > 0 && onlyNumbers(arrPistolas)){
+    //     queryWhere = { [Op.and] : queryAnd, pistola: { [Op.in]: arrPistolas } }            
+    // }else{
+    //     queryWhere = { [Op.and] : queryAnd }
+    // }
 
     const queryParams = {          
         where: queryWhere,
@@ -112,26 +112,30 @@ export const getAbastecimientos = async (req: Request, res: Response) => {
     });
 }
 
+export const getCountAbastecimientos = async (req: Request, res: Response) => {
+
+    const data: any = await Abastecimiento.findAndCountAll({ where: { estado: 0 }, raw: true });
+
+    res.json({
+        total: data.count, 
+        abastecimientos: data.rows
+    });
+}
+
 export const getAbastecimiento = async (req: Request, res: Response) => {
 
     const { id } = req.params;
 
-    let remoteAddress = req.ip;
-
-    if (ipaddr.isValid(req.ip)) {
-      remoteAddress = ipaddr.process(req.ip).toString();
-    }
-
-    const pistolas: any = await Pistola.findAll({
-        where:{ estado: 1 }, 
-    });    
-
     try {
+
+        const pistolas: any = await Pistola.findAll({
+            where:{ estado: 1 }, 
+        });      
+
         const abastecimiento: any = await Abastecimiento.findByPk(id,{ raw: true });
 
         if(abastecimiento){
             const pistola = pistolas.find((obj: { codigo: any; }) => { return obj.codigo === abastecimiento.pistola; });
-            console.log(pistola);
             abastecimiento.descripcionCombustible = pistola.desc_producto
             abastecimiento.styleCombustible = pistola.color
         }
@@ -145,6 +149,7 @@ export const getAbastecimiento = async (req: Request, res: Response) => {
             });
         }             
     } catch (error) {
+        console.log(error);
         log4js( error, 'error');
         res.status(404).json({
             msg: `No existe abastecimiento con el123 id ${ id }`

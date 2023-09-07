@@ -1,4 +1,4 @@
-import { DataTypes, IntegerDataType, Sequelize } from "sequelize";
+import { DataTypes, IntegerDataType, QueryTypes, Sequelize } from "sequelize";
 import { Sqlcn } from '../database/config';
 import { numbersToLetters } from "../helpers/numeros-letras";
 import Abastecimiento from "./abastecimiento";
@@ -15,6 +15,7 @@ import Login from "./login";
 import Cierredia from "./cierredia";
 import Emisor from "./emisor";
 import { log4js } from "../helpers";
+import Constantes from "../helpers/constantes";
 
 
 export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number, producto: string, comentario: string, tipo_afectado: string, numeracion_afectado: string, fecha_afectado: string, tarjeta: number = 0, efectivo: number = 0, billete: number = 0): Promise<any> => {
@@ -33,7 +34,7 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
             numeracion_comprobante:         correlativo,
             tipo_documento_afectado:        tipo_afectado,
             numeracion_documento_afectado:  numeracion_afectado,
-            fecha_documento_afectado:       fecha_afectado?fecha_afectado:null,
+            fecha_documento_afectado:       fecha_afectado?fecha_afectado:null,            
             total_gravadas:                 total_gravadas,
             total_igv:                      igv_unitario,
             total_venta:                    abastecimiento.valorTotal,
@@ -52,6 +53,7 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
             placa:                          placa,
             billete:                        billete,
             producto_precio:                abastecimiento.precioUnitario,
+            ruc:                            process.env.EMISOR_RUC,
             Items:[{
                 cantidad:           abastecimiento.volTotal,
                 valor_unitario:     valor_unitario,
@@ -66,8 +68,16 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
                 { model: Item, as: 'Items' }
             ]
           });
-    
+
         await comprobante.save();
+
+        if(tipo == Constantes.TipoComprobante.NotaCredito){
+            Comprobante.update(
+                { motivo_documento_afectado: 'Factura dada de baja' },
+                { where: { numeracion_comprobante: numeracion_afectado, tipo_comprobante: Constantes.TipoComprobante.Factura } }
+            )
+        }
+                
         log4js( "Fin nuevoComprobante");
         if(comprobante){
             return {
@@ -133,6 +143,82 @@ export const actualizarComprobante = async (props: any, idComprobante: number, c
 
 }
 
+export const generaReporteProductoCombustible = async (fecha: string): Promise<{ hasError: boolean; message: string; data: any; }> => {
+    log4js( "Inicio generaReporteProductoCombustible");
+    var data = null;
+    try {
+        await Sqlcn.query(
+            'SELECT fecha_emision as Fecha, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total  from Comprobantes where fecha_emision = :fecha  group by fecha_emision, dec_combustible;', 
+            {
+                replacements: { fecha },
+                type: QueryTypes.SELECT
+            }).then((results: any)=>{
+                data = results
+            });
+
+            log4js( "Fin generaReporteProductoCombustible ");
+            
+            return {
+                hasError: false,
+                message: "Reporte generado satisfactoriamente",
+                data: data
+            };
+    } catch (error: any) {
+        log4js( "generaReporteProductoCombustible: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteProductoCombustible: " + error.toString(),
+            data: data
+        };
+    }
+}
+
+export const generaReporteProductoCombustibleTurno = async (fecha: string, turnos: string, usuarios: string): Promise<{ hasError: boolean; message: string; data: any; }> => {
+    log4js( "Inicio generaReporteProductoCombustibleTurno");
+
+    const array: string[] = turnos.split(',');
+    const arrUsuarios: string[] = usuarios.split(',');
+
+    var querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) ';
+    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
+    var queryGroup = 'group by t.turno, dec_combustible;'
+    
+    if(arrUsuarios.length > 0){
+        querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) ';
+        queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
+        queryGroup = 'group by t.turno, dec_combustible;'
+    }
+
+    var prepareQuery = querySelect + queryWhere + queryGroup;
+
+    var data = null;
+    try {
+        await Sqlcn.query(
+            prepareQuery, 
+            {
+                replacements: { fecha, array },
+                type: QueryTypes.SELECT
+            }).then((results: any)=>{
+                data = results
+            });
+
+            log4js( "Fin generaReporteProductoCombustibleTurno ");
+            console.log(data);
+            return {
+                hasError: false,
+                message: "Reporte generado satisfactoriamente",
+                data: data
+            };
+    } catch (error: any) {
+        log4js( "generaReporteProductoCombustibleTurno: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteProductoCombustibleTurno: " + error.toString(),
+            data: data
+        };
+    }
+}
+
 export const Comprobante  = Sqlcn.define('Comprobantes', {
     id:{
         type: DataTypes.INTEGER,
@@ -146,7 +232,7 @@ export const Comprobante  = Sqlcn.define('Comprobantes', {
     numeracion_comprobante:{
         type: DataTypes.STRING,
         allowNull: true
-    },    
+    },     
     fecha_emision:{
         type: DataTypes.DATEONLY,
         defaultValue: DataTypes.NOW
@@ -167,14 +253,14 @@ export const Comprobante  = Sqlcn.define('Comprobantes', {
         type: DataTypes.STRING,
         allowNull: true     
     },
-    numeracion_documento_afectado:{
-        type: DataTypes.STRING,
-        allowNull: true
-    },
     fecha_documento_afectado:{
         type: DataTypes.DATEONLY,
         allowNull: true
     },       
+    numeracion_documento_afectado:{
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     motivo_documento_afectado:{
         type: DataTypes.STRING,
         allowNull: true
@@ -255,7 +341,10 @@ export const Comprobante  = Sqlcn.define('Comprobantes', {
     },
     producto_precio:{
         type: DataTypes.FLOAT
-    },                          
+    },
+    ruc:{
+        type: DataTypes.STRING
+    }                              
 }, {
     timestamps: false
 });

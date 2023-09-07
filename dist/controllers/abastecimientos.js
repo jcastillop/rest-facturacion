@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getAbastecimiento = exports.getAbastecimientos = void 0;
+exports.getAbastecimiento = exports.getCountAbastecimientos = exports.getAbastecimientos = void 0;
 const abastecimiento_1 = __importDefault(require("../models/abastecimiento"));
 const sequelize_1 = require("sequelize");
 const helpers_1 = require("../helpers");
@@ -62,12 +62,11 @@ const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, funct
         queryWhere = { [sequelize_1.Op.and]: queryAnd };
     }
     queryAnd.push({ estado: 0 });
-    if (arrPistolas.length > 0 && (0, helpers_1.onlyNumbers)(arrPistolas)) {
-        queryWhere = { [sequelize_1.Op.and]: queryAnd, pistola: { [sequelize_1.Op.in]: arrPistolas } };
-    }
-    else {
-        queryWhere = { [sequelize_1.Op.and]: queryAnd };
-    }
+    // if(arrPistolas.length > 0 && onlyNumbers(arrPistolas)){
+    //     queryWhere = { [Op.and] : queryAnd, pistola: { [Op.in]: arrPistolas } }            
+    // }else{
+    //     queryWhere = { [Op.and] : queryAnd }
+    // }
     const queryParams = {
         where: queryWhere,
         attributes: [
@@ -104,20 +103,23 @@ const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, funct
     });
 });
 exports.getAbastecimientos = getAbastecimientos;
+const getCountAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const data = yield abastecimiento_1.default.findAndCountAll({ where: { estado: 0 }, raw: true });
+    res.json({
+        total: data.count,
+        abastecimientos: data.rows
+    });
+});
+exports.getCountAbastecimientos = getCountAbastecimientos;
 const getAbastecimiento = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    let remoteAddress = req.ip;
-    if (ipaddr_js_1.default.isValid(req.ip)) {
-        remoteAddress = ipaddr_js_1.default.process(req.ip).toString();
-    }
-    const pistolas = yield pistola_1.default.findAll({
-        where: { estado: 1 },
-    });
     try {
+        const pistolas = yield pistola_1.default.findAll({
+            where: { estado: 1 },
+        });
         const abastecimiento = yield abastecimiento_1.default.findByPk(id, { raw: true });
         if (abastecimiento) {
             const pistola = pistolas.find((obj) => { return obj.codigo === abastecimiento.pistola; });
-            console.log(pistola);
             abastecimiento.descripcionCombustible = pistola.desc_producto;
             abastecimiento.styleCombustible = pistola.color;
         }
@@ -132,6 +134,7 @@ const getAbastecimiento = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
     catch (error) {
+        console.log(error);
         (0, helpers_1.log4js)(error, 'error');
         res.status(404).json({
             msg: `No existe abastecimiento con el123 id ${id}`

@@ -8,6 +8,12 @@ require('dotenv').config();
 exports.Sqlcn = new sequelize_1.Sequelize(process.env.SQL_AUX_DB || "", 'sa', process.env.USER_PASS, {
     host: process.env.SQL_AUX_HOST,
     dialect: 'mssql',
+    dialectOptions: {
+        encrypt: false,
+        options: {
+            useUTC: false, // for reading from database
+        },
+    },
     logging: function (sql, queryObject) {
         (0, helpers_1.log4js)(sql, 'debug');
     }
@@ -15,6 +21,10 @@ exports.Sqlcn = new sequelize_1.Sequelize(process.env.SQL_AUX_DB || "", 'sa', pr
 exports.ControladorSQL = new sequelize_1.Sequelize(process.env.SQL_CONTR_DB || "", 'sa', process.env.USER_PASS, {
     host: process.env.SQL_CONTR_HOST,
     dialect: 'mssql',
+    dialectOptions: {
+        useUTC: false,
+        dateStrings: true,
+    },
     // logging: function (sql, queryObject: any) {
     //     if(JSON.stringify(queryObject.tableNames) === JSON.stringify(['Abastecimientos']) && queryObject.type == "SELECT"){
     //         console.log("no esta entrando al log");
@@ -24,6 +34,6 @@ exports.ControladorSQL = new sequelize_1.Sequelize(process.env.SQL_CONTR_DB || "
     //         log4js(sql, 'debug');
     //     }   
     // },     
-    //logging: false
+    logging: false
 });
 //# sourceMappingURL=config.js.map

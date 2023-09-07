@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Comprobante = exports.actualizarComprobante = exports.nuevoComprobante = void 0;
+exports.Comprobante = exports.generaReporteProductoCombustibleTurno = exports.generaReporteProductoCombustible = exports.actualizarComprobante = exports.nuevoComprobante = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const numeros_letras_1 = require("../helpers/numeros-letras");
@@ -28,6 +28,7 @@ const login_1 = __importDefault(require("./login"));
 const cierredia_1 = __importDefault(require("./cierredia"));
 const emisor_1 = __importDefault(require("./emisor"));
 const helpers_1 = require("../helpers");
+const constantes_1 = __importDefault(require("../helpers/constantes"));
 const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tipo_afectado, numeracion_afectado, fecha_afectado, tarjeta = 0, efectivo = 0, billete = 0) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio nuevoComprobante");
     try {
@@ -61,6 +62,7 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
             placa: placa,
             billete: billete,
             producto_precio: abastecimiento.precioUnitario,
+            ruc: process.env.EMISOR_RUC,
             Items: [{
                     cantidad: abastecimiento.volTotal,
                     valor_unitario: valor_unitario,
@@ -76,6 +78,9 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
             ]
         });
         yield comprobante.save();
+        if (tipo == constantes_1.default.TipoComprobante.NotaCredito) {
+            exports.Comprobante.update({ motivo_documento_afectado: 'Factura dada de baja' }, { where: { numeracion_comprobante: numeracion_afectado, tipo_comprobante: constantes_1.default.TipoComprobante.Factura } });
+        }
         (0, helpers_1.log4js)("Fin nuevoComprobante");
         if (comprobante) {
             return {
@@ -138,6 +143,65 @@ const actualizarComprobante = (props, idComprobante, createOrderMiFact) => __awa
     }
 });
 exports.actualizarComprobante = actualizarComprobante;
+const generaReporteProductoCombustible = (fecha) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio generaReporteProductoCombustible");
+    var data = null;
+    try {
+        yield config_1.Sqlcn.query('SELECT fecha_emision as Fecha, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total  from Comprobantes where fecha_emision = :fecha  group by fecha_emision, dec_combustible;', {
+            replacements: { fecha },
+            type: sequelize_1.QueryTypes.SELECT
+        }).then((results) => {
+            data = results;
+        });
+        (0, helpers_1.log4js)("Fin generaReporteProductoCombustible ");
+        return {
+            hasError: false,
+            message: "Reporte generado satisfactoriamente",
+            data: data
+        };
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("generaReporteProductoCombustible: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteProductoCombustible: " + error.toString(),
+            data: data
+        };
+    }
+});
+exports.generaReporteProductoCombustible = generaReporteProductoCombustible;
+const generaReporteProductoCombustibleTurno = (fecha, turnos) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurno");
+    const array = turnos.split(',');
+    var prepareQuery = 'SELECT t.turno as Turno, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total FROM Comprobantes c  inner join Usuarios u on c.UsuarioId = u.id inner join Cierreturnos t on c.CierreturnoId = t.id ' +
+        'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) group by t.turno, dec_combustible;' +
+        '';
+    var data = null;
+    try {
+        yield config_1.Sqlcn.query(prepareQuery, {
+            replacements: { fecha, array },
+            type: sequelize_1.QueryTypes.SELECT
+        }).then((results) => {
+            data = results;
+        });
+        (0, helpers_1.log4js)("Fin generaReporteProductoCombustibleTurno ");
+        console.log(data);
+        return {
+            hasError: false,
+            message: "Reporte generado satisfactoriamente",
+            data: data
+        };
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("generaReporteProductoCombustibleTurno: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteProductoCombustibleTurno: " + error.toString(),
+            data: data
+        };
+    }
+});
+exports.generaReporteProductoCombustibleTurno = generaReporteProductoCombustibleTurno;
 exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
     id: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -172,12 +236,12 @@ exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
         type: sequelize_1.DataTypes.STRING,
         allowNull: true
     },
-    numeracion_documento_afectado: {
-        type: sequelize_1.DataTypes.STRING,
-        allowNull: true
-    },
     fecha_documento_afectado: {
         type: sequelize_1.DataTypes.DATEONLY,
+        allowNull: true
+    },
+    numeracion_documento_afectado: {
+        type: sequelize_1.DataTypes.STRING,
         allowNull: true
     },
     motivo_documento_afectado: {
@@ -261,6 +325,9 @@ exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
     producto_precio: {
         type: sequelize_1.DataTypes.FLOAT
     },
+    ruc: {
+        type: sequelize_1.DataTypes.STRING
+    }
 }, {
     timestamps: false
 });

@@ -59,6 +59,9 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
             "TOKEN": "gN8zNRBV+/FVxTLwdaZx0w==",
             "COD_TIP_NIF_EMIS": "6",
             "NUM_NIF_EMIS": "20100100100",
+            // "TOKEN":"tOcEEdPoW/SnZ0lYcWH/eA==", // token del emisor, este token gN8zNRBV+/FVxTLwdaZx0w== es de pruebas
+            // "COD_TIP_NIF_EMIS": "6",
+            // "NUM_NIF_EMIS": "20609785269",
             "NOM_RZN_SOC_EMIS": process.env.EMISOR_RS,
             "NOM_COMER_EMIS": process.env.EMISOR_COMERCIAL,
             "COD_UBI_EMIS": process.env.EMISOR_UBIGEO,
@@ -67,8 +70,8 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
             "NUM_NIF_RECP": receptor.numero_documento,
             "NOM_RZN_SOC_RECP": receptor.razon_social,
             "TXT_DMCL_FISC_RECEP": receptor.direccion,
-            "FEC_EMIS": comprobante.fecha_emision,
-            "FEC_VENCIMIENTO": comprobante.fecha_emision,
+            "FEC_EMIS": new Date(comprobante.fecha_abastecimiento).toISOString().split('T')[0],
+            "FEC_VENCIMIENTO": new Date(comprobante.fecha_abastecimiento).toISOString().split('T')[0],
             "COD_TIP_CPE": tipo_comprobante,
             "NUM_SERIE_CPE": splitted[0],
             "NUM_CORRE_CPE": splitted[1],
@@ -89,7 +92,7 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
             "COD_ANEXO_EMIS": "0000",
             "COD_TIP_OPE_SUNAT": "0101",
             "TXT_DESC_MTVO": (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) ? "anulacion de comprobante" : "",
-            //"items": arr_items,
+            "items": arr_items,
             "docs_referenciado": [
                 {
                     "COD_TIP_DOC_REF": (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) ? comprobante.tipo_documento_afectado : "",
@@ -100,7 +103,8 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
             ]
         };
         (0, log4js_1.log4js)(`createOrderApiMiFact: ${correlativo} : ${JSON.stringify(body)}`);
-        const { data } = yield api_1.posApi.post(`${process.env.MIFACT_API}/api/invoiceService.svc/SendInvoice`, body);
+        //const { data } = await posApi.post(`${process.env.MIFACT_API}/mifactapi40/invoiceService.svc/SendInvoice`, body);
+        const { data } = yield api_1.posApi.post(`${process.env.MIFACT_API}`, body);
         //console.log(process.env.MIFACT_API);
         (0, log4js_1.log4js)(`reponse data : ${JSON.stringify(data)}`);
         (0, log4js_1.log4js)("Fin createOrderApiMiFact");

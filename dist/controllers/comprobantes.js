@@ -51,7 +51,7 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
     const serie = '001';
     const bCreateOrderMiFact = (body.tipo == constantes_1.default.TipoComprobante.Boleta || body.tipo == constantes_1.default.TipoComprobante.Factura || body.tipo == constantes_1.default.TipoComprobante.NotaCredito);
     var responseMiFact;
-    const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(body.tipo, serie);
+    const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(body.tipo, serie, body.prefijo ? body.prefijo : "");
     if (hasErrorCorrelativo) {
         res.json({ hasError: true, respuesta: messageCorrelativo });
         return;
@@ -93,8 +93,7 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
 });
 exports.generaComprobante = generaComprobante;
 const historicoComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
-    const comprobanteParams = body;
+    const comprobanteParams = req.query;
     const queryAnd = [];
     var queryWhere = {};
     const usuario = yield usuario_1.default.findByPk(comprobanteParams.idUsuario, { raw: true });

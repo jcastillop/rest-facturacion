@@ -53,31 +53,66 @@ export const getUsuario = (req: Request, res: Response) => {
     res.json("");
 }
 
-export const postUsuarioLogin = async (req: Request, res: Response) => {
-
-    const { body } = req;
+export const getValidaIp = async (req: Request, res: Response) => {
     
     let remoteAddress = req.ip;
+
+    if (ipaddr.isValid(req.ip)) {
+      remoteAddress = ipaddr.process(req.ip).toString();
+    }else{
+        remoteAddress = ""
+    }
+
+    try {
+
+        const isla: any = await Isla.findOne({ where: { ip: remoteAddress }, include: [ { model: Terminal } ]});
+
+        if(isla && isla.Terminale){
+
+            res.json({
+                message: `Isla existe`,
+                hasError: false,
+                terminal: isla.Terminale.nombre,
+                isla: isla.nombre
+            })                    
+        }else{
+            res.json({
+                message: `Isla o terminal no registrada`,
+                hasError:true,
+                terminal: "",
+                isla: ""
+            })  
+        }
+
+    } catch (error) {
+        log4js( error, 'error');
+        res.status(404).json({
+            msg: `Error no identificado ${ error }`
+        });                 
+    }
+
+
+}
+
+export const postUsuarioLogin = async (req: Request, res: Response) => {
+
+    const { user, password, turno, isla, terminal } = req.body;
     
+    let remoteAddress = req.ip;
+    //console.log(remoteAddress);
     if (ipaddr.isValid(req.ip)) {
       remoteAddress = ipaddr.process(req.ip).toString();
     }
 
     var today = new Date()
-    var curHr = today.getHours()
-
-    var turno = 'TURNO3';
-
-    if (curHr < 12) {
-        turno = 'TURNO1';
-      } else if (curHr < 18) {
-        turno = 'TURNO2';
-      }
-
+    today.setHours(today.getHours() - 5);    
 
     try {
-        const isla: any = await Isla.findOne({ where: { ip: remoteAddress }, include: [ { model: Terminal } ]});
-        const usuario = await nuevoLogin(body.user, body.password, isla.Terminale.nombre, isla.nombre, turno, remoteAddress, today)
+        //console.log(remoteAddress);
+
+        //const isla: any = await Isla.findOne({ where: { ip: remoteAddress }, include: [ { model: Terminal } ]});
+        //console.log(isla);
+        const usuario = await nuevoLogin(user, password, terminal, isla, turno, remoteAddress, today)
         
         log4js( usuario, 'debug');
         if(usuario){

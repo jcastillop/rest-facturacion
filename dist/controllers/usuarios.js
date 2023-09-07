@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.adminAuthorize = exports.deleteUsuario = exports.changePassword = exports.resetPassword = exports.putUsuario = exports.postUsuario = exports.postUsuarioLogin = exports.getUsuario = exports.getUsuarios = void 0;
+exports.adminAuthorize = exports.deleteUsuario = exports.changePassword = exports.resetPassword = exports.putUsuario = exports.postUsuario = exports.postUsuarioLogin = exports.getValidaIp = exports.getUsuario = exports.getUsuarios = void 0;
 const usuario_1 = __importStar(require("../models/usuario"));
 const sequelize_1 = require("sequelize");
 const helpers_1 = require("../helpers");
@@ -85,24 +85,55 @@ const getUsuario = (req, res) => {
     res.json("");
 };
 exports.getUsuario = getUsuario;
-const postUsuarioLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
+const getValidaIp = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let remoteAddress = req.ip;
     if (ipaddr_js_1.default.isValid(req.ip)) {
         remoteAddress = ipaddr_js_1.default.process(req.ip).toString();
     }
-    var today = new Date();
-    var curHr = today.getHours();
-    var turno = 'TURNO3';
-    if (curHr < 12) {
-        turno = 'TURNO1';
-    }
-    else if (curHr < 18) {
-        turno = 'TURNO2';
+    else {
+        remoteAddress = "";
     }
     try {
         const isla = yield isla_1.default.findOne({ where: { ip: remoteAddress }, include: [{ model: terminal_1.default }] });
-        const usuario = yield (0, login_1.nuevoLogin)(body.user, body.password, isla.Terminale.nombre, isla.nombre, turno, remoteAddress, today);
+        if (isla && isla.Terminale) {
+            res.json({
+                message: `Isla existe`,
+                hasError: false,
+                terminal: isla.Terminale.nombre,
+                isla: isla.nombre
+            });
+        }
+        else {
+            res.json({
+                message: `Isla o terminal no registrada`,
+                hasError: true,
+                terminal: "",
+                isla: ""
+            });
+        }
+    }
+    catch (error) {
+        (0, helpers_1.log4js)(error, 'error');
+        res.status(404).json({
+            msg: `Error no identificado ${error}`
+        });
+    }
+});
+exports.getValidaIp = getValidaIp;
+const postUsuarioLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { user, password, turno, isla, terminal } = req.body;
+    let remoteAddress = req.ip;
+    //console.log(remoteAddress);
+    if (ipaddr_js_1.default.isValid(req.ip)) {
+        remoteAddress = ipaddr_js_1.default.process(req.ip).toString();
+    }
+    var today = new Date();
+    today.setHours(today.getHours() - 5);
+    try {
+        //console.log(remoteAddress);
+        //const isla: any = await Isla.findOne({ where: { ip: remoteAddress }, include: [ { model: Terminal } ]});
+        //console.log(isla);
+        const usuario = yield (0, login_1.nuevoLogin)(user, password, terminal, isla, turno, remoteAddress, today);
         (0, helpers_1.log4js)(usuario, 'debug');
         if (usuario) {
             res.json({ usuario });

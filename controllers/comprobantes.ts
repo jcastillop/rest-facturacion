@@ -23,7 +23,7 @@ export const generaComprobante = async (req: Request, res: Response) => {
     var responseMiFact;
 
 
-    const { hasErrorCorrelativo, messageCorrelativo, correlativo} = await generaCorrelativo(body.tipo, serie)
+    const { hasErrorCorrelativo, messageCorrelativo, correlativo} = await generaCorrelativo(body.tipo, serie, body.prefijo?body.prefijo:"")
     if(hasErrorCorrelativo){ res.json({ hasError: true, respuesta: messageCorrelativo}); return; }
 
     const {hasErrorReceptor, messageReceptor, receptor} = await obtieneReceptor(body.numero_documento?body.numero_documento:0, body.tipo_documento, body.razon_social, body.direccion, body.correo, body.placa);
@@ -64,8 +64,7 @@ interface ComprobanteParams {
 
 export const historicoComprobantes = async (req: Request, res: Response) => {
 
-    const { body } = req;
-    const comprobanteParams: ComprobanteParams = body;
+    const comprobanteParams: ComprobanteParams = req.query;
 
     const queryAnd = [];
 
