@@ -67,3 +67,6 @@
 [2023-09-05T21:49:56.008] [ERROR] default - "createOrderApiMiFact: AxiosError: Request failed with status code 404"
 [2023-09-05T22:18:18.636] [ERROR] default - "generaCorrelativo: SequelizeDatabaseError: The formal parameter \"@ruc\" was not declared as an OUTPUT parameter, but the actual parameter passed in requested output."
 [2023-09-05T22:45:43.561] [ERROR] default - "nuevoComprobante: SequelizeDatabaseError: Conversion failed when converting date and/or time from character string."
+[2023-09-10T00:32:45.041] [ERROR] default - "createOrderApiMiFact: TypeError: Cannot read properties of undefined (reading 'forEach')"
+[2023-09-10T00:35:18.338] [ERROR] default - "actualizarComprobante: SequelizeDatabaseError: String or binary data would be truncated."
+[2023-09-10T23:14:08.751] [ERROR] default - {"name":"SequelizeConnectionError","parent":{"code":"ESOCKET"},"original":{"code":"ESOCKET"}}

@@ -14,12 +14,13 @@ interface ParamsCerrarTurno{
     isla: string;
     efectivo: number;
     tarjeta: number;
+    yape: number;
 }
 interface ParamsListaCerrarTurno{
     fecha: Date;
 }
 
-export const cerrarTurno = async({ sessionID, fecha, turno, isla, efectivo, tarjeta }:ParamsCerrarTurno): Promise<PropsCerrarTurno> =>{
+export const cerrarTurno = async({ sessionID, fecha, turno, isla, efectivo, tarjeta, yape }:ParamsCerrarTurno): Promise<PropsCerrarTurno> =>{
 
     var montoCierre = 0  
    
@@ -40,7 +41,8 @@ export const cerrarTurno = async({ sessionID, fecha, turno, isla, efectivo, tarj
         turno: turno,
         isla: isla,
         efectivo: efectivo,
-        tarjeta: tarjeta
+        tarjeta: tarjeta,
+        yape: yape
     });
 
     await cierre.save();
@@ -102,6 +104,9 @@ const Cierreturno = Sqlcn.define('Cierreturnos', {
     tarjeta:{
         type: DataTypes.FLOAT
     },    
+    yape:{
+        type: DataTypes.FLOAT
+    },       
     estado:{
         type: DataTypes.TINYINT,
         defaultValue: 1

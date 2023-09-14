@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.generaComprobante = void 0;
+exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.modificaComprobante = exports.generaComprobante = void 0;
 const receptor_1 = __importStar(require("../models/receptor"));
 const abastecimiento_1 = require("../models/abastecimiento");
 const comprobante_1 = require("../models/comprobante");
@@ -51,19 +51,69 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
     const serie = '001';
     const bCreateOrderMiFact = (body.tipo == constantes_1.default.TipoComprobante.Boleta || body.tipo == constantes_1.default.TipoComprobante.Factura || body.tipo == constantes_1.default.TipoComprobante.NotaCredito);
     var responseMiFact;
-    const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(body.tipo, serie, body.prefijo ? body.prefijo : "");
-    if (hasErrorCorrelativo) {
-        res.json({ hasError: true, respuesta: messageCorrelativo });
-        return;
+    const { hasError, message } = yield (0, comprobante_1.validaComprobanteAbastecimiento)(body.id);
+    if (hasError) {
+        res.json({
+            hasError: hasError,
+            respuesta: message
+        });
     }
+    else {
+        const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(body.tipo, serie, body.prefijo ? body.prefijo : "");
+        if (hasErrorCorrelativo) {
+            res.json({ hasError: true, respuesta: messageCorrelativo });
+            return;
+        }
+        const { hasErrorReceptor, messageReceptor, receptor } = yield (0, receptor_1.obtieneReceptor)(body.numero_documento ? body.numero_documento : 0, body.tipo_documento, body.razon_social, body.direccion, body.correo, body.placa);
+        if (hasErrorReceptor) {
+            res.json({ hasError: true, respuesta: messageReceptor });
+            return;
+        }
+        const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobante)(body.id, body.tipo, receptor, correlativo, body.placa, body.usuario, body.producto, body.comentario, body.tipo_afectado, body.numeracion_afectado, body.fecha_afectado, body.tarjeta, body.efectivo, body.yape, body.billete);
+        if (hasErrorComprobante) {
+            res.json({ hasError: true, respuesta: messageComprobante });
+            return;
+        }
+        if (bCreateOrderMiFact) {
+            const { hasErrorMiFact, messageMiFact, response } = yield (0, api_mifact_1.createOrderApiMiFact)(comprobante, receptor, body.tipo, correlativo);
+            responseMiFact = response;
+            if (hasErrorMiFact) {
+                res.json({ hasError: true, respuesta: messageMiFact });
+                return;
+            }
+        }
+        const { hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate } = yield (0, comprobante_1.actualizarComprobante)(responseMiFact, comprobante.id, bCreateOrderMiFact);
+        if (hasErrorActualizaComprobante) {
+            res.json({ hasError: true, respuesta: messageActualizaComprobante });
+            return;
+        }
+        const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(body.id);
+        if (hasErrorActualizaAbastecimiento) {
+            res.json({ hasError: true, respuesta: messageActualizaAbastecimiento });
+            return;
+        }
+        res.json({
+            hasError: false,
+            receptor: receptor,
+            comprobante: comprobanteUpdate,
+            respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
+        });
+    }
+});
+exports.generaComprobante = generaComprobante;
+const modificaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { body } = req;
+    const bCreateOrderMiFact = (body.tipo == constantes_1.default.TipoComprobante.Boleta || body.tipo == constantes_1.default.TipoComprobante.Factura || body.tipo == constantes_1.default.TipoComprobante.NotaCredito);
+    var responseMiFact;
+    const correlativo = body.correlativo;
     const { hasErrorReceptor, messageReceptor, receptor } = yield (0, receptor_1.obtieneReceptor)(body.numero_documento ? body.numero_documento : 0, body.tipo_documento, body.razon_social, body.direccion, body.correo, body.placa);
     if (hasErrorReceptor) {
         res.json({ hasError: true, respuesta: messageReceptor });
         return;
     }
-    const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobante)(body.id, body.tipo, receptor, correlativo, body.placa, body.usuario, body.producto, body.comentario, body.tipo_afectado, body.numeracion_afectado, body.fecha_afectado, body.tarjeta, body.efectivo, body.billete);
-    if (hasErrorComprobante) {
-        res.json({ hasError: true, respuesta: messageComprobante });
+    const { hasErrorObtieneComprobante, messageObtieneComprobante, comprobante } = yield (0, comprobante_1.obtieneComprobante)(body.id_comprobante);
+    if (hasErrorObtieneComprobante) {
+        res.json({ hasError: true, respuesta: messageObtieneComprobante });
         return;
     }
     if (bCreateOrderMiFact) {
@@ -79,11 +129,6 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
         res.json({ hasError: true, respuesta: messageActualizaComprobante });
         return;
     }
-    const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(body.id);
-    if (hasErrorActualizaAbastecimiento) {
-        res.json({ hasError: true, respuesta: messageActualizaAbastecimiento });
-        return;
-    }
     res.json({
         hasError: false,
         receptor: receptor,
@@ -91,45 +136,53 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
         respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
     });
 });
-exports.generaComprobante = generaComprobante;
+exports.modificaComprobante = modificaComprobante;
 const historicoComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const comprobanteParams = req.query;
     const queryAnd = [];
     var queryWhere = {};
     const usuario = yield usuario_1.default.findByPk(comprobanteParams.idUsuario, { raw: true });
-    if (usuario.rol == 'ADMIN_ROLE') {
-        queryAnd.push({ numeracion_comprobante: { [sequelize_1.Op.ne]: null } });
-    }
-    else if (usuario.rol == 'USER_ROLE') {
-        queryAnd.push({ UsuarioId: comprobanteParams.idUsuario });
-        queryAnd.push({ CierreturnoId: null });
+    if (usuario) {
+        if (usuario.rol == 'ADMIN_ROLE') {
+            queryAnd.push({ numeracion_comprobante: { [sequelize_1.Op.ne]: null } });
+        }
+        else if (usuario.rol == 'USER_ROLE') {
+            queryAnd.push({ UsuarioId: comprobanteParams.idUsuario });
+            queryAnd.push({ CierreturnoId: null });
+        }
+        else {
+            queryAnd.push({ CierreturnoId: { [sequelize_1.Op.ne]: null } });
+        }
+        queryWhere = { [sequelize_1.Op.and]: queryAnd };
+        const queryParams = {
+            include: [
+                { model: receptor_1.default, required: true },
+                { model: cierreturno_1.default, required: false },
+                { model: usuario_1.default, required: true }
+            ],
+            where: queryWhere,
+            offset: Number(comprobanteParams.offset),
+            limit: Number(comprobanteParams.limit),
+            raw: true
+        };
+        const data = yield comprobante_1.Comprobante.findAndCountAll(queryParams);
+        res.json({
+            total: data.count,
+            comprobantes: data.rows
+        });
     }
     else {
-        queryAnd.push({ CierreturnoId: { [sequelize_1.Op.ne]: null } });
+        res.json({
+            total: 0,
+            comprobantes: null
+        });
     }
-    queryWhere = { [sequelize_1.Op.and]: queryAnd };
-    const queryParams = {
-        include: [
-            { model: receptor_1.default, required: true },
-            { model: cierreturno_1.default, required: false },
-            { model: usuario_1.default, required: true }
-        ],
-        where: queryWhere,
-        offset: Number(comprobanteParams.offset),
-        limit: Number(comprobanteParams.limit),
-        raw: true
-    };
-    const data = yield comprobante_1.Comprobante.findAndCountAll(queryParams);
-    res.json({
-        total: data.count,
-        comprobantes: data.rows
-    });
 });
 exports.historicoComprobantes = historicoComprobantes;
 const cierreTurno = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { body } = req;
     try {
-        const cierre = yield (0, cierreturno_1.cerrarTurno)({ sessionID: body.session, fecha: body.fecha, turno: body.turno, isla: body.isla, efectivo: body.efectivo, tarjeta: body.tarjeta });
+        const cierre = yield (0, cierreturno_1.cerrarTurno)({ sessionID: body.session, fecha: body.fecha, turno: body.turno, isla: body.isla, efectivo: body.efectivo, tarjeta: body.tarjeta, yape: body.yape });
         res.json({
             cierre
         });

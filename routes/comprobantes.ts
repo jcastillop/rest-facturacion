@@ -1,10 +1,12 @@
 import { Router } from 'express';
-import { cierreTurno, createCierreDia, generaComprobante, listaTurnosPorCerrar, historicoComprobantes } from '../controllers/comprobantes';
+import { cierreTurno, createCierreDia, generaComprobante, listaTurnosPorCerrar, historicoComprobantes, modificaComprobante } from '../controllers/comprobantes';
 import { rptProducto, rptProductoTurno } from '../controllers/reportes';
 
 const router = Router();
 
 router.post('/',            generaComprobante);
+
+router.post('/modifica',    modificaComprobante);
 
 router.get('/historico',   historicoComprobantes);
 

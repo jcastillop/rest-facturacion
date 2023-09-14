@@ -17,7 +17,7 @@ const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const comprobante_1 = require("./comprobante");
 const usuario_1 = __importDefault(require("./usuario"));
-const cerrarTurno = ({ sessionID, fecha, turno, isla, efectivo, tarjeta }) => __awaiter(void 0, void 0, void 0, function* () {
+const cerrarTurno = ({ sessionID, fecha, turno, isla, efectivo, tarjeta, yape }) => __awaiter(void 0, void 0, void 0, function* () {
     var montoCierre = 0;
     yield config_1.Sqlcn.query('SELECT ROUND(SUM(CONVERT(float,total_venta)),2) as suma from Comprobantes where UsuarioId=:sessionID and CierreturnoId is null;', {
         replacements: { sessionID },
@@ -33,7 +33,8 @@ const cerrarTurno = ({ sessionID, fecha, turno, isla, efectivo, tarjeta }) => __
         turno: turno,
         isla: isla,
         efectivo: efectivo,
-        tarjeta: tarjeta
+        tarjeta: tarjeta,
+        yape: yape
     });
     yield cierre.save();
     const updateRow = yield comprobante_1.Comprobante.update({ CierreturnoId: cierre.id }, { where: { UsuarioId: sessionID, CierreturnoId: null } });
@@ -87,6 +88,9 @@ const Cierreturno = config_1.Sqlcn.define('Cierreturnos', {
         type: sequelize_1.DataTypes.FLOAT
     },
     tarjeta: {
+        type: sequelize_1.DataTypes.FLOAT
+    },
+    yape: {
         type: sequelize_1.DataTypes.FLOAT
     },
     estado: {

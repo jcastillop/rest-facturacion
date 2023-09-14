@@ -18,7 +18,7 @@ import { log4js } from "../helpers";
 import Constantes from "../helpers/constantes";
 
 
-export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number, producto: string, comentario: string, tipo_afectado: string, numeracion_afectado: string, fecha_afectado: string, tarjeta: number = 0, efectivo: number = 0, billete: number = 0): Promise<any> => {
+export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number, producto: string, comentario: string, tipo_afectado: string, numeracion_afectado: string, fecha_afectado: string, tarjeta: number = 0, efectivo: number = 0, yape: number = 0, billete: number = 0): Promise<any> => {
     log4js( "Inicio nuevoComprobante");
     try {
         const abastecimiento: any = await Abastecimiento.findByPk(idAbastecimiento);
@@ -50,6 +50,7 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
             volumen_tanque:                 abastecimiento.volTanque,
             pago_tarjeta:                   tarjeta,
             pago_efectivo:                  efectivo,
+            pago_yape:                      yape,
             placa:                          placa,
             billete:                        billete,
             producto_precio:                abastecimiento.precioUnitario,
@@ -101,6 +102,37 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
         };
     }
 
+}
+
+export const obtieneComprobante  = async (idComprobante: number): Promise<any> => {
+    log4js( "Inicio obtieneComprobante");
+    try {
+        const comprobante = await Comprobante.findByPk(idComprobante, {
+            include: [
+                { model: Item, as: 'Items' }
+            ]
+          }); 
+        log4js( "Fin obtieneComprobante: " + JSON.stringify(comprobante));
+        if(comprobante){
+            return{
+                hasErrorObtieneComprobante: false,
+                messageObtieneComprobante: `Comprobante obtenido correctamente`,
+                comprobante: comprobante              
+            } 
+        }else{
+            return{
+                hasErrorObtieneComprobante: true,
+                messageObtieneComprobante: `No se obtuvo comprobante`
+            }             
+        }
+    } catch (error: any) {
+        log4js( "obtieneComprobante: " + error.toString(), 'error');
+        return {
+            hasErrorObtieneComprobante: true,
+            messageObtieneComprobante: error.toString(),
+        };        
+    }
+    
 }
 
 export const actualizarComprobante = async (props: any, idComprobante: number, createOrderMiFact: boolean): Promise<any> => {
@@ -219,6 +251,18 @@ export const generaReporteProductoCombustibleTurno = async (fecha: string, turno
     }
 }
 
+export const validaComprobanteAbastecimiento = async (idAbastecimiento: string): Promise<{ hasError: boolean; message: string; } > => {
+    log4js( "Inicio validaComprobanteAbastecimiento");
+    const total = await Comprobante.count({
+        where: { id_abastecimiento: idAbastecimiento }
+    });
+    log4js( "Fin validaComprobanteAbastecimiento ");
+    return {
+        hasError: total != 0,
+        message: `Comprobante se encuentra registrado previamente ${total}`
+    };
+}
+
 export const Comprobante  = Sqlcn.define('Comprobantes', {
     id:{
         type: DataTypes.INTEGER,
@@ -333,6 +377,9 @@ export const Comprobante  = Sqlcn.define('Comprobantes', {
     pago_efectivo:{
         type: DataTypes.FLOAT
     },
+    pago_yape:{
+        type: DataTypes.FLOAT
+    },    
     placa:{
         type: DataTypes.STRING
     },

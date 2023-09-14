@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Comprobante = exports.generaReporteProductoCombustibleTurno = exports.generaReporteProductoCombustible = exports.actualizarComprobante = exports.nuevoComprobante = void 0;
+exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteProductoCombustibleTurno = exports.generaReporteProductoCombustible = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobante = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const numeros_letras_1 = require("../helpers/numeros-letras");
@@ -29,7 +29,7 @@ const cierredia_1 = __importDefault(require("./cierredia"));
 const emisor_1 = __importDefault(require("./emisor"));
 const helpers_1 = require("../helpers");
 const constantes_1 = __importDefault(require("../helpers/constantes"));
-const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tipo_afectado, numeracion_afectado, fecha_afectado, tarjeta = 0, efectivo = 0, billete = 0) => __awaiter(void 0, void 0, void 0, function* () {
+const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tipo_afectado, numeracion_afectado, fecha_afectado, tarjeta = 0, efectivo = 0, yape = 0, billete = 0) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio nuevoComprobante");
     try {
         const abastecimiento = yield abastecimiento_1.default.findByPk(idAbastecimiento);
@@ -59,6 +59,7 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
             volumen_tanque: abastecimiento.volTanque,
             pago_tarjeta: tarjeta,
             pago_efectivo: efectivo,
+            pago_yape: yape,
             placa: placa,
             billete: billete,
             producto_precio: abastecimiento.precioUnitario,
@@ -106,6 +107,38 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
     }
 });
 exports.nuevoComprobante = nuevoComprobante;
+const obtieneComprobante = (idComprobante) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio obtieneComprobante");
+    try {
+        const comprobante = yield exports.Comprobante.findByPk(idComprobante, {
+            include: [
+                { model: item_1.default, as: 'Items' }
+            ]
+        });
+        (0, helpers_1.log4js)("Fin obtieneComprobante: " + JSON.stringify(comprobante));
+        if (comprobante) {
+            return {
+                hasErrorObtieneComprobante: false,
+                messageObtieneComprobante: `Comprobante obtenido correctamente`,
+                comprobante: comprobante
+            };
+        }
+        else {
+            return {
+                hasErrorObtieneComprobante: true,
+                messageObtieneComprobante: `No se obtuvo comprobante`
+            };
+        }
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("obtieneComprobante: " + error.toString(), 'error');
+        return {
+            hasErrorObtieneComprobante: true,
+            messageObtieneComprobante: error.toString(),
+        };
+    }
+});
+exports.obtieneComprobante = obtieneComprobante;
 const actualizarComprobante = (props, idComprobante, createOrderMiFact) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio actualizarComprobante");
     try {
@@ -170,12 +203,19 @@ const generaReporteProductoCombustible = (fecha) => __awaiter(void 0, void 0, vo
     }
 });
 exports.generaReporteProductoCombustible = generaReporteProductoCombustible;
-const generaReporteProductoCombustibleTurno = (fecha, turnos) => __awaiter(void 0, void 0, void 0, function* () {
+const generaReporteProductoCombustibleTurno = (fecha, turnos, usuarios) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurno");
     const array = turnos.split(',');
-    var prepareQuery = 'SELECT t.turno as Turno, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total FROM Comprobantes c  inner join Usuarios u on c.UsuarioId = u.id inner join Cierreturnos t on c.CierreturnoId = t.id ' +
-        'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) group by t.turno, dec_combustible;' +
-        '';
+    const arrUsuarios = usuarios.split(',');
+    var querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) ';
+    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
+    var queryGroup = 'group by t.turno, dec_combustible;';
+    if (arrUsuarios.length > 0) {
+        querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) ';
+        queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
+        queryGroup = 'group by t.turno, dec_combustible;';
+    }
+    var prepareQuery = querySelect + queryWhere + queryGroup;
     var data = null;
     try {
         yield config_1.Sqlcn.query(prepareQuery, {
@@ -202,6 +242,18 @@ const generaReporteProductoCombustibleTurno = (fecha, turnos) => __awaiter(void 
     }
 });
 exports.generaReporteProductoCombustibleTurno = generaReporteProductoCombustibleTurno;
+const validaComprobanteAbastecimiento = (idAbastecimiento) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio validaComprobanteAbastecimiento");
+    const total = yield exports.Comprobante.count({
+        where: { id_abastecimiento: idAbastecimiento }
+    });
+    (0, helpers_1.log4js)("Fin validaComprobanteAbastecimiento ");
+    return {
+        hasError: total != 0,
+        message: `Comprobante se encuentra registrado previamente ${total}`
+    };
+});
+exports.validaComprobanteAbastecimiento = validaComprobanteAbastecimiento;
 exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
     id: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -314,6 +366,9 @@ exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
         type: sequelize_1.DataTypes.FLOAT
     },
     pago_efectivo: {
+        type: sequelize_1.DataTypes.FLOAT
+    },
+    pago_yape: {
         type: sequelize_1.DataTypes.FLOAT
     },
     placa: {

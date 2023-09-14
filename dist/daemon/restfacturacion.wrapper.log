@@ -124,3 +124,27 @@ Stacktrace:   en System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInter
 2023-09-05 00:19:15 - Started 7212
 2023-09-06 02:39:49 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
 2023-09-06 02:39:49 - Started 7804
+2023-09-08 08:07:41 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2023-09-08 08:07:41 - Started 7152
+2023-09-12 10:00:22 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2023-09-12 10:00:22 - Started 7480
+2023-09-13 18:54:47 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2023-09-13 18:54:47 - Started 6948
+2023-09-13 18:54:54 - Stopping restfacturacion.exe
+2023-09-13 18:54:54 - ProcessKill 6948
+2023-09-13 18:54:54 - Shutdown exception
+Message:Se está cerrando el sistema.
+
+Stacktrace:   en System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInternal(Int32 errorCode, IntPtr errorInfo)
+   en System.Management.ManagementScope.InitializeGuts(Object o)
+   en System.Management.ManagementScope.Initialize()
+   en System.Management.ManagementObjectSearcher.Initialize()
+   en System.Management.ManagementObjectSearcher.Get()
+   en winsw.WrapperService.GetChildPids(Int32 pid)
+   en winsw.WrapperService.StopProcessAndChildren(Int32 pid)
+   en winsw.WrapperService.StopIt()
+   en winsw.WrapperService.OnShutdown()
+2023-09-13 18:57:46 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2023-09-13 18:57:46 - Started 7028
+2023-09-13 19:01:46 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2023-09-13 19:01:46 - Started 7408

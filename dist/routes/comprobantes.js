@@ -5,6 +5,7 @@ const comprobantes_1 = require("../controllers/comprobantes");
 const reportes_1 = require("../controllers/reportes");
 const router = (0, express_1.Router)();
 router.post('/', comprobantes_1.generaComprobante);
+router.post('/modifica', comprobantes_1.modificaComprobante);
 router.get('/historico', comprobantes_1.historicoComprobantes);
 router.post('/cerrarturno', comprobantes_1.cierreTurno);
 router.post('/cerrardia', comprobantes_1.createCierreDia);
