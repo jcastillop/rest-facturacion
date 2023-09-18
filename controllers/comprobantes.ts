@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 
-import Item from "../models/item";
+import { log4js } from "../helpers";
 import Receptor, { obtieneReceptor } from "../models/receptor";
 
 import { actualizaAbastecimiento } from "../models/abastecimiento";
 import { Comprobante, actualizarComprobante, nuevoComprobante, obtieneComprobante, validaComprobanteAbastecimiento } from "../models/comprobante";
 import { generaCorrelativo } from "../models/correlativo";
-import Cierreturno, { cerrarTurno, obtenerCierreTurno } from "../models/cierreturno";
+import Cierreturno, { cerrarTurno, obtenerCierreTurno, obtieneCierreTurnoGalonaje, obtieneCierreTurnoTotalProducto, obtieneCierreTurnoTotalSoles } from "../models/cierreturno";
 
 import { createOrderApiMiFact } from "../helpers/api-mifact";
 import Constantes from "../helpers/constantes";
@@ -163,7 +163,7 @@ export const cierreTurno = async (req: Request, res: Response) => {
     const { body } = req;
 
     try {
-        const cierre = await cerrarTurno({sessionID: body.session, fecha: body.fecha, turno: body.turno, isla: body.isla, efectivo: body.efectivo, tarjeta: body.tarjeta, yape: body.yape})
+        const cierre = await cerrarTurno({sessionID: body.session, turno: body.turno, isla: body.isla, efectivo: body.efectivo, tarjeta: body.tarjeta, yape: body.yape})
 
         res.json({
             cierre
@@ -206,4 +206,44 @@ export const listaTurnosPorCerrar = async (req: Request, res: Response) => {
             error
         });          
     }
+}
+
+export const historicoCierres = async (req: Request, res: Response) => {
+
+    const { idUsuario } = req.query;
+
+    const data: any = await Cierreturno.findAll({      
+        where: { UsuarioId: idUsuario },
+        order: [
+            ['id', 'DESC']
+        ],
+        limit: 5
+    });
+    
+    res.json(data);     
+    
+}
+
+export const cierreTurnoGalonaje = async (req: Request, res: Response) => {
+
+    const { idUsuario } = req.query;
+    const data = await obtieneCierreTurnoGalonaje( idUsuario?idUsuario.toString():"" );
+    res.json(data);   
+
+}
+
+export const cierreTurnoTotalProducto = async (req: Request, res: Response) => {
+
+    const { idUsuario } = req.query;
+    const data = await obtieneCierreTurnoTotalProducto( idUsuario?idUsuario.toString():"" );
+    res.json(data);   
+
+}
+
+export const cierreTurnoTotalSoles = async (req: Request, res: Response) => {
+
+    const { idUsuario } = req.query;
+    const data = await obtieneCierreTurnoTotalSoles( idUsuario?idUsuario.toString():"" );
+    res.json(data);   
+
 }

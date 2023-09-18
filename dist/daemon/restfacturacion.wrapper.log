@@ -148,3 +148,5 @@ Stacktrace:   en System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInter
 2023-09-13 18:57:46 - Started 7028
 2023-09-13 19:01:46 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
 2023-09-13 19:01:46 - Started 7408
+2023-09-14 18:22:44 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2023-09-14 18:22:44 - Started 7756

@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.modificaComprobante = exports.generaComprobante = void 0;
+exports.cierreTurnoTotalSoles = exports.cierreTurnoTotalProducto = exports.cierreTurnoGalonaje = exports.historicoCierres = exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.modificaComprobante = exports.generaComprobante = void 0;
 const receptor_1 = __importStar(require("../models/receptor"));
 const abastecimiento_1 = require("../models/abastecimiento");
 const comprobante_1 = require("../models/comprobante");
@@ -182,7 +182,7 @@ exports.historicoComprobantes = historicoComprobantes;
 const cierreTurno = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { body } = req;
     try {
-        const cierre = yield (0, cierreturno_1.cerrarTurno)({ sessionID: body.session, fecha: body.fecha, turno: body.turno, isla: body.isla, efectivo: body.efectivo, tarjeta: body.tarjeta, yape: body.yape });
+        const cierre = yield (0, cierreturno_1.cerrarTurno)({ sessionID: body.session, turno: body.turno, isla: body.isla, efectivo: body.efectivo, tarjeta: body.tarjeta, yape: body.yape });
         res.json({
             cierre
         });
@@ -222,4 +222,34 @@ const listaTurnosPorCerrar = (req, res) => __awaiter(void 0, void 0, void 0, fun
     }
 });
 exports.listaTurnosPorCerrar = listaTurnosPorCerrar;
+const historicoCierres = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { idUsuario } = req.query;
+    const data = yield cierreturno_1.default.findAll({
+        where: { UsuarioId: idUsuario },
+        order: [
+            ['id', 'DESC']
+        ],
+        limit: 5
+    });
+    res.json(data);
+});
+exports.historicoCierres = historicoCierres;
+const cierreTurnoGalonaje = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { idUsuario } = req.query;
+    const data = yield (0, cierreturno_1.obtieneCierreTurnoGalonaje)(idUsuario ? idUsuario.toString() : "");
+    res.json(data);
+});
+exports.cierreTurnoGalonaje = cierreTurnoGalonaje;
+const cierreTurnoTotalProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { idUsuario } = req.query;
+    const data = yield (0, cierreturno_1.obtieneCierreTurnoTotalProducto)(idUsuario ? idUsuario.toString() : "");
+    res.json(data);
+});
+exports.cierreTurnoTotalProducto = cierreTurnoTotalProducto;
+const cierreTurnoTotalSoles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { idUsuario } = req.query;
+    const data = yield (0, cierreturno_1.obtieneCierreTurnoTotalSoles)(idUsuario ? idUsuario.toString() : "");
+    res.json(data);
+});
+exports.cierreTurnoTotalSoles = cierreTurnoTotalSoles;
 //# sourceMappingURL=comprobantes.js.map

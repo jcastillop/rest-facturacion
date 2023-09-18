@@ -3,13 +3,14 @@ import { Sqlcn } from '../database/config';
 import { Comprobante } from "./comprobante";
 import Cierredia from './cierredia';
 import Usuario from "./usuario";
+import { getTodayDate } from "../helpers/date-values";
+import { log4js } from "../helpers";
 
 interface PropsCerrarTurno{
     transactionOk: boolean;
 }
 interface ParamsCerrarTurno{
     sessionID: number;
-    fecha: Date;
     turno: string;
     isla: string;
     efectivo: number;
@@ -19,8 +20,14 @@ interface ParamsCerrarTurno{
 interface ParamsListaCerrarTurno{
     fecha: Date;
 }
+interface ICierreTurnoReporteTotales {
+    producto: string;
+    total: number;
+    despacho?: number;
+    calibracion?: number;
+}
 
-export const cerrarTurno = async({ sessionID, fecha, turno, isla, efectivo, tarjeta, yape }:ParamsCerrarTurno): Promise<PropsCerrarTurno> =>{
+export const cerrarTurno = async({ sessionID, turno, isla, efectivo, tarjeta, yape }:ParamsCerrarTurno): Promise<PropsCerrarTurno> =>{
 
     var montoCierre = 0  
    
@@ -36,10 +43,10 @@ export const cerrarTurno = async({ sessionID, fecha, turno, isla, efectivo, tarj
            
     const cierre: any = Cierreturno.build({
         UsuarioId: sessionID,
-        fecha: fecha,
         total: montoCierre?montoCierre:0,
         turno: turno,
         isla: isla,
+        fecha: getTodayDate(),
         efectivo: efectivo,
         tarjeta: tarjeta,
         yape: yape
@@ -55,19 +62,6 @@ export const cerrarTurno = async({ sessionID, fecha, turno, isla, efectivo, tarj
 }
 
 export const obtenerCierreTurno = async({ fecha }:ParamsListaCerrarTurno): Promise<any> =>{
-    /*
-      const isla: any = await Isla.findAll({
-        include: [
-            { 
-                model: Pistola, 
-                as: 'Pistolas'
-            }
-        ],
-        where:{
-            [Op.and]: [{ ip: remoteAddress },{ estado: 1 }]
-        }, 
-    });    
-    */
 
     const data: any = await Cierreturno.findAll({ 
         include: [
@@ -80,6 +74,60 @@ export const obtenerCierreTurno = async({ fecha }:ParamsListaCerrarTurno): Promi
     return data;
 }
 
+export const obtieneCierreTurnoGalonaje = async( usuario: string ):Promise<any> => {
+    log4js( "Inicio obtieneCierreTurnoGalonaje ");
+    var resultado
+
+    await Sqlcn.query(
+        'select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\') then volumen else 0 END) as total, sum(CASE when tipo_comprobante = \'50\' then volumen else 0 END) as despacho, sum(CASE when tipo_comprobante = \'51\' then volumen else 0 END) as calibracion from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', 
+        {
+            replacements: { usuario },
+            type: QueryTypes.SELECT,
+            plain: false,
+            raw: false
+        }).then((results: any)=>{
+            resultado= results
+        });  
+    log4js( "Fin obtieneCierreTurnoGalonaje");
+    return resultado  
+}
+
+export const obtieneCierreTurnoTotalProducto = async( usuario: string ):Promise<any> => {
+    log4js( "Inicio obtieneCierreTurnoTotalProducto ");
+    var resultado
+
+    await Sqlcn.query(
+        'select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\') then CONVERT(float, total_venta) else 0 END) as total, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', 
+        {
+            replacements: { usuario },
+            type: QueryTypes.SELECT,
+            plain: false,
+            raw: false
+        }).then((results: any)=>{
+            resultado= results
+        });  
+    log4js( "Fin obtieneCierreTurnoTotalProducto");
+    return resultado  
+}
+
+export const obtieneCierreTurnoTotalSoles= async( usuario: string ):Promise<any> => {
+    log4js( "Inicio obtieneCierreTurnoTotalSoles");
+    var resultado
+
+    await Sqlcn.query(
+        'select sum(pago_efectivo) as efectivo, sum(pago_tarjeta) as tarjeta, sum(pago_yape) as yape from Comprobantes where CierreturnoId is null and tipo_comprobante in (\'01\',\'03\') and UsuarioId = :usuario ', 
+        {
+            replacements: { usuario },
+            type: QueryTypes.SELECT,
+            plain: true,
+            raw: false
+        }).then((results: any)=>{
+            resultado= results
+        });  
+    log4js( "Fin obtieneCierreTurnoTotalSoles ");
+    return resultado  
+}
+
 const Cierreturno = Sqlcn.define('Cierreturnos', {
     id:{
         type: DataTypes.INTEGER,
@@ -90,7 +138,8 @@ const Cierreturno = Sqlcn.define('Cierreturnos', {
         type: DataTypes.FLOAT
     },  
     fecha:{
-        type: DataTypes.DATE
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     },
     turno:{
         type: DataTypes.STRING

@@ -12,5 +12,9 @@ router.post('/cerrardia', comprobantes_1.createCierreDia);
 router.post('/listarturnos', comprobantes_1.listaTurnosPorCerrar);
 router.post('/reporteproducto', reportes_1.rptProducto);
 router.post('/reporteproductoturnos', reportes_1.rptProductoTurno);
+router.get('/cierreturnohistorico', comprobantes_1.historicoCierres);
+router.get('/cierreturnogalonaje', comprobantes_1.cierreTurnoGalonaje);
+router.get('/cierreturnototalproducto', comprobantes_1.cierreTurnoTotalProducto);
+router.get('/cierreturnototalsoles', comprobantes_1.cierreTurnoTotalSoles);
 exports.default = router;
 //# sourceMappingURL=comprobantes.js.map
