@@ -180,7 +180,7 @@ export const generaReporteProductoCombustible = async (fecha: string): Promise<{
     var data = null;
     try {
         await Sqlcn.query(
-            'SELECT fecha_emision as Fecha, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total  from Comprobantes where fecha_emision = :fecha  group by fecha_emision, dec_combustible;', 
+            'SELECT fecha_emision as Fecha, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total  from Comprobantes where fecha_emision = :fecha  and tipo_comprobante in (\'01\',\'03\') group by fecha_emision, dec_combustible;', 
             {
                 replacements: { fecha },
                 type: QueryTypes.SELECT

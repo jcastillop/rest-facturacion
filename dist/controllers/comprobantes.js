@@ -129,6 +129,11 @@ const modificaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, func
         res.json({ hasError: true, respuesta: messageActualizaComprobante });
         return;
     }
+    const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(body.id);
+    if (hasErrorActualizaAbastecimiento) {
+        res.json({ hasError: true, respuesta: messageActualizaAbastecimiento });
+        return;
+    }
     res.json({
         hasError: false,
         receptor: receptor,

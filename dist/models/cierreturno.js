@@ -20,17 +20,9 @@ const usuario_1 = __importDefault(require("./usuario"));
 const date_values_1 = require("../helpers/date-values");
 const helpers_1 = require("../helpers");
 const cerrarTurno = ({ sessionID, turno, isla, efectivo, tarjeta, yape }) => __awaiter(void 0, void 0, void 0, function* () {
-    var montoCierre = 0;
-    yield config_1.Sqlcn.query('SELECT ROUND(SUM(CONVERT(float,total_venta)),2) as suma from Comprobantes where UsuarioId=:sessionID and CierreturnoId is null;', {
-        replacements: { sessionID },
-        type: sequelize_1.QueryTypes.SELECT,
-        plain: true
-    }).then((results) => {
-        montoCierre = results.suma;
-    });
     const cierre = Cierreturno.build({
         UsuarioId: sessionID,
-        total: montoCierre ? montoCierre : 0,
+        total: efectivo + tarjeta + yape,
         turno: turno,
         isla: isla,
         fecha: (0, date_values_1.getTodayDate)(),
@@ -39,9 +31,10 @@ const cerrarTurno = ({ sessionID, turno, isla, efectivo, tarjeta, yape }) => __a
         yape: yape
     });
     yield cierre.save();
-    const updateRow = yield comprobante_1.Comprobante.update({ CierreturnoId: cierre.id }, { where: { UsuarioId: sessionID, CierreturnoId: null } });
+    const respUpdate = yield comprobante_1.Comprobante.update({ CierreturnoId: cierre.id }, { where: { UsuarioId: sessionID, CierreturnoId: null } });
     return {
-        transactionOk: updateRow ? true : false
+        cierre,
+        cantidad: respUpdate[0]
     };
 });
 exports.cerrarTurno = cerrarTurno;

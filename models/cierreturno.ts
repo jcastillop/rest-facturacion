@@ -5,9 +5,11 @@ import Cierredia from './cierredia';
 import Usuario from "./usuario";
 import { getTodayDate } from "../helpers/date-values";
 import { log4js } from "../helpers";
+import { ICierreturno } from "../interfaces/cierreturno";
 
 interface PropsCerrarTurno{
-    transactionOk: boolean;
+    cierre: ICierreturno,
+    cantidad: number
 }
 interface ParamsCerrarTurno{
     sessionID: number;
@@ -29,21 +31,9 @@ interface ICierreTurnoReporteTotales {
 
 export const cerrarTurno = async({ sessionID, turno, isla, efectivo, tarjeta, yape }:ParamsCerrarTurno): Promise<PropsCerrarTurno> =>{
 
-    var montoCierre = 0  
-   
-    await Sqlcn.query(
-        'SELECT ROUND(SUM(CONVERT(float,total_venta)),2) as suma from Comprobantes where UsuarioId=:sessionID and CierreturnoId is null;', 
-        {
-            replacements: { sessionID },
-            type: QueryTypes.SELECT,
-            plain: true
-        }).then((results: any)=>{
-            montoCierre= results.suma
-        });
-           
     const cierre: any = Cierreturno.build({
         UsuarioId: sessionID,
-        total: montoCierre?montoCierre:0,
+        total: efectivo + tarjeta + yape,
         turno: turno,
         isla: isla,
         fecha: getTodayDate(),
@@ -54,10 +44,11 @@ export const cerrarTurno = async({ sessionID, turno, isla, efectivo, tarjeta, ya
 
     await cierre.save();
 
-    const updateRow = await Comprobante.update({ CierreturnoId: cierre.id },{where:{UsuarioId: sessionID, CierreturnoId: null}});
+    const respUpdate = await Comprobante.update({ CierreturnoId: cierre.id },{where:{UsuarioId: sessionID, CierreturnoId: null}});
 
     return {
-        transactionOk: updateRow?true:false
+        cierre,
+        cantidad: respUpdate[0]
     }
 }
 

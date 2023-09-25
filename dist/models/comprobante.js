@@ -180,7 +180,7 @@ const generaReporteProductoCombustible = (fecha) => __awaiter(void 0, void 0, vo
     (0, helpers_1.log4js)("Inicio generaReporteProductoCombustible");
     var data = null;
     try {
-        yield config_1.Sqlcn.query('SELECT fecha_emision as Fecha, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total  from Comprobantes where fecha_emision = :fecha  group by fecha_emision, dec_combustible;', {
+        yield config_1.Sqlcn.query('SELECT fecha_emision as Fecha, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total  from Comprobantes where fecha_emision = :fecha  and tipo_comprobante in (\'01\',\'03\') group by fecha_emision, dec_combustible;', {
             replacements: { fecha },
             type: sequelize_1.QueryTypes.SELECT
         }).then((results) => {
