@@ -1,10 +1,11 @@
 import express, { Application } from 'express';
+import cors from 'cors'
+import { Sqlcn } from '../database/config';
 import abastecimientoRoutes from '../routes/abastecimientos';
 import comprobanteRoutes from '../routes/comprobantes';
 import userRoutes from '../routes/usuarios';
 import receptorRoutes from '../routes/receptores';
-import cors from 'cors'
-import { Sqlcn } from '../database/config';
+import productoRoutes from '../routes/productos';
 
 class Server{
 
@@ -14,7 +15,8 @@ class Server{
         abastecimientos: '/api/abastecimientos',
         comprobantes: '/api/comprobantes',
         usuarios: '/api/usuarios',
-        receptores: '/api/receptores'
+        receptores: '/api/receptores',
+        productos: '/api/productos'
     }
 
     constructor(){
@@ -30,7 +32,7 @@ class Server{
         try {
             //await Sqlcn().authenticate();
             Sqlcn.sync()
-            console.log('database on lines')
+            console.log('database on lines'+ process.env.SQL_CONTR_HOST )
         } catch (error) {
             
         }
@@ -49,13 +51,14 @@ class Server{
         this.app.use(this.apiPaths.abastecimientos, abastecimientoRoutes);
         this.app.use(this.apiPaths.comprobantes, comprobanteRoutes);
         this.app.use(this.apiPaths.usuarios, userRoutes);
-        this.app.use(this.apiPaths.receptores, receptorRoutes)
+        this.app.use(this.apiPaths.receptores, receptorRoutes);
+        this.app.use(this.apiPaths.productos, productoRoutes);
     }
 
     listen(){
         this.app.listen(this.port, ()=>{
             
-            console.log('Servidor ejecutandose en el puerto: ' + this.port)
+            console.log('Servidor ejecutandose en el puerto: ' + this.port + process.env.SQL_CONTR_HOST )
         })
     }
 }
