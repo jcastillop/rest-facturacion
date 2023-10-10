@@ -32,23 +32,23 @@ export const getProductos = async (req: Request, res: Response) => {
 }
 
 export const getProducto = async (req: Request, res: Response) => {
-
+    log4js( "Inicio getProducto");
     const { id } = req.params;
     
     try {
 
-        const producto = await Producto.findAll({ where : { id: id}, raw: true});
+        const producto = await Producto.findOne({ where : { id: id}, raw: true});
 
         res.json({
             producto
         });  
-
+        log4js( "Fin getProducto");
     } catch (error) {
         res.status(404).json({
             msg: `Error no identificado ${ error }`
         });          
     }
-
+    
 }
 
 export const putProducto = async (req: Request, res: Response) => {

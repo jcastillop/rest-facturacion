@@ -8,33 +8,46 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.actualizaAbastecimiento = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const helpers_1 = require("../helpers");
-const actualizaAbastecimiento = (idAbastecimiento) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const abastecimento = yield Abastecimiento.update({ estado: 1 }, { where: { idAbastecimiento: idAbastecimiento } });
-        if (abastecimento) {
-            return {
-                hasErrorActualizaAbastecimiento: false,
-                messageActualizaAbastecimiento: `Abastecimiento actualizado correctamente`
-            };
+const constantes_1 = __importDefault(require("../helpers/constantes"));
+const actualizaAbastecimiento = (idAbastecimiento, tipo_comprobante) => __awaiter(void 0, void 0, void 0, function* () {
+    if (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) {
+        (0, helpers_1.log4js)("Fin actualizaAbastecimiento ");
+        return {
+            hasErrorActualizaAbastecimiento: false,
+            messageActualizaAbastecimiento: `No se valida abastecimiento para NC`
+        };
+    }
+    else {
+        try {
+            const abastecimento = yield Abastecimiento.update({ estado: 1 }, { where: { idAbastecimiento: idAbastecimiento } });
+            if (abastecimento) {
+                return {
+                    hasErrorActualizaAbastecimiento: false,
+                    messageActualizaAbastecimiento: `Abastecimiento actualizado correctamente`
+                };
+            }
+            else {
+                return {
+                    hasErrorActualizaAbastecimiento: true,
+                    messageActualizaAbastecimiento: `No se actualizó ningún registro`
+                };
+            }
         }
-        else {
+        catch (error) {
+            (0, helpers_1.log4js)("actualizaAbastecimiento: " + error.toString(), 'error');
             return {
                 hasErrorActualizaAbastecimiento: true,
-                messageActualizaAbastecimiento: `No se actualizó ningún registro`
+                messageActualizaAbastecimiento: error.toString(),
             };
         }
-    }
-    catch (error) {
-        (0, helpers_1.log4js)("actualizaAbastecimiento: " + error.toString(), 'error');
-        return {
-            hasErrorActualizaAbastecimiento: true,
-            messageActualizaAbastecimiento: error.toString(),
-        };
     }
 });
 exports.actualizaAbastecimiento = actualizaAbastecimiento;

@@ -1,10 +1,8 @@
 import { Request, Response } from "express";
-
-import { log4js } from "../helpers";
 import Receptor, { obtieneReceptor } from "../models/receptor";
 
 import { actualizaAbastecimiento } from "../models/abastecimiento";
-import { Comprobante, actualizarComprobante, nuevoComprobante, obtieneComprobante, validaComprobanteAbastecimiento } from "../models/comprobante";
+import { Comprobante, actualizarComprobante, nuevoComprobante, nuevoComprobanteV2, obtieneComprobante, validaComprobanteAbastecimiento } from "../models/comprobante";
 import { generaCorrelativo } from "../models/correlativo";
 import Cierreturno, { cerrarTurno, obtenerCierreTurno, obtieneCierreTurnoGalonaje, obtieneCierreTurnoTotalProducto, obtieneCierreTurnoTotalSoles } from "../models/cierreturno";
 
@@ -22,7 +20,7 @@ export const generaComprobante = async (req: Request, res: Response) => {
     const bCreateOrderMiFact = (body.tipo == Constantes.TipoComprobante.Boleta || body.tipo == Constantes.TipoComprobante.Factura || body.tipo == Constantes.TipoComprobante.NotaCredito)
     var responseMiFact;
 
-    const { hasError, message } = await validaComprobanteAbastecimiento(body.id);
+    const { hasError, message } = await validaComprobanteAbastecimiento(body.id, body.tipo);
 
     if(hasError){
         res.json({
@@ -50,7 +48,7 @@ export const generaComprobante = async (req: Request, res: Response) => {
         const {hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate} = await actualizarComprobante(responseMiFact, comprobante.id, bCreateOrderMiFact)
         if(hasErrorActualizaComprobante){ res.json({ hasError: true, respuesta: messageActualizaComprobante}); return; }
     
-        const {hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento} = await actualizaAbastecimiento(body.id);
+        const {hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento} = await actualizaAbastecimiento(body.id, body.tipo);
         if(hasErrorActualizaAbastecimiento){ res.json({ hasError: true, respuesta: messageActualizaAbastecimiento}); return; }
         
         res.json({
@@ -61,8 +59,41 @@ export const generaComprobante = async (req: Request, res: Response) => {
         }); 
 
     }
+}
 
-         
+export const generaComprobanteV2 = async (req: Request, res: Response) => {
+
+    const { tipo_comprobante, prefijo, Receptor } = req.body;
+    const serie: string = '002';
+    const bCreateOrderMiFact = (tipo_comprobante == Constantes.TipoComprobante.Boleta || tipo_comprobante == Constantes.TipoComprobante.Factura || tipo_comprobante == Constantes.TipoComprobante.NotaCredito)
+    var responseMiFact;
+
+    const { hasErrorCorrelativo, messageCorrelativo, correlativo} = await generaCorrelativo(tipo_comprobante, serie, prefijo?prefijo:"")
+    if(hasErrorCorrelativo){ res.json({ hasError: true, respuesta: messageCorrelativo}); return; }
+
+    const {hasErrorReceptor, messageReceptor, receptor} = await obtieneReceptor(Receptor.numero_documento, Receptor.tipo_documento, Receptor.razon_social, Receptor.direccion, Receptor.correo, Receptor.placa);
+    if(hasErrorReceptor){ res.json({ hasError: true, respuesta: messageReceptor}); return; }
+
+    const {hasErrorComprobante, messageComprobante, comprobante} = await nuevoComprobanteV2(req.body, correlativo, receptor);
+    if(hasErrorComprobante){ res.json({ hasError: true, respuesta: messageComprobante}); return; }
+    
+    if(bCreateOrderMiFact){
+        const {hasErrorMiFact, messageMiFact, response} = await createOrderApiMiFact(comprobante, receptor, tipo_comprobante, correlativo);
+        responseMiFact = response;
+        if(hasErrorMiFact){ res.json({ hasError: true, respuesta: messageMiFact}); return; }
+    }
+
+    const {hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate} = await actualizarComprobante(responseMiFact, comprobante.id, bCreateOrderMiFact)
+    if(hasErrorActualizaComprobante){ res.json({ hasError: true, respuesta: messageActualizaComprobante}); return; }
+    
+    res.json({
+        hasError: false,
+        receptor: receptor,
+        comprobante: comprobanteUpdate,
+        respuesta: bCreateOrderMiFact?"Comprobante guardado y enviado a SUNAT":"Comprobante generado"
+    }); 
+
+
 }
 
 export const modificaComprobante = async (req: Request, res: Response) => {
@@ -89,7 +120,7 @@ export const modificaComprobante = async (req: Request, res: Response) => {
     const {hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate} = await actualizarComprobante(responseMiFact, comprobante.id, bCreateOrderMiFact)
     if(hasErrorActualizaComprobante){ res.json({ hasError: true, respuesta: messageActualizaComprobante}); return; }    
 
-    const {hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento} = await actualizaAbastecimiento(body.id);
+    const {hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento} = await actualizaAbastecimiento(body.id, body.tipo);
     if(hasErrorActualizaAbastecimiento){ res.json({ hasError: true, respuesta: messageActualizaAbastecimiento}); return; }    
     
     res.json({
@@ -249,4 +280,21 @@ export const cierreTurnoTotalSoles = async (req: Request, res: Response) => {
     const data = await obtieneCierreTurnoTotalSoles( idUsuario?idUsuario.toString():"" );
     res.json(data);   
 
+}
+
+export const getComprobante = async (req: Request, res: Response) => {
+
+    const { id } = req.query;
+
+    try {
+        const comprobante: any = await obtieneComprobante(id?+id:0);
+
+        res.json({
+            comprobante
+        });        
+    } catch (error) {
+        res.json({
+            error
+        });          
+    }    
 }

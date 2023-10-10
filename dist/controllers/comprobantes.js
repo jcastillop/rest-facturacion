@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.cierreTurnoTotalSoles = exports.cierreTurnoTotalProducto = exports.cierreTurnoGalonaje = exports.historicoCierres = exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.modificaComprobante = exports.generaComprobante = void 0;
+exports.getComprobante = exports.cierreTurnoTotalSoles = exports.cierreTurnoTotalProducto = exports.cierreTurnoGalonaje = exports.historicoCierres = exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.modificaComprobante = exports.generaComprobanteV2 = exports.generaComprobante = void 0;
 const receptor_1 = __importStar(require("../models/receptor"));
 const abastecimiento_1 = require("../models/abastecimiento");
 const comprobante_1 = require("../models/comprobante");
@@ -51,7 +51,7 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
     const serie = '001';
     const bCreateOrderMiFact = (body.tipo == constantes_1.default.TipoComprobante.Boleta || body.tipo == constantes_1.default.TipoComprobante.Factura || body.tipo == constantes_1.default.TipoComprobante.NotaCredito);
     var responseMiFact;
-    const { hasError, message } = yield (0, comprobante_1.validaComprobanteAbastecimiento)(body.id);
+    const { hasError, message } = yield (0, comprobante_1.validaComprobanteAbastecimiento)(body.id, body.tipo);
     if (hasError) {
         res.json({
             hasError: hasError,
@@ -87,7 +87,7 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
             res.json({ hasError: true, respuesta: messageActualizaComprobante });
             return;
         }
-        const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(body.id);
+        const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(body.id, body.tipo);
         if (hasErrorActualizaAbastecimiento) {
             res.json({ hasError: true, respuesta: messageActualizaAbastecimiento });
             return;
@@ -101,6 +101,47 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.generaComprobante = generaComprobante;
+const generaComprobanteV2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { tipo_comprobante, prefijo, Receptor } = req.body;
+    const serie = '002';
+    const bCreateOrderMiFact = (tipo_comprobante == constantes_1.default.TipoComprobante.Boleta || tipo_comprobante == constantes_1.default.TipoComprobante.Factura || tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito);
+    var responseMiFact;
+    const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(tipo_comprobante, serie, prefijo ? prefijo : "");
+    if (hasErrorCorrelativo) {
+        res.json({ hasError: true, respuesta: messageCorrelativo });
+        return;
+    }
+    const { hasErrorReceptor, messageReceptor, receptor } = yield (0, receptor_1.obtieneReceptor)(Receptor.numero_documento, Receptor.tipo_documento, Receptor.razon_social, Receptor.direccion, Receptor.correo, Receptor.placa);
+    if (hasErrorReceptor) {
+        res.json({ hasError: true, respuesta: messageReceptor });
+        return;
+    }
+    const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobanteV2)(req.body, correlativo, receptor);
+    if (hasErrorComprobante) {
+        res.json({ hasError: true, respuesta: messageComprobante });
+        return;
+    }
+    if (bCreateOrderMiFact) {
+        const { hasErrorMiFact, messageMiFact, response } = yield (0, api_mifact_1.createOrderApiMiFact)(comprobante, receptor, tipo_comprobante, correlativo);
+        responseMiFact = response;
+        if (hasErrorMiFact) {
+            res.json({ hasError: true, respuesta: messageMiFact });
+            return;
+        }
+    }
+    const { hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate } = yield (0, comprobante_1.actualizarComprobante)(responseMiFact, comprobante.id, bCreateOrderMiFact);
+    if (hasErrorActualizaComprobante) {
+        res.json({ hasError: true, respuesta: messageActualizaComprobante });
+        return;
+    }
+    res.json({
+        hasError: false,
+        receptor: receptor,
+        comprobante: comprobanteUpdate,
+        respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
+    });
+});
+exports.generaComprobanteV2 = generaComprobanteV2;
 const modificaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { body } = req;
     const bCreateOrderMiFact = (body.tipo == constantes_1.default.TipoComprobante.Boleta || body.tipo == constantes_1.default.TipoComprobante.Factura || body.tipo == constantes_1.default.TipoComprobante.NotaCredito);
@@ -129,7 +170,7 @@ const modificaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, func
         res.json({ hasError: true, respuesta: messageActualizaComprobante });
         return;
     }
-    const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(body.id);
+    const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(body.id, body.tipo);
     if (hasErrorActualizaAbastecimiento) {
         res.json({ hasError: true, respuesta: messageActualizaAbastecimiento });
         return;
@@ -257,4 +298,19 @@ const cierreTurnoTotalSoles = (req, res) => __awaiter(void 0, void 0, void 0, fu
     res.json(data);
 });
 exports.cierreTurnoTotalSoles = cierreTurnoTotalSoles;
+const getComprobante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.query;
+    try {
+        const comprobante = yield (0, comprobante_1.obtieneComprobante)(id ? +id : 0);
+        res.json({
+            comprobante
+        });
+    }
+    catch (error) {
+        res.json({
+            error
+        });
+    }
+});
+exports.getComprobante = getComprobante;
 //# sourceMappingURL=comprobantes.js.map

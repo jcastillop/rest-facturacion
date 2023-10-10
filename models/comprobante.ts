@@ -16,6 +16,8 @@ import Cierredia from "./cierredia";
 import Emisor from "./emisor";
 import { log4js } from "../helpers";
 import Constantes from "../helpers/constantes";
+import { IComprobanteAdmin, IComprobanteAdminItem } from "../interfaces/comprobante";
+import { getTodayDate } from "../helpers/date-values";
 
 
 export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number, producto: string, comentario: string, tipo_afectado: string, numeracion_afectado: string, fecha_afectado: string, tarjeta: number = 0, efectivo: number = 0, yape: number = 0, billete: number = 0): Promise<any> => {
@@ -85,6 +87,91 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
                 hasErrorComprobante: false,
                 messageComprobante: `Comprobante creado correctamente`,
                 comprobante: comprobante
+            };
+        }else{
+            return {
+                hasErrorComprobante: true,
+                messageComprobante: "nuevoComprobante: " + `Ocurrió un error durante la creación del comprobante`
+            };            
+        }
+        
+    } catch (error: any) {
+        log4js( "nuevoComprobante: " + error.toString(), 'error');
+        log4js( "Fin nuevoComprobante");
+        return {
+            hasErrorComprobante: true,
+            messageComprobante: "nuevoComprobante: " + error.toString(),
+        };
+    }
+
+}
+
+export const nuevoComprobanteV2 = async (comprobante: IComprobanteAdmin, correlativo: string, receptor: any): Promise<any> => {
+    log4js( `Inicio nuevoComprobante(${correlativo}):  ${JSON.stringify(comprobante.toString())}`);
+    try {
+        var arr_items: any = [] 
+        comprobante.items.forEach(({ cantidad, valor, precio, igv, descripcion, codigo_producto}:IComprobanteAdminItem) => {
+            arr_items.push({
+                cantidad:           cantidad,
+                valor_unitario:     valor,
+                precio_unitario:    precio,
+                igv:                igv,
+                descripcion:        descripcion,
+                codigo_producto:    codigo_producto,
+                placa:              null
+            })
+        })
+
+        const newComprobante = Comprobante.build({ 
+            ReceptorId:                     receptor.id,
+            UsuarioId:                      comprobante.usuarioId,
+            tipo_comprobante:               comprobante.tipo_comprobante,
+            numeracion_comprobante:         correlativo,
+            tipo_documento_afectado:        comprobante.tipo_comprobante == Constantes.TipoComprobante.NotaCredito?comprobante.tipo_documento_afectado:"",
+            numeracion_documento_afectado:  comprobante.tipo_comprobante == Constantes.TipoComprobante.NotaCredito?comprobante.numeracion_documento_afectado:"",
+            fecha_documento_afectado:       comprobante.tipo_comprobante == Constantes.TipoComprobante.NotaCredito?comprobante.fecha_documento_afectado:null,           
+            total_gravadas:                 comprobante.gravadas,
+            total_igv:                      comprobante.igv,
+            total_venta:                    comprobante.total,
+            monto_letras:                   numbersToLetters(comprobante.total),
+            comentario:                     comprobante.comentario,
+            id_abastecimiento:              1,
+            pistola:                        comprobante.pistola,
+            codigo_combustible:             comprobante.codigo_combustible,
+            dec_combustible:                comprobante.dec_combustible,
+            volumen:                        comprobante.volumen,
+            fecha_abastecimiento:           getTodayDate(),
+            tiempo_abastecimiento:          comprobante.tiempo_abastecimiento,
+            volumen_tanque:                 comprobante.volumen_tanque,
+            pago_tarjeta:                   comprobante.tarjeta,
+            pago_efectivo:                  comprobante.efectivo,
+            pago_yape:                      comprobante.yape,
+            placa:                          comprobante.placa,
+            billete:                        comprobante.billete,
+            producto_precio:                comprobante.producto_precio,
+            ruc:                            process.env.EMISOR_RUC,
+            Items:arr_items
+        }, {
+            include: [
+                { model: Item, as: 'Items' }
+            ]
+          });
+
+        await newComprobante.save();
+
+        if(comprobante.tipo_comprobante == Constantes.TipoComprobante.NotaCredito){
+            Comprobante.update(
+                { motivo_documento_afectado: 'Comprobante dado de baja' },
+                { where: { numeracion_comprobante: comprobante.numeracion_documento_afectado, tipo_comprobante: comprobante.tipo_documento_afectado } }
+            )
+        }
+                
+        log4js( `Fin nuevoComprobante: ${JSON.stringify(newComprobante)}`);
+        if(newComprobante){
+            return {
+                hasErrorComprobante: false,
+                messageComprobante: `Comprobante creado correctamente`,
+                comprobante: newComprobante
             };
         }else{
             return {
@@ -251,16 +338,25 @@ export const generaReporteProductoCombustibleTurno = async (fecha: string, turno
     }
 }
 
-export const validaComprobanteAbastecimiento = async (idAbastecimiento: string): Promise<{ hasError: boolean; message: string; } > => {
+export const validaComprobanteAbastecimiento = async (idAbastecimiento: string, tipo_comprobante: string): Promise<{ hasError: boolean; message: string; } > => {
     log4js( "Inicio validaComprobanteAbastecimiento");
-    const total = await Comprobante.count({
-        where: { id_abastecimiento: idAbastecimiento }
-    });
-    log4js( "Fin validaComprobanteAbastecimiento ");
-    return {
-        hasError: total != 0,
-        message: `Comprobante se encuentra registrado previamente ${total}`
-    };
+    if(tipo_comprobante == Constantes.TipoComprobante.NotaCredito){
+        log4js( "Fin validaComprobanteAbastecimiento ");
+        return {
+            hasError: false,
+            message: `No se valida abastecimiento para NC`
+        };        
+    }else{
+        const total = await Comprobante.count({
+            where: { id_abastecimiento: idAbastecimiento }
+        });
+        log4js( "Fin validaComprobanteAbastecimiento ");
+        return {
+            hasError: total != 0,
+            message: `Comprobante se encuentra registrado previamente ${total}`
+        };
+    }
+
 }
 
 export const Comprobante  = Sqlcn.define('Comprobantes', {

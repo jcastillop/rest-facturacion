@@ -2,6 +2,7 @@ import axios from 'axios';
 import { posApi } from '../api';
 import { log4js } from './log4js';
 import Constantes from './constantes';
+import { IComprobanteAdmin, IComprobanteAdminItem } from '../interfaces/comprobante';
 
 export interface PropsMiFact {
     hasErrorMiFact: boolean; 

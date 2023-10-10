@@ -35,7 +35,7 @@ const obtieneReceptor = (numero_documento, tipo_documento, razon_social, direcci
             //         placa: placa,
             //     }
         });
-        (0, helpers_1.log4js)("Fin obtieneReceptor");
+        (0, helpers_1.log4js)("Fin obtieneReceptor" + receptor);
         return {
             hasErrorReceptor: false,
             messageReceptor: `Receptor ${created ? "creado" : "actualizado"} correctamente`,

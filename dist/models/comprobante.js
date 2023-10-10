@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteProductoCombustibleTurno = exports.generaReporteProductoCombustible = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobante = void 0;
+exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteProductoCombustibleTurno = exports.generaReporteProductoCombustible = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const numeros_letras_1 = require("../helpers/numeros-letras");
@@ -29,6 +29,7 @@ const cierredia_1 = __importDefault(require("./cierredia"));
 const emisor_1 = __importDefault(require("./emisor"));
 const helpers_1 = require("../helpers");
 const constantes_1 = __importDefault(require("../helpers/constantes"));
+const date_values_1 = require("../helpers/date-values");
 const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tipo_afectado, numeracion_afectado, fecha_afectado, tarjeta = 0, efectivo = 0, yape = 0, billete = 0) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio nuevoComprobante");
     try {
@@ -107,6 +108,84 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
     }
 });
 exports.nuevoComprobante = nuevoComprobante;
+const nuevoComprobanteV2 = (comprobante, correlativo, receptor) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)(`Inicio nuevoComprobante(${correlativo}):  ${JSON.stringify(comprobante.toString())}`);
+    try {
+        var arr_items = [];
+        comprobante.items.forEach(({ cantidad, valor, precio, igv, descripcion, codigo_producto }) => {
+            arr_items.push({
+                cantidad: cantidad,
+                valor_unitario: valor,
+                precio_unitario: precio,
+                igv: igv,
+                descripcion: descripcion,
+                codigo_producto: codigo_producto,
+                placa: null
+            });
+        });
+        const newComprobante = exports.Comprobante.build({
+            ReceptorId: receptor.id,
+            UsuarioId: comprobante.usuarioId,
+            tipo_comprobante: comprobante.tipo_comprobante,
+            numeracion_comprobante: correlativo,
+            tipo_documento_afectado: comprobante.tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? comprobante.tipo_documento_afectado : "",
+            numeracion_documento_afectado: comprobante.tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? comprobante.numeracion_documento_afectado : "",
+            fecha_documento_afectado: comprobante.tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? comprobante.fecha_documento_afectado : null,
+            total_gravadas: comprobante.gravadas,
+            total_igv: comprobante.igv,
+            total_venta: comprobante.total,
+            monto_letras: (0, numeros_letras_1.numbersToLetters)(comprobante.total),
+            comentario: comprobante.comentario,
+            id_abastecimiento: 1,
+            pistola: comprobante.pistola,
+            codigo_combustible: comprobante.codigo_combustible,
+            dec_combustible: comprobante.dec_combustible,
+            volumen: comprobante.volumen,
+            fecha_abastecimiento: (0, date_values_1.getTodayDate)(),
+            tiempo_abastecimiento: comprobante.tiempo_abastecimiento,
+            volumen_tanque: comprobante.volumen_tanque,
+            pago_tarjeta: comprobante.tarjeta,
+            pago_efectivo: comprobante.efectivo,
+            pago_yape: comprobante.yape,
+            placa: comprobante.placa,
+            billete: comprobante.billete,
+            producto_precio: comprobante.producto_precio,
+            ruc: process.env.EMISOR_RUC,
+            Items: arr_items
+        }, {
+            include: [
+                { model: item_1.default, as: 'Items' }
+            ]
+        });
+        yield newComprobante.save();
+        if (comprobante.tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) {
+            exports.Comprobante.update({ motivo_documento_afectado: 'Comprobante dado de baja' }, { where: { numeracion_comprobante: comprobante.numeracion_documento_afectado, tipo_comprobante: comprobante.tipo_documento_afectado } });
+        }
+        (0, helpers_1.log4js)(`Fin nuevoComprobante: ${JSON.stringify(newComprobante)}`);
+        if (newComprobante) {
+            return {
+                hasErrorComprobante: false,
+                messageComprobante: `Comprobante creado correctamente`,
+                comprobante: newComprobante
+            };
+        }
+        else {
+            return {
+                hasErrorComprobante: true,
+                messageComprobante: "nuevoComprobante: " + `Ocurrió un error durante la creación del comprobante`
+            };
+        }
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("nuevoComprobante: " + error.toString(), 'error');
+        (0, helpers_1.log4js)("Fin nuevoComprobante");
+        return {
+            hasErrorComprobante: true,
+            messageComprobante: "nuevoComprobante: " + error.toString(),
+        };
+    }
+});
+exports.nuevoComprobanteV2 = nuevoComprobanteV2;
 const obtieneComprobante = (idComprobante) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio obtieneComprobante");
     try {
@@ -242,16 +321,25 @@ const generaReporteProductoCombustibleTurno = (fecha, turnos, usuarios) => __awa
     }
 });
 exports.generaReporteProductoCombustibleTurno = generaReporteProductoCombustibleTurno;
-const validaComprobanteAbastecimiento = (idAbastecimiento) => __awaiter(void 0, void 0, void 0, function* () {
+const validaComprobanteAbastecimiento = (idAbastecimiento, tipo_comprobante) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio validaComprobanteAbastecimiento");
-    const total = yield exports.Comprobante.count({
-        where: { id_abastecimiento: idAbastecimiento }
-    });
-    (0, helpers_1.log4js)("Fin validaComprobanteAbastecimiento ");
-    return {
-        hasError: total != 0,
-        message: `Comprobante se encuentra registrado previamente ${total}`
-    };
+    if (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) {
+        (0, helpers_1.log4js)("Fin validaComprobanteAbastecimiento ");
+        return {
+            hasError: false,
+            message: `No se valida abastecimiento para NC`
+        };
+    }
+    else {
+        const total = yield exports.Comprobante.count({
+            where: { id_abastecimiento: idAbastecimiento }
+        });
+        (0, helpers_1.log4js)("Fin validaComprobanteAbastecimiento ");
+        return {
+            hasError: total != 0,
+            message: `Comprobante se encuentra registrado previamente ${total}`
+        };
+    }
 });
 exports.validaComprobanteAbastecimiento = validaComprobanteAbastecimiento;
 exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {

@@ -38,12 +38,14 @@ const getProductos = (req, res) => __awaiter(void 0, void 0, void 0, function* (
 });
 exports.getProductos = getProductos;
 const getProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio getProducto");
     const { id } = req.params;
     try {
-        const producto = yield producto_1.default.findAll({ where: { id: id }, raw: true });
+        const producto = yield producto_1.default.findOne({ where: { id: id }, raw: true });
         res.json({
             producto
         });
+        (0, helpers_1.log4js)("Fin getProducto");
     }
     catch (error) {
         res.status(404).json({

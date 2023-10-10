@@ -24,7 +24,7 @@ export const obtieneReceptor = async (numero_documento: string, tipo_documento: 
         //         placa: placa,
         //     }
           });
-        log4js( "Fin obtieneReceptor");
+        log4js( "Fin obtieneReceptor" + receptor);
         return {
             hasErrorReceptor: false,
             messageReceptor: `Receptor ${created? "creado":"actualizado"} correctamente`,
