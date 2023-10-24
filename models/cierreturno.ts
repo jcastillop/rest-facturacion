@@ -52,13 +52,17 @@ export const cerrarTurno = async({ sessionID, turno, isla, efectivo, tarjeta, ya
     }
 }
 
-export const obtenerCierreTurno = async({ fecha }:ParamsListaCerrarTurno): Promise<any> =>{
+export const obtenerCierreTurno = async(): Promise<any> =>{
 
     const data: any = await Cierreturno.findAll({ 
         include: [
             { model: Usuario, required: true }
         ],             
-        where: { fecha: fecha, CierrediaId: null }
+        where: { CierrediaId: null },
+        order: [
+            ['fecha', 'DESC'],
+            ['turno', 'ASC'],
+        ]
     });
 
 

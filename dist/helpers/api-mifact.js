@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createOrderApiMiFact = void 0;
+exports.consultaRucMiFact = exports.createOrderApiMiFact = void 0;
 const axios_1 = __importDefault(require("axios"));
 const api_1 = require("../api");
 const log4js_1 = require("./log4js");
@@ -141,4 +141,51 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
     }
 });
 exports.createOrderApiMiFact = createOrderApiMiFact;
+const consultaRucMiFact = (ruc) => __awaiter(void 0, void 0, void 0, function* () {
+    var _b;
+    try {
+        const body = {
+            "TOKEN": `${process.env.CONSULTA_RUC_TOKEN}`,
+            "RUC_RECEPTOR": ruc
+        };
+        const { data } = yield api_1.posApi.post(`${process.env.CONSULTA_RUC}`, body);
+        console.log(data);
+        if (data.aCod_MensajeAPP == "0") {
+            return {
+                hasErrorMiFact: false,
+                messageMiFact: "consultaRucMiFact: " + data.aCod_MensajeAPP,
+                razon_social: data.aRazon_Social,
+                direccion: data.aDireccion_Fiscal
+            };
+        }
+        else {
+            (0, log4js_1.log4js)("consultaRucMiFact: " + data.aCod_MensajeAPP, 'error');
+            return {
+                hasErrorMiFact: true,
+                messageMiFact: "consultaRucMiFact: " + data.aCod_MensajeAPP,
+                razon_social: null,
+                direccion: null
+            };
+        }
+    }
+    catch (error) {
+        (0, log4js_1.log4js)("consultaRucMiFact: " + error.toString(), 'error');
+        (0, log4js_1.log4js)("Fin createOrderApiMiFact");
+        if (axios_1.default.isAxiosError(error)) {
+            return {
+                hasErrorMiFact: true,
+                messageMiFact: "createOrderApiMiFact: " + ((_b = error.response) === null || _b === void 0 ? void 0 : _b.data.message),
+                razon_social: null,
+                direccion: null
+            };
+        }
+        return {
+            hasErrorMiFact: true,
+            messageMiFact: 'Error no controlado, hable con el administrador ' + error,
+            razon_social: null,
+            direccion: null
+        };
+    }
+});
+exports.consultaRucMiFact = consultaRucMiFact;
 //# sourceMappingURL=api-mifact.js.map

@@ -16,29 +16,39 @@ const helpers_1 = require("../helpers");
 const obtieneReceptor = (numero_documento, tipo_documento, razon_social, direccion, correo, placa) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio obtieneReceptor");
     try {
-        const [receptor, created] = yield Receptor.findOrCreate({
-            where: { numero_documento: numero_documento },
-            defaults: {
+        // const [receptor, created] = await Receptor.findOrCreate({
+        //     where: { numero_documento: numero_documento },
+        //     defaults: {
+        //         tipo_documento: tipo_documento,
+        //         razon_social: razon_social,
+        //         direccion: direccion,
+        //         correo: correo,
+        //         placa: placa,
+        //     }
+        //   });
+        const receptor = yield Receptor.findOne({ where: { numero_documento: numero_documento, tipo_documento: tipo_documento } }).then(function (obj) {
+            // update
+            if (obj)
+                return obj.update({
+                    razon_social: razon_social,
+                    direccion: direccion,
+                    correo: correo,
+                    placa: placa,
+                });
+            // insert
+            return Receptor.create({
+                numero_documento: numero_documento,
                 tipo_documento: tipo_documento,
                 razon_social: razon_social,
                 direccion: direccion,
                 correo: correo,
                 placa: placa,
-            }
-            // const [receptor, created] = await Receptor.upsert({
-            //     where: { numero_documento: numero_documento },
-            //     defaults: {
-            //         tipo_documento: tipo_documento,
-            //         razon_social: razon_social,
-            //         direccion: direccion,
-            //         correo: correo,
-            //         placa: placa,
-            //     }
+            });
         });
         (0, helpers_1.log4js)("Fin obtieneReceptor" + receptor);
         return {
             hasErrorReceptor: false,
-            messageReceptor: `Receptor ${created ? "creado" : "actualizado"} correctamente`,
+            messageReceptor: `Receptor obtenido correctamente`,
             receptor: receptor
         };
     }

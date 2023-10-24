@@ -9,6 +9,12 @@ export interface PropsMiFact {
     messageMiFact: string; 
     response: any
 }
+export interface PropsConsultaRucMiFact {
+    hasErrorMiFact: boolean;
+    messageMiFact: string;
+    razon_social: string | null;
+    direccion: string | null;
+}
 
 export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo_comprobante: string, correlativo: string): Promise<PropsMiFact> => {
     log4js( "Inicio createOrderApiMiFact");
@@ -139,4 +145,53 @@ export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo
         }        
     }
     
+}
+
+export const consultaRucMiFact = async (ruc: string): Promise<PropsConsultaRucMiFact> => {
+
+    try {
+        const body = {
+            "TOKEN": `${process.env.CONSULTA_RUC_TOKEN}`,
+            "RUC_RECEPTOR": ruc     
+        }
+
+        const { data } = await posApi.post(`${process.env.CONSULTA_RUC}`, body);
+
+        console.log(data)
+
+        if(data.aCod_MensajeAPP == "0"){
+            return {
+                hasErrorMiFact: false,
+                messageMiFact: "consultaRucMiFact: " + data.aCod_MensajeAPP,
+                razon_social: data.aRazon_Social,
+                direccion: data.aDireccion_Fiscal
+            }
+        }else{
+            log4js( "consultaRucMiFact: "  + data.aCod_MensajeAPP, 'error');
+            return {
+                hasErrorMiFact: true,
+                messageMiFact: "consultaRucMiFact: " + data.aCod_MensajeAPP,
+                razon_social: null,
+                direccion: null
+            }            
+        }  
+        
+    } catch (error: any) {
+        log4js( "consultaRucMiFact: " + error.toString(), 'error');
+        log4js( "Fin createOrderApiMiFact");
+        if ( axios.isAxiosError(error) ) {
+            return {
+                hasErrorMiFact: true,
+                messageMiFact: "createOrderApiMiFact: " + error.response?.data.message,
+                razon_social: null,
+                direccion: null
+            }
+        }
+        return {
+            hasErrorMiFact: true,
+            messageMiFact : 'Error no controlado, hable con el administrador ' + error,
+            razon_social: null,
+            direccion: null
+        }        
+    }
 }

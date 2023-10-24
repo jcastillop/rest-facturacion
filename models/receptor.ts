@@ -5,16 +5,7 @@ import { log4js } from "../helpers";
 export const obtieneReceptor = async (numero_documento: string, tipo_documento: string, razon_social: string, direccion: string, correo: string, placa: string) => {
     log4js( "Inicio obtieneReceptor");
     try {
-        const [receptor, created] = await Receptor.findOrCreate({
-            where: { numero_documento: numero_documento },
-            defaults: {
-                tipo_documento: tipo_documento,
-                razon_social: razon_social,
-                direccion: direccion,
-                correo: correo,
-                placa: placa,
-            }        
-        // const [receptor, created] = await Receptor.upsert({
+        // const [receptor, created] = await Receptor.findOrCreate({
         //     where: { numero_documento: numero_documento },
         //     defaults: {
         //         tipo_documento: tipo_documento,
@@ -23,11 +14,33 @@ export const obtieneReceptor = async (numero_documento: string, tipo_documento: 
         //         correo: correo,
         //         placa: placa,
         //     }
-          });
+
+        //   });
+
+        const receptor = await Receptor.findOne({ where: { numero_documento: numero_documento, tipo_documento: tipo_documento } }).then(function(obj) {
+            // update
+            if(obj)
+                return obj.update({
+                    razon_social: razon_social,
+                    direccion: direccion,
+                    correo: correo,
+                    placa: placa,
+                });
+            // insert
+            return Receptor.create({
+                numero_documento: numero_documento,
+                tipo_documento: tipo_documento,
+                razon_social: razon_social,
+                direccion: direccion,
+                correo: correo,
+                placa: placa,
+            });            
+        })
+
         log4js( "Fin obtieneReceptor" + receptor);
         return {
             hasErrorReceptor: false,
-            messageReceptor: `Receptor ${created? "creado":"actualizado"} correctamente`,
+            messageReceptor: `Receptor obtenido correctamente`,
             receptor: receptor
         };
     } catch (error: any) {

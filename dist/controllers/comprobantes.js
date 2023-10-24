@@ -256,9 +256,8 @@ const createCierreDia = (req, res) => __awaiter(void 0, void 0, void 0, function
 });
 exports.createCierreDia = createCierreDia;
 const listaTurnosPorCerrar = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
     try {
-        const cierre = yield (0, cierreturno_1.obtenerCierreTurno)({ fecha: body.fecha });
+        const cierre = yield (0, cierreturno_1.obtenerCierreTurno)();
         res.json(cierre);
     }
     catch (error) {

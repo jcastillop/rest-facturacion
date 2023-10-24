@@ -285,15 +285,9 @@ exports.generaReporteProductoCombustible = generaReporteProductoCombustible;
 const generaReporteProductoCombustibleTurno = (fecha, turnos, usuarios) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurno");
     const array = turnos.split(',');
-    const arrUsuarios = usuarios.split(',');
     var querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) ';
     var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
     var queryGroup = 'group by t.turno, dec_combustible;';
-    if (arrUsuarios.length > 0) {
-        querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) ';
-        queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
-        queryGroup = 'group by t.turno, dec_combustible;';
-    }
     var prepareQuery = querySelect + queryWhere + queryGroup;
     var data = null;
     try {

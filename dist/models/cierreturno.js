@@ -38,12 +38,16 @@ const cerrarTurno = ({ sessionID, turno, isla, efectivo, tarjeta, yape }) => __a
     };
 });
 exports.cerrarTurno = cerrarTurno;
-const obtenerCierreTurno = ({ fecha }) => __awaiter(void 0, void 0, void 0, function* () {
+const obtenerCierreTurno = () => __awaiter(void 0, void 0, void 0, function* () {
     const data = yield Cierreturno.findAll({
         include: [
             { model: usuario_1.default, required: true }
         ],
-        where: { fecha: fecha, CierrediaId: null }
+        where: { CierrediaId: null },
+        order: [
+            ['fecha', 'DESC'],
+            ['turno', 'ASC'],
+        ]
     });
     return data;
 });

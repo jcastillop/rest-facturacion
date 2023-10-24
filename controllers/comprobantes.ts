@@ -228,10 +228,8 @@ export const createCierreDia = async (req: Request, res: Response) => {
 
 export const listaTurnosPorCerrar = async (req: Request, res: Response) => {
 
-    const { body } = req;
-
     try {
-        const cierre = await obtenerCierreTurno({fecha: body.fecha})
+        const cierre = await obtenerCierreTurno()
 
         res.json(cierre);  
              
