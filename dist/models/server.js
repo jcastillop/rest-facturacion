@@ -20,6 +20,7 @@ const comprobantes_1 = __importDefault(require("../routes/comprobantes"));
 const usuarios_1 = __importDefault(require("../routes/usuarios"));
 const receptores_1 = __importDefault(require("../routes/receptores"));
 const productos_1 = __importDefault(require("../routes/productos"));
+const gastos_1 = __importDefault(require("../routes/gastos"));
 class Server {
     constructor() {
         this.apiPaths = {
@@ -27,7 +28,8 @@ class Server {
             comprobantes: '/api/comprobantes',
             usuarios: '/api/usuarios',
             receptores: '/api/receptores',
-            productos: '/api/productos'
+            productos: '/api/productos',
+            gastos: '/api/gastos'
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '8800';
@@ -61,6 +63,7 @@ class Server {
         this.app.use(this.apiPaths.usuarios, usuarios_1.default);
         this.app.use(this.apiPaths.receptores, receptores_1.default);
         this.app.use(this.apiPaths.productos, productos_1.default);
+        this.app.use(this.apiPaths.gastos, gastos_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {

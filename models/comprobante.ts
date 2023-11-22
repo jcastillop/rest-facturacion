@@ -18,6 +18,7 @@ import { log4js } from "../helpers";
 import Constantes from "../helpers/constantes";
 import { IComprobanteAdmin, IComprobanteAdminItem } from "../interfaces/comprobante";
 import { getTodayDate } from "../helpers/date-values";
+import Gastos from "./gastos";
 
 
 export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number, producto: string, comentario: string, tipo_afectado: string, numeracion_afectado: string, fecha_afectado: string, tarjeta: number = 0, efectivo: number = 0, yape: number = 0, billete: number = 0): Promise<any> => {
@@ -294,21 +295,30 @@ export const generaReporteProductoCombustible = async (fecha: string): Promise<{
 
 export const generaReporteProductoCombustibleTurno = async (fecha: string, turnos: string, usuarios: string): Promise<{ hasError: boolean; message: string; data: any; }> => {
     log4js( "Inicio generaReporteProductoCombustibleTurno");
-
     const array: string[] = turnos.split(',');
 
-    var querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) ';
-    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
-    var queryGroup = 'group by t.turno, dec_combustible;'
+    const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00'
 
-    var prepareQuery = querySelect + queryWhere + queryGroup;
+    var querySelect = 
+        'SELECT t.turno as Turno, dec_combustible as Producto, ' + 
+        'cast(sum(case tipo_comprobante when \'01\' then volumen when \'03\' then volumen else \'0\' end) as decimal(10,3)) as VolumenVenta, '+
+        'cast(sum(case tipo_comprobante when \'50\' then volumen else \'0\' end) as decimal(10,3)) as VolumenDespacho, '+
+        'cast(sum(case tipo_comprobante when \'51\' then volumen else \'0\' end) as decimal(10,3)) as VolumenCalibracion, '+
+        'sum(convert(float,case tipo_comprobante when \'01\' then total_venta when \'03\' then total_venta else \'0\' end)) as TotalVenta, '+
+        'sum(convert(float,case tipo_comprobante when \'50\' then total_venta else \'0\' end)) as TotalDespacho, '+
+        'sum(convert(float,case tipo_comprobante when \'51\' then total_venta else \'0\' end)) as TotalCalibracion ';
+    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id '
+    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
+    var queryGroup = 'group by t.turno, dec_combustible order by t.turno desc;'
 
+    var prepareQuery = querySelect + queryFrom + queryWhere + queryGroup;
+    
     var data = null;
     try {
         await Sqlcn.query(
             prepareQuery, 
             {
-                replacements: { fecha, array },
+                replacements: { fecha, fecha_abastecimiento, array },
                 type: QueryTypes.SELECT
             }).then((results: any)=>{
                 data = results
@@ -326,6 +336,80 @@ export const generaReporteProductoCombustibleTurno = async (fecha: string, turno
         return {
             hasError: true,
             message: "generaReporteProductoCombustibleTurno: " + error.toString(),
+            data: data
+        };
+    }
+}
+
+export const generaReporteDeclaracionMensual = async (month: string, year: string): Promise<{ hasError: boolean; message: string; data: any; }> => {
+    log4js( "Inicio generaReporteDeclaracionMensual");
+    var data = null;
+
+    try {
+        var query = 
+        'select c.tipo_comprobante, r.tipo_documento, r.numero_documento, c.numeracion_comprobante, c.tipo_documento_afectado, c.numeracion_documento_afectado, c.fecha_emision, LEFT(convert(varchar,c.fecha_abastecimiento,108), 8), CAST(c.total_gravadas as decimal(10,2)) as total_gravadas, CAST(c.total_igv as decimal(10,2)) as total_igv, CAST(c.total_venta as decimal(10,2)) as total_venta, c.dec_combustible, c.volumen, c.pistola, c.tiempo_abastecimiento, c.ruc ' + 
+        'from Comprobantes c ' +
+        'inner join Receptores r on c.ReceptorId = r.id ' +
+        'where YEAR(fecha_emision) = :year and MONTH(fecha_emision) = :month and tipo_comprobante in (\'01\',\'03\',\'07\') and c.errors = \'\' ' +
+        'order by c.id desc;';
+
+        await Sqlcn.query(
+            query, 
+            {
+                replacements: { year, month },
+                type: QueryTypes.SELECT
+            }).then((results: any)=>{
+                data = results
+            });
+
+            log4js( "Fin generaReporteDeclaracionMensual ");
+            
+            return {
+                hasError: false,
+                message: "Reporte generado satisfactoriamente",
+                data: data
+            };
+    } catch (error: any) {
+        log4js( "generaReporteDeclaracionMensual: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteDeclaracionMensual: " + error.toString(),
+            data: data
+        };
+    }
+}
+
+export const generaReporteCierreTurno = async (fecha: string): Promise<{ hasError: boolean; message: string; data: any; }> => {
+    log4js( "Inicio generaReporteCierreTurno");
+    var data = null;
+    try {
+        var query = 
+        'SELECT c.turno as Turno, c.isla as Isla, u.nombre as Usuario, RIGHT( CONVERT(DATETIME, c.fecha),8) as Hora, CAST(c.efectivo AS DECIMAL(10,2)) as Efectivo, CAST(c.tarjeta AS DECIMAL(10,2)) as Tarjeta, CAST(c.yape AS DECIMAL(10,2)) as Yape, CAST(c.total AS DECIMAL(10,2)) as Total ' +
+        'FROM Cierreturnos c ' +
+        'INNER JOIN Usuarios u on c.UsuarioId = u.id ' +
+        'where CAST(fecha as DATE) = CAST(:fecha as DATE)';
+
+        await Sqlcn.query(
+            query, 
+            {
+                replacements: { fecha },
+                type: QueryTypes.SELECT
+            }).then((results: any)=>{
+                data = results
+            });
+
+            log4js( "Fin generaReporteCierreTurno ");
+            
+            return {
+                hasError: false,
+                message: "Reporte generado satisfactoriamente",
+                data: data
+            };
+    } catch (error: any) {
+        log4js( "generaReporteCierreTurno: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteCierreTurno: " + error.toString(),
             data: data
         };
     }
@@ -545,6 +629,18 @@ Cierreturno.belongsTo(Usuario, {
 Usuario.belongsTo(Emisor, {
     foreignKey: {
         name:'EmisorId',
+        allowNull: false
+    }
+});
+Gastos.belongsTo(Cierreturno, {
+    foreignKey: {
+        name:'CierreturnoId',
+        allowNull: true
+    }
+});
+Gastos.belongsTo(Usuario, {
+    foreignKey: {
+        name:'UsuarioId',
         allowNull: false
     }
 });

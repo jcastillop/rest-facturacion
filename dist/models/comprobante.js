@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteProductoCombustibleTurno = exports.generaReporteProductoCombustible = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
+exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteCierreTurno = exports.generaReporteDeclaracionMensual = exports.generaReporteProductoCombustibleTurno = exports.generaReporteProductoCombustible = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const numeros_letras_1 = require("../helpers/numeros-letras");
@@ -30,6 +30,7 @@ const emisor_1 = __importDefault(require("./emisor"));
 const helpers_1 = require("../helpers");
 const constantes_1 = __importDefault(require("../helpers/constantes"));
 const date_values_1 = require("../helpers/date-values");
+const gastos_1 = __importDefault(require("./gastos"));
 const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tipo_afectado, numeracion_afectado, fecha_afectado, tarjeta = 0, efectivo = 0, yape = 0, billete = 0) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio nuevoComprobante");
     try {
@@ -285,14 +286,22 @@ exports.generaReporteProductoCombustible = generaReporteProductoCombustible;
 const generaReporteProductoCombustibleTurno = (fecha, turnos, usuarios) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurno");
     const array = turnos.split(',');
-    var querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) ';
-    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
-    var queryGroup = 'group by t.turno, dec_combustible;';
-    var prepareQuery = querySelect + queryWhere + queryGroup;
+    const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00';
+    var querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, ' +
+        'cast(sum(case tipo_comprobante when \'01\' then volumen when \'03\' then volumen else \'0\' end) as decimal(10,3)) as VolumenVenta, ' +
+        'cast(sum(case tipo_comprobante when \'50\' then volumen else \'0\' end) as decimal(10,3)) as VolumenDespacho, ' +
+        'cast(sum(case tipo_comprobante when \'51\' then volumen else \'0\' end) as decimal(10,3)) as VolumenCalibracion, ' +
+        'sum(convert(float,case tipo_comprobante when \'01\' then total_venta when \'03\' then total_venta else \'0\' end)) as TotalVenta, ' +
+        'sum(convert(float,case tipo_comprobante when \'50\' then total_venta else \'0\' end)) as TotalDespacho, ' +
+        'sum(convert(float,case tipo_comprobante when \'51\' then total_venta else \'0\' end)) as TotalCalibracion ';
+    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id ';
+    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
+    var queryGroup = 'group by t.turno, dec_combustible order by t.turno desc;';
+    var prepareQuery = querySelect + queryFrom + queryWhere + queryGroup;
     var data = null;
     try {
         yield config_1.Sqlcn.query(prepareQuery, {
-            replacements: { fecha, array },
+            replacements: { fecha, fecha_abastecimiento, array },
             type: sequelize_1.QueryTypes.SELECT
         }).then((results) => {
             data = results;
@@ -315,6 +324,69 @@ const generaReporteProductoCombustibleTurno = (fecha, turnos, usuarios) => __awa
     }
 });
 exports.generaReporteProductoCombustibleTurno = generaReporteProductoCombustibleTurno;
+const generaReporteDeclaracionMensual = (month, year) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio generaReporteDeclaracionMensual");
+    var data = null;
+    try {
+        var query = 'select c.tipo_comprobante, r.tipo_documento, r.numero_documento, c.numeracion_comprobante, c.tipo_documento_afectado, c.numeracion_documento_afectado, c.fecha_emision, LEFT(convert(varchar,c.fecha_abastecimiento,108), 8), CAST(c.total_gravadas as decimal(10,2)) as total_gravadas, CAST(c.total_igv as decimal(10,2)) as total_igv, CAST(c.total_venta as decimal(10,2)) as total_venta, c.dec_combustible, c.volumen, c.pistola, c.tiempo_abastecimiento, c.ruc ' +
+            'from Comprobantes c ' +
+            'inner join Receptores r on c.ReceptorId = r.id ' +
+            'where YEAR(fecha_emision) = :year and MONTH(fecha_emision) = :month and tipo_comprobante in (\'01\',\'03\',\'07\') and c.errors = \'\' ' +
+            'order by c.id desc;';
+        yield config_1.Sqlcn.query(query, {
+            replacements: { year, month },
+            type: sequelize_1.QueryTypes.SELECT
+        }).then((results) => {
+            data = results;
+        });
+        (0, helpers_1.log4js)("Fin generaReporteDeclaracionMensual ");
+        return {
+            hasError: false,
+            message: "Reporte generado satisfactoriamente",
+            data: data
+        };
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("generaReporteDeclaracionMensual: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteDeclaracionMensual: " + error.toString(),
+            data: data
+        };
+    }
+});
+exports.generaReporteDeclaracionMensual = generaReporteDeclaracionMensual;
+const generaReporteCierreTurno = (fecha) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio generaReporteCierreTurno");
+    var data = null;
+    try {
+        var query = 'SELECT c.turno as Turno, c.isla as Isla, u.nombre as Usuario, RIGHT( CONVERT(DATETIME, c.fecha),8) as Hora, CAST(c.efectivo AS DECIMAL(10,2)) as Efectivo, CAST(c.tarjeta AS DECIMAL(10,2)) as Tarjeta, CAST(c.yape AS DECIMAL(10,2)) as Yape, CAST(c.total AS DECIMAL(10,2)) as Total ' +
+            'FROM Cierreturnos c ' +
+            'INNER JOIN Usuarios u on c.UsuarioId = u.id ' +
+            'where CAST(fecha as DATE) = CAST(:fecha as DATE)';
+        yield config_1.Sqlcn.query(query, {
+            replacements: { fecha },
+            type: sequelize_1.QueryTypes.SELECT
+        }).then((results) => {
+            data = results;
+        });
+        (0, helpers_1.log4js)("Fin generaReporteCierreTurno ");
+        return {
+            hasError: false,
+            message: "Reporte generado satisfactoriamente",
+            data: data
+        };
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("generaReporteCierreTurno: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteCierreTurno: " + error.toString(),
+            data: data
+        };
+    }
+});
+exports.generaReporteCierreTurno = generaReporteCierreTurno;
 const validaComprobanteAbastecimiento = (idAbastecimiento, tipo_comprobante) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio validaComprobanteAbastecimiento");
     if (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) {
@@ -527,6 +599,18 @@ cierreturno_1.default.belongsTo(usuario_1.default, {
 usuario_1.default.belongsTo(emisor_1.default, {
     foreignKey: {
         name: 'EmisorId',
+        allowNull: false
+    }
+});
+gastos_1.default.belongsTo(cierreturno_1.default, {
+    foreignKey: {
+        name: 'CierreturnoId',
+        allowNull: true
+    }
+});
+gastos_1.default.belongsTo(usuario_1.default, {
+    foreignKey: {
+        name: 'UsuarioId',
         allowNull: false
     }
 });

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { cierreTurno, createCierreDia, generaComprobante, listaTurnosPorCerrar, historicoComprobantes, modificaComprobante, historicoCierres, cierreTurnoGalonaje, cierreTurnoTotalProducto, cierreTurnoTotalSoles, generaComprobanteV2, getComprobante } from '../controllers/comprobantes';
-import { rptProducto, rptProductoTurno } from '../controllers/reportes';
+import { rptCierreTurnos, rptDeclaracionMensual, rptProducto, rptProductoTurno } from '../controllers/reportes';
 
 const router = Router();
 
@@ -21,6 +21,10 @@ router.post('/listarturnos',listaTurnosPorCerrar);
 router.post('/reporteproducto',rptProducto);
 
 router.post('/reporteproductoturnos', rptProductoTurno);
+
+router.post('/reportedeclaracionmensual', rptDeclaracionMensual);
+
+router.post('/reportecierres', rptCierreTurnos);
 
 router.get('/cierreturnohistorico',   historicoCierres);
 

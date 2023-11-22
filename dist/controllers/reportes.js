@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rptProductoTurno = exports.rptProducto = void 0;
+exports.rptCierreTurnos = exports.rptDeclaracionMensual = exports.rptProductoTurno = exports.rptProducto = void 0;
 const comprobante_1 = require("../models/comprobante");
 const rptProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fecha } = req.body;
@@ -31,4 +31,24 @@ const rptProductoTurno = (req, res) => __awaiter(void 0, void 0, void 0, functio
     });
 });
 exports.rptProductoTurno = rptProductoTurno;
+const rptDeclaracionMensual = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { month, year } = req.body;
+    const { hasError, message, data } = yield (0, comprobante_1.generaReporteDeclaracionMensual)(month, year);
+    res.json({
+        hasError: hasError,
+        message: message,
+        data: data
+    });
+});
+exports.rptDeclaracionMensual = rptDeclaracionMensual;
+const rptCierreTurnos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { fecha } = req.body;
+    const { hasError, message, data } = yield (0, comprobante_1.generaReporteCierreTurno)(fecha);
+    res.json({
+        hasError: hasError,
+        message: message,
+        data: data
+    });
+});
+exports.rptCierreTurnos = rptCierreTurnos;
 //# sourceMappingURL=reportes.js.map

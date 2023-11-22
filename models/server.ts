@@ -6,6 +6,7 @@ import comprobanteRoutes from '../routes/comprobantes';
 import userRoutes from '../routes/usuarios';
 import receptorRoutes from '../routes/receptores';
 import productoRoutes from '../routes/productos';
+import gastoRoutes from '../routes/gastos';
 
 class Server{
 
@@ -16,7 +17,8 @@ class Server{
         comprobantes: '/api/comprobantes',
         usuarios: '/api/usuarios',
         receptores: '/api/receptores',
-        productos: '/api/productos'
+        productos: '/api/productos',
+        gastos: '/api/gastos'
     }
 
     constructor(){
@@ -53,6 +55,7 @@ class Server{
         this.app.use(this.apiPaths.usuarios, userRoutes);
         this.app.use(this.apiPaths.receptores, receptorRoutes);
         this.app.use(this.apiPaths.productos, productoRoutes);
+        this.app.use(this.apiPaths.gastos, gastoRoutes);
     }
 
     listen(){

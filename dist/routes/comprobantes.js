@@ -13,6 +13,8 @@ router.post('/cerrardia', comprobantes_1.createCierreDia);
 router.post('/listarturnos', comprobantes_1.listaTurnosPorCerrar);
 router.post('/reporteproducto', reportes_1.rptProducto);
 router.post('/reporteproductoturnos', reportes_1.rptProductoTurno);
+router.post('/reportedeclaracionmensual', reportes_1.rptDeclaracionMensual);
+router.post('/reportecierres', reportes_1.rptCierreTurnos);
 router.get('/cierreturnohistorico', comprobantes_1.historicoCierres);
 router.get('/cierreturnogalonaje', comprobantes_1.cierreTurnoGalonaje);
 router.get('/cierreturnototalproducto', comprobantes_1.cierreTurnoTotalProducto);

@@ -19,23 +19,38 @@ const comprobante_1 = require("./comprobante");
 const usuario_1 = __importDefault(require("./usuario"));
 const date_values_1 = require("../helpers/date-values");
 const helpers_1 = require("../helpers");
+const gastos_1 = __importDefault(require("./gastos"));
 const cerrarTurno = ({ sessionID, turno, isla, efectivo, tarjeta, yape }) => __awaiter(void 0, void 0, void 0, function* () {
-    const cierre = Cierreturno.build({
-        UsuarioId: sessionID,
-        total: efectivo + tarjeta + yape,
-        turno: turno,
-        isla: isla,
-        fecha: (0, date_values_1.getTodayDate)(),
-        efectivo: efectivo,
-        tarjeta: tarjeta,
-        yape: yape
-    });
-    yield cierre.save();
-    const respUpdate = yield comprobante_1.Comprobante.update({ CierreturnoId: cierre.id }, { where: { UsuarioId: sessionID, CierreturnoId: null } });
-    return {
-        cierre,
-        cantidad: respUpdate[0]
-    };
+    (0, helpers_1.log4js)("Inicio cerrarTurno");
+    (0, helpers_1.log4js)(`Inicio cerrarTurno: sessionID ${sessionID},  turno ${turno},  isla ${isla},  total ${efectivo + tarjeta + yape}, efectivo ${efectivo},  tarjeta ${tarjeta},  yape ${yape}`);
+    const totalSumado = (Math.round((efectivo + tarjeta + yape) * 100) / 100).toFixed(2);
+    try {
+        const cierre = Cierreturno.build({
+            UsuarioId: sessionID,
+            total: totalSumado,
+            turno: turno,
+            isla: isla,
+            fecha: (0, date_values_1.getTodayDate)(),
+            efectivo: efectivo,
+            tarjeta: tarjeta,
+            yape: yape
+        });
+        (0, helpers_1.log4js)("Procesando cerrarTurno" + cierre);
+        yield cierre.save();
+        const respUpdate = yield comprobante_1.Comprobante.update({ CierreturnoId: cierre.id }, { where: { UsuarioId: sessionID, CierreturnoId: null } });
+        const respGatos = yield gastos_1.default.update({ CierreturnoId: cierre.id }, { where: { UsuarioId: sessionID, CierreturnoId: null } });
+        (0, helpers_1.log4js)("Fin cerrarTurno");
+        return {
+            cierre,
+            cantidad: respUpdate[0]
+        };
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("generaReporteProductoCombustible: " + error.toString(), 'error');
+        return {
+            cantidad: 0
+        };
+    }
 });
 exports.cerrarTurno = cerrarTurno;
 const obtenerCierreTurno = () => __awaiter(void 0, void 0, void 0, function* () {
@@ -55,7 +70,7 @@ exports.obtenerCierreTurno = obtenerCierreTurno;
 const obtieneCierreTurnoGalonaje = (usuario) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio obtieneCierreTurnoGalonaje ");
     var resultado;
-    yield config_1.Sqlcn.query('select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\') then volumen else 0 END) as total, sum(CASE when tipo_comprobante = \'50\' then volumen else 0 END) as despacho, sum(CASE when tipo_comprobante = \'51\' then volumen else 0 END) as calibracion from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', {
+    yield config_1.Sqlcn.query('select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\') then volumen else 0 END) as total_galones, sum(CASE when tipo_comprobante = \'50\' then volumen else 0 END) as despacho_galones, sum(CASE when tipo_comprobante = \'51\' then volumen else 0 END) as calibracion_galones, sum(CASE when tipo_comprobante in (\'01\',\'03\') then CONVERT(float, total_venta) else 0 END) as total_soles, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho_soles, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion_soles from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', {
         replacements: { usuario },
         type: sequelize_1.QueryTypes.SELECT,
         plain: false,
