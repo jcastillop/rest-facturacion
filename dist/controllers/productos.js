@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteProducto = exports.updateProducto = exports.putProducto = exports.getProducto = exports.getProductos = void 0;
+exports.deleteProducto = exports.updateProducto = exports.putProducto = exports.getProducto = exports.getProductosTipo = exports.getProductos = void 0;
 const producto_1 = __importDefault(require("../models/producto"));
 const helpers_1 = require("../helpers");
 const getProductos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -37,6 +37,27 @@ const getProductos = (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 });
 exports.getProductos = getProductos;
+const getProductosTipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    try {
+        const um = (id == 'USER_ROLE') ? 'NIU' : 'GAL';
+        const data = yield producto_1.default.findAndCountAll({
+            where: { medida: um },
+            raw: true
+        });
+        res.json({
+            message: "Consulta getProductosTipo realizada satisfactoriamente",
+            total: data.count,
+            productos: data.rows
+        });
+    }
+    catch (error) {
+        res.status(404).json({
+            msg: `Error no identificado ${error}`
+        });
+    }
+});
+exports.getProductosTipo = getProductosTipo;
 const getProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio getProducto");
     const { id } = req.params;

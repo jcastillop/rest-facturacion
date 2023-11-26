@@ -31,6 +31,32 @@ export const getProductos = async (req: Request, res: Response) => {
     }
 }
 
+export const getProductosTipo = async (req: Request, res: Response) => {
+    
+    const { id } = req.params;
+
+    try {
+
+        const um = (id=='USER_ROLE')?'NIU':'GAL'
+
+        const data: any = await Producto.findAndCountAll({      
+            where: { medida: um },
+            raw:    true
+        });
+
+        res.json({
+            message: "Consulta getProductosTipo realizada satisfactoriamente",
+            total: data.count, 
+            productos: data.rows
+        });
+
+    } catch (error) {
+        res.status(404).json({
+            msg: `Error no identificado ${ error }`
+        });         
+    }
+}
+
 export const getProducto = async (req: Request, res: Response) => {
     log4js( "Inicio getProducto");
     const { id } = req.params;

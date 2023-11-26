@@ -87,7 +87,7 @@ export const obtenerCierreTurno = async(): Promise<any> =>{
 export const obtieneCierreTurnoGalonaje = async( usuario: string ):Promise<any> => {
     log4js( "Inicio obtieneCierreTurnoGalonaje ");
     var resultado
-
+    //cambios
     await Sqlcn.query(
         'select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\') then volumen else 0 END) as total_galones, sum(CASE when tipo_comprobante = \'50\' then volumen else 0 END) as despacho_galones, sum(CASE when tipo_comprobante = \'51\' then volumen else 0 END) as calibracion_galones, sum(CASE when tipo_comprobante in (\'01\',\'03\') then CONVERT(float, total_venta) else 0 END) as total_soles, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho_soles, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion_soles from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', 
         {
