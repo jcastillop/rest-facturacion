@@ -1,4 +1,4 @@
-import { DataTypes, IntegerDataType, QueryTypes, Sequelize } from "sequelize";
+import { DataTypes, IntegerDataType, Op, QueryTypes, Sequelize } from "sequelize";
 import { Sqlcn } from '../database/config';
 import { numbersToLetters } from "../helpers/numeros-letras";
 import Abastecimiento from "./abastecimiento";
@@ -19,6 +19,7 @@ import Constantes from "../helpers/constantes";
 import { IComprobanteAdmin, IComprobanteAdminItem } from "../interfaces/comprobante";
 import { getTodayDate } from "../helpers/date-values";
 import Gastos from "./gastos";
+import Depositos from "./depositos";
 
 
 export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, receptor:any, correlativo: string, placa: string, usuario: number, producto: string, comentario: string, tipo_afectado: string, numeracion_afectado: string, fecha_afectado: string, tarjeta: number = 0, efectivo: number = 0, yape: number = 0, billete: number = 0): Promise<any> => {
@@ -29,7 +30,8 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
         var valor_unitario = (parseFloat(abastecimiento.precioUnitario)/1.18).toFixed(10);
         var igv_unitario =((parseFloat(valor_unitario)*parseFloat(abastecimiento.volTotal))*0.18).toFixed(2);
         var total_gravadas = (parseFloat(valor_unitario) * abastecimiento.volTotal).toFixed(2);
-    
+        const numeracion = correlativo.split("-");
+        const cadena_qr = [process.env.EMISOR_RUC,tipo, numeracion[0], numeracion[1], igv_unitario, abastecimiento.valorTotal, getTodayDate(), 0, 0]
         const comprobante = Comprobante.build({ 
             ReceptorId:                     receptor.id,
             UsuarioId:                      usuario,
@@ -58,6 +60,11 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
             billete:                        billete,
             producto_precio:                abastecimiento.precioUnitario,
             ruc:                            process.env.EMISOR_RUC,
+            cadena_para_codigo_qr:          cadena_qr.join('|'),
+            codigo_hash:                    '',
+            pdf_bytes:                      '',
+            url:                            '',
+            errors:                         '',            
             Items:[{
                 cantidad:           abastecimiento.volTotal,
                 valor_unitario:     valor_unitario,
@@ -122,6 +129,8 @@ export const nuevoComprobanteV2 = async (comprobante: IComprobanteAdmin, correla
                 placa:              null
             })
         })
+        const numeracion = correlativo.split("-");
+        const cadena_qr = [process.env.EMISOR_RUC,comprobante.tipo_comprobante, numeracion[0], numeracion[1], comprobante.total_igv, comprobante.total_venta, getTodayDate(), 0, 0]
 
         const newComprobante = Comprobante.build({ 
             ReceptorId:                     receptor.id,
@@ -132,9 +141,9 @@ export const nuevoComprobanteV2 = async (comprobante: IComprobanteAdmin, correla
             numeracion_documento_afectado:  comprobante.tipo_comprobante == Constantes.TipoComprobante.NotaCredito?comprobante.numeracion_documento_afectado:"",
             fecha_documento_afectado:       comprobante.tipo_comprobante == Constantes.TipoComprobante.NotaCredito?comprobante.fecha_documento_afectado:null,           
             total_gravadas:                 comprobante.gravadas,
-            total_igv:                      comprobante.igv,
-            total_venta:                    comprobante.total,
-            monto_letras:                   numbersToLetters(comprobante.total),
+            total_igv:                      comprobante.total_igv,
+            total_venta:                    comprobante.total_venta,
+            monto_letras:                   numbersToLetters(comprobante.total_venta),
             comentario:                     comprobante.comentario,
             id_abastecimiento:              1,
             pistola:                        comprobante.pistola,
@@ -151,6 +160,11 @@ export const nuevoComprobanteV2 = async (comprobante: IComprobanteAdmin, correla
             billete:                        comprobante.billete,
             producto_precio:                comprobante.producto_precio,
             ruc:                            process.env.EMISOR_RUC,
+            cadena_para_codigo_qr:          cadena_qr.join('|'),
+            codigo_hash:                    '',
+            pdf_bytes:                      '',
+            url:                            '',
+            errors:                         '',
             Items:arr_items
         }, {
             include: [
@@ -166,6 +180,26 @@ export const nuevoComprobanteV2 = async (comprobante: IComprobanteAdmin, correla
                 { where: { numeracion_comprobante: comprobante.numeracion_documento_afectado, tipo_comprobante: comprobante.tipo_documento_afectado } }
             )
         }
+        if(comprobante.tipo_comprobante == Constantes.TipoComprobante.Factura){
+            log4js( `nuevoComprobante: Inicio Actualizando las notas de despacho asociadas a la factura: ${JSON.stringify(comprobante.items)}`);
+            comprobante.items.forEach(({ codigo_producto }:IComprobanteAdminItem) => {
+                if(Number.isInteger(codigo_producto)){
+                    Comprobante.update(
+                        {
+                            estado_nota_despacho:           1,
+                            comprobante_facturado_nota_despacho:  correlativo,
+                            fecha_facturado_nota_despacho:  getTodayDate(),
+                        },
+                        {
+                            where: { id: codigo_producto, tipo_comprobante: Constantes.TipoComprobante.NotaDespacho},
+                            returning: true      
+                        }
+                    );
+                }
+
+            }) 
+            log4js( `nuevoComprobante: Fin Actualizando las notas de despacho asociadas a la factura `);
+        }      
                 
         log4js( `Fin nuevoComprobante: ${JSON.stringify(newComprobante)}`);
         if(newComprobante){
@@ -233,6 +267,7 @@ export const actualizarComprobante = async (props: any, idComprobante: number, c
                 pdf_bytes:              createOrderMiFact? props.pdf_bytes:'',
                 url:                    createOrderMiFact? props.url:'',
                 errors:                 createOrderMiFact? props.errors:'',
+                enviado:                1
             },
             {
                 where: { id: idComprobante },
@@ -564,7 +599,21 @@ export const Comprobante  = Sqlcn.define('Comprobantes', {
     },
     ruc:{
         type: DataTypes.STRING
-    }                              
+    },
+    enviado:{
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    estado_nota_despacho:{
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    comprobante_nota_despacho:{
+        type: DataTypes.STRING
+    },    
+    fecha_facturado_nota_despacho:{
+        type: DataTypes.DATE
+    },    
 }, {
     timestamps: false
 });
@@ -639,6 +688,18 @@ Gastos.belongsTo(Cierreturno, {
     }
 });
 Gastos.belongsTo(Usuario, {
+    foreignKey: {
+        name:'UsuarioId',
+        allowNull: false
+    }
+});
+Depositos.belongsTo(Cierreturno, {
+    foreignKey: {
+        name:'CierreturnoId',
+        allowNull: true
+    }
+});
+Depositos.belongsTo(Usuario, {
     foreignKey: {
         name:'UsuarioId',
         allowNull: false

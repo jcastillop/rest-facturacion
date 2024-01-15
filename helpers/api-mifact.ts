@@ -51,7 +51,7 @@ export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo
                     "COD_TRIB_IGV_ITEM": "1000",
                     "POR_IGV_ITEM": "18",
                     "MNT_IGV_ITEM": parseFloat(item.igv).toFixed(2),
-                    "TXT_DESC_ITEM": item.descripcion,                  
+                    "TXT_DESC_ITEM": `${item.descripcion} | ${comprobante.placa}`,                  
                     "DET_VAL_ADIC01": "",
                     "DET_VAL_ADIC02": "",
                     "DET_VAL_ADIC03": "",

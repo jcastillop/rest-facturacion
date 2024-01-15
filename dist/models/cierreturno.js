@@ -20,6 +20,7 @@ const usuario_1 = __importDefault(require("./usuario"));
 const date_values_1 = require("../helpers/date-values");
 const helpers_1 = require("../helpers");
 const gastos_1 = __importDefault(require("./gastos"));
+const depositos_1 = __importDefault(require("./depositos"));
 const cerrarTurno = ({ sessionID, turno, isla, efectivo, tarjeta, yape }) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio cerrarTurno");
     (0, helpers_1.log4js)(`Inicio cerrarTurno: sessionID ${sessionID},  turno ${turno},  isla ${isla},  total ${efectivo + tarjeta + yape}, efectivo ${efectivo},  tarjeta ${tarjeta},  yape ${yape}`);
@@ -31,14 +32,15 @@ const cerrarTurno = ({ sessionID, turno, isla, efectivo, tarjeta, yape }) => __a
             turno: turno,
             isla: isla,
             fecha: (0, date_values_1.getTodayDate)(),
-            efectivo: efectivo,
-            tarjeta: tarjeta,
-            yape: yape
+            efectivo: efectivo.toFixed(2),
+            tarjeta: tarjeta.toFixed(2),
+            yape: yape.toFixed(2)
         });
         (0, helpers_1.log4js)("Procesando cerrarTurno" + cierre);
         yield cierre.save();
         const respUpdate = yield comprobante_1.Comprobante.update({ CierreturnoId: cierre.id }, { where: { UsuarioId: sessionID, CierreturnoId: null } });
         const respGatos = yield gastos_1.default.update({ CierreturnoId: cierre.id }, { where: { UsuarioId: sessionID, CierreturnoId: null } });
+        const respDepositos = yield depositos_1.default.update({ CierreturnoId: cierre.id }, { where: { UsuarioId: sessionID, CierreturnoId: null } });
         (0, helpers_1.log4js)("Fin cerrarTurno");
         return {
             cierre,
@@ -46,7 +48,7 @@ const cerrarTurno = ({ sessionID, turno, isla, efectivo, tarjeta, yape }) => __a
         };
     }
     catch (error) {
-        (0, helpers_1.log4js)("generaReporteProductoCombustible: " + error.toString(), 'error');
+        (0, helpers_1.log4js)("cerrarTurno: " + error.toString(), 'error');
         return {
             cantidad: 0
         };

@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { cierreTurno, createCierreDia, generaComprobante, listaTurnosPorCerrar, historicoComprobantes, modificaComprobante, historicoCierres, cierreTurnoGalonaje, cierreTurnoTotalProducto, cierreTurnoTotalSoles, generaComprobanteV2, getComprobante } from '../controllers/comprobantes';
+import { cierreTurno, createCierreDia, generaComprobante, listaTurnosPorCerrar, historicoComprobantes, modificaComprobante, historicoCierres, cierreTurnoGalonaje, cierreTurnoTotalProducto, cierreTurnoTotalSoles, generaComprobanteV2, getComprobante, getNotasDespacho } from '../controllers/comprobantes';
 import { rptCierreTurnos, rptDeclaracionMensual, rptProducto, rptProductoTurno } from '../controllers/reportes';
 
 const router = Router();
@@ -35,6 +35,8 @@ router.get('/cierreturnototalproducto',   cierreTurnoTotalProducto);
 router.get('/cierreturnototalsoles',   cierreTurnoTotalSoles);
 
 router.get('/comprobante',            getComprobante);
+
+router.get('/notas/:id',            getNotasDespacho);
 
 
 export default router;

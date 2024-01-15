@@ -184,6 +184,13 @@
   "resolved" "https://registry.npmjs.org/@js-joda/core/-/core-5.5.2.tgz"
   "version" "5.5.2"
 
+"@mongodb-js/saslprep@^1.1.0":
+  "integrity" "sha512-t7c5K033joZZMspnHg/gWPE4kandgc2OxE74aYOtGKfgB9VPuVJPix0H6fhmm2erj5PBJ21mqcx34lpIGtUCsQ=="
+  "resolved" "https://registry.npmjs.org/@mongodb-js/saslprep/-/saslprep-1.1.1.tgz"
+  "version" "1.1.1"
+  dependencies:
+    "sparse-bitfield" "^3.0.3"
+
 "@tootallnate/once@2":
   "integrity" "sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A=="
   "resolved" "https://registry.npmjs.org/@tootallnate/once/-/once-2.0.0.tgz"
@@ -211,6 +218,13 @@
   dependencies:
     "@types/node" "*"
 
+"@types/cron@^2.4.0":
+  "integrity" "sha512-5bBaAkqvSFBX8JMi/xCofNzG5E594TNsApMz68dLd/sQYz/HGQqgcxGHTRjOvD4G3Y+YF1Oo3S7QdCvKt1KAJQ=="
+  "resolved" "https://registry.npmjs.org/@types/cron/-/cron-2.4.0.tgz"
+  "version" "2.4.0"
+  dependencies:
+    "cron" "*"
+
 "@types/debug@^4.1.7":
   "integrity" "sha512-9AonUzyTjXXhEOa0DnqpzZi6VHlqKMswga9EXjpXnnqxwLtdvPPtlO8evrI5D9S6asFRCQ6v+wpiUKbw+vKqyg=="
   "resolved" "https://registry.npmjs.org/@types/debug/-/debug-4.1.7.tgz"
@@ -236,6 +250,11 @@
     "@types/express-serve-static-core" "^4.17.33"
     "@types/qs" "*"
     "@types/serve-static" "*"
+
+"@types/luxon@~3.3.0":
+  "integrity" "sha512-LblarKeI26YsMLxHDIQ0295wPSLjkl98eNwDcVhz3zbo1H+kfnkzR01H5Ai5LBzSeddX0ZJSpGwKEZihGb5diw=="
+  "resolved" "https://registry.npmjs.org/@types/luxon/-/luxon-3.3.6.tgz"
+  "version" "3.3.6"
 
 "@types/mime@*":
   "integrity" "sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA=="
@@ -276,9 +295,9 @@
   "version" "13.7.14"
 
 "@types/webidl-conversions@*":
-  "integrity" "sha512-xTE1E+YF4aWPJJeUzaZI5DRntlkY3+BCVJi0axFptnjGmAoWxkyREIh/XMrfxVLejwQxMCfDXdICo0VLxThrog=="
-  "resolved" "https://registry.npmjs.org/@types/webidl-conversions/-/webidl-conversions-7.0.0.tgz"
-  "version" "7.0.0"
+  "integrity" "sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA=="
+  "resolved" "https://registry.npmjs.org/@types/webidl-conversions/-/webidl-conversions-7.0.3.tgz"
+  "version" "7.0.3"
 
 "@types/whatwg-url@^8.2.1":
   "integrity" "sha512-FtQu10RWgn3D9U4aazdwIE2yzphmTJREDqNdODHrbrZmmMqI0vMheC/6NE/J1Yveaj8H+ela+YwWTjq5PGmuhA=="
@@ -358,9 +377,9 @@
   "version" "1.0.5"
 
 "axios@^1.4.0":
-  "integrity" "sha512-S4XCWMEmzvo64T9GfvQDOXgYRDJ/wsSZc7Jvdgx5u1sd0JwsuPLqb3SYmusag+edF6ziyMensPVqLTSc1PiSEA=="
-  "resolved" "https://registry.npmjs.org/axios/-/axios-1.4.0.tgz"
-  "version" "1.4.0"
+  "integrity" "sha512-7i24Ri4pmDRfJTR7LDBhsOTtcm+9kjX5WiY1X3wIisx6G9So3pfMkEiU7emUBe46oceVImccTEM3k6C5dbVW8A=="
+  "resolved" "https://registry.npmjs.org/axios/-/axios-1.6.2.tgz"
+  "version" "1.6.2"
   dependencies:
     "follow-redirects" "^1.15.0"
     "form-data" "^4.0.0"
@@ -411,10 +430,10 @@
     "balanced-match" "^1.0.0"
     "concat-map" "0.0.1"
 
-"bson@^5.0.1":
-  "integrity" "sha512-y09gBGusgHtinMon/GVbv1J6FrXhnr/+6hqLlSmEFzkz6PodqF6TxjyvfvY3AfO+oG1mgUtbC86xSbOlwvM62Q=="
-  "resolved" "https://registry.npmjs.org/bson/-/bson-5.0.1.tgz"
-  "version" "5.0.1"
+"bson@^5.5.0":
+  "integrity" "sha512-ix0EwukN2EpC0SRWIj/7B5+A6uQMQy6KMREI9qQqvgpkV2frH63T0UDVd1SYedL6dNCmDBYB3QtXi4ISk9YT+g=="
+  "resolved" "https://registry.npmjs.org/bson/-/bson-5.5.1.tgz"
+  "version" "5.5.1"
 
 "buffer-equal-constant-time@1.0.1":
   "integrity" "sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA=="
@@ -535,6 +554,14 @@
   dependencies:
     "object-assign" "^4"
     "vary" "^1"
+
+"cron@*", "cron@^3.1.6":
+  "integrity" "sha512-cvFiQCeVzsA+QPM6fhjBtlKGij7tLLISnTSvFxVdnFGLdz+ZdXN37kNe0i2gefmdD17XuZA6n2uPVwzl4FxW/w=="
+  "resolved" "https://registry.npmjs.org/cron/-/cron-3.1.6.tgz"
+  "version" "3.1.6"
+  dependencies:
+    "@types/luxon" "~3.3.0"
+    "luxon" "~3.4.0"
 
 "date-format@^4.0.14":
   "integrity" "sha512-39BOQLs9ZjKh0/patS9nrT8wc3ioX3/eA/zgbKNopnF2wCqJEoxywwwElATYvRsXdnOxA/OQeQoFZ3rFjVajhg=="
@@ -1274,6 +1301,11 @@
   dependencies:
     "yallist" "^4.0.0"
 
+"luxon@~3.4.0":
+  "integrity" "sha512-zobTr7akeGHnv7eBOXcRgMeCP6+uyYsczwmeRCauvpvaAltgNyTbLH/+VaEAPUeWBT+1GuNmz4wC/6jtQzbbVA=="
+  "resolved" "https://registry.npmjs.org/luxon/-/luxon-3.4.4.tgz"
+  "version" "3.4.4"
+
 "media-typer@0.3.0":
   "integrity" "sha512-dq+qelQ9akHpcOl/gUVRTxVIOkAJ1wR3QAvb4RsVjS8oVoFjDGTc679wJYmUmknUF5HwMLOgb5O+a3KxfWapPQ=="
   "resolved" "https://registry.npmjs.org/media-typer/-/media-typer-0.3.0.tgz"
@@ -1350,25 +1382,25 @@
     "@types/whatwg-url" "^8.2.1"
     "whatwg-url" "^11.0.0"
 
-"mongodb@5.1.0":
-  "integrity" "sha512-qgKb7y+EI90y4weY3z5+lIgm8wmexbonz0GalHkSElQXVKtRuwqXuhXKccyvIjXCJVy9qPV82zsinY0W1FBnJw=="
-  "resolved" "https://registry.npmjs.org/mongodb/-/mongodb-5.1.0.tgz"
-  "version" "5.1.0"
+"mongodb@5.9.1":
+  "integrity" "sha512-NBGA8AfJxGPeB12F73xXwozt8ZpeIPmCUeWRwl9xejozTXFes/3zaep9zhzs1B/nKKsw4P3I4iPfXl3K7s6g+Q=="
+  "resolved" "https://registry.npmjs.org/mongodb/-/mongodb-5.9.1.tgz"
+  "version" "5.9.1"
   dependencies:
-    "bson" "^5.0.1"
+    "bson" "^5.5.0"
     "mongodb-connection-string-url" "^2.6.0"
     "socks" "^2.7.1"
   optionalDependencies:
-    "saslprep" "^1.0.3"
+    "@mongodb-js/saslprep" "^1.1.0"
 
 "mongoose@^7.0.1":
-  "integrity" "sha512-fxm2bPRG457Hb8RLwN8cMCokK8HNem/7g+qp5SrHC7Pt4Z4jqn1+/3cuc8W7uqehKDWEtpirggI7uw08x2ZIjQ=="
-  "resolved" "https://registry.npmjs.org/mongoose/-/mongoose-7.0.1.tgz"
-  "version" "7.0.1"
+  "integrity" "sha512-xZDNhnpSUJH1r72g42ai4StVoLmcaLD74Gv6vbEqOKKDEphAjMCZxzS5WU8hFUZAogt8eocvPf/1um8jvkkZGQ=="
+  "resolved" "https://registry.npmjs.org/mongoose/-/mongoose-7.6.6.tgz"
+  "version" "7.6.6"
   dependencies:
-    "bson" "^5.0.1"
+    "bson" "^5.5.0"
     "kareem" "2.5.1"
-    "mongodb" "5.1.0"
+    "mongodb" "5.9.1"
     "mpath" "0.9.0"
     "mquery" "5.0.0"
     "ms" "2.1.3"
@@ -1602,13 +1634,6 @@
   "integrity" "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg=="
   "resolved" "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz"
   "version" "2.1.2"
-
-"saslprep@^1.0.3":
-  "integrity" "sha512-/MY/PEMbk2SuY5sScONwhUDsV2p77Znkb/q3nSVstq/yQzYJOH/Azh29p9oJLsl3LnQwSvZDKagDGBsBwSooag=="
-  "resolved" "https://registry.npmjs.org/saslprep/-/saslprep-1.0.3.tgz"
-  "version" "1.0.3"
-  dependencies:
-    "sparse-bitfield" "^3.0.3"
 
 "semver@^5.3.0":
   "integrity" "sha512-cBznnQ9KjJqU67B52RMC65CMarK2600WFnbkcaiwWq3xy/5haFJlshgnpjovMVJ+Hff49d8GEn0b87C5pDQ10g=="

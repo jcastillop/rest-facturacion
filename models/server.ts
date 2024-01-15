@@ -7,6 +7,9 @@ import userRoutes from '../routes/usuarios';
 import receptorRoutes from '../routes/receptores';
 import productoRoutes from '../routes/productos';
 import gastoRoutes from '../routes/gastos';
+import depositoRoutes from '../routes/depositos';
+import { CronJob } from 'cron';
+import { procesarComprobantes } from '../helpers/app-helpers';
 
 class Server{
 
@@ -18,7 +21,8 @@ class Server{
         usuarios: '/api/usuarios',
         receptores: '/api/receptores',
         productos: '/api/productos',
-        gastos: '/api/gastos'
+        gastos: '/api/gastos',
+        depositos: '/api/depositos'
     }
 
     constructor(){
@@ -27,6 +31,7 @@ class Server{
         this.conectarDB();
         this.middlewares();
         this.routes();
+        this.automatismos();
     }
 
     async conectarDB(){
@@ -56,13 +61,31 @@ class Server{
         this.app.use(this.apiPaths.receptores, receptorRoutes);
         this.app.use(this.apiPaths.productos, productoRoutes);
         this.app.use(this.apiPaths.gastos, gastoRoutes);
+        this.app.use(this.apiPaths.depositos, depositoRoutes);
     }
 
     listen(){
         this.app.listen(this.port, ()=>{
-            
             console.log('Servidor ejecutandose en el puerto: ' + this.port + process.env.SQL_CONTR_HOST )
         })
+    }
+
+    automatismos(){
+        console.log('Los envíos asincronos se encuentran ' + (process.env.ENVIOS_ASINCRONOS=='1'? 'ENCENDIDOS':'APAGADOS'))
+        if(process.env.ENVIOS_ASINCRONOS == '1'){
+            const job = new CronJob(
+                '10 * * * * *', // cronTime
+                function () {
+                    console.log("ejecutando cada minuto");
+                    procesarComprobantes()
+                }, // onTick
+                null, // onComplete
+                true, // start
+            );            
+        }
+
+
+
     }
 }
 

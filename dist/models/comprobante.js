@@ -31,6 +31,7 @@ const helpers_1 = require("../helpers");
 const constantes_1 = __importDefault(require("../helpers/constantes"));
 const date_values_1 = require("../helpers/date-values");
 const gastos_1 = __importDefault(require("./gastos"));
+const depositos_1 = __importDefault(require("./depositos"));
 const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tipo_afectado, numeracion_afectado, fecha_afectado, tarjeta = 0, efectivo = 0, yape = 0, billete = 0) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio nuevoComprobante");
     try {
@@ -38,6 +39,8 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
         var valor_unitario = (parseFloat(abastecimiento.precioUnitario) / 1.18).toFixed(10);
         var igv_unitario = ((parseFloat(valor_unitario) * parseFloat(abastecimiento.volTotal)) * 0.18).toFixed(2);
         var total_gravadas = (parseFloat(valor_unitario) * abastecimiento.volTotal).toFixed(2);
+        const numeracion = correlativo.split("-");
+        const cadena_qr = [process.env.EMISOR_RUC, tipo, numeracion[0], numeracion[1], igv_unitario, abastecimiento.valorTotal, (0, date_values_1.getTodayDate)(), 0, 0];
         const comprobante = exports.Comprobante.build({
             ReceptorId: receptor.id,
             UsuarioId: usuario,
@@ -66,6 +69,11 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
             billete: billete,
             producto_precio: abastecimiento.precioUnitario,
             ruc: process.env.EMISOR_RUC,
+            cadena_para_codigo_qr: cadena_qr.join('|'),
+            codigo_hash: '',
+            pdf_bytes: '',
+            url: '',
+            errors: '',
             Items: [{
                     cantidad: abastecimiento.volTotal,
                     valor_unitario: valor_unitario,
@@ -124,6 +132,8 @@ const nuevoComprobanteV2 = (comprobante, correlativo, receptor) => __awaiter(voi
                 placa: null
             });
         });
+        const numeracion = correlativo.split("-");
+        const cadena_qr = [process.env.EMISOR_RUC, comprobante.tipo_comprobante, numeracion[0], numeracion[1], comprobante.total_igv, comprobante.total_venta, (0, date_values_1.getTodayDate)(), 0, 0];
         const newComprobante = exports.Comprobante.build({
             ReceptorId: receptor.id,
             UsuarioId: comprobante.usuarioId,
@@ -133,9 +143,9 @@ const nuevoComprobanteV2 = (comprobante, correlativo, receptor) => __awaiter(voi
             numeracion_documento_afectado: comprobante.tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? comprobante.numeracion_documento_afectado : "",
             fecha_documento_afectado: comprobante.tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? comprobante.fecha_documento_afectado : null,
             total_gravadas: comprobante.gravadas,
-            total_igv: comprobante.igv,
-            total_venta: comprobante.total,
-            monto_letras: (0, numeros_letras_1.numbersToLetters)(comprobante.total),
+            total_igv: comprobante.total_igv,
+            total_venta: comprobante.total_venta,
+            monto_letras: (0, numeros_letras_1.numbersToLetters)(comprobante.total_venta),
             comentario: comprobante.comentario,
             id_abastecimiento: 1,
             pistola: comprobante.pistola,
@@ -152,6 +162,11 @@ const nuevoComprobanteV2 = (comprobante, correlativo, receptor) => __awaiter(voi
             billete: comprobante.billete,
             producto_precio: comprobante.producto_precio,
             ruc: process.env.EMISOR_RUC,
+            cadena_para_codigo_qr: cadena_qr.join('|'),
+            codigo_hash: '',
+            pdf_bytes: '',
+            url: '',
+            errors: '',
             Items: arr_items
         }, {
             include: [
@@ -161,6 +176,22 @@ const nuevoComprobanteV2 = (comprobante, correlativo, receptor) => __awaiter(voi
         yield newComprobante.save();
         if (comprobante.tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) {
             exports.Comprobante.update({ motivo_documento_afectado: 'Comprobante dado de baja' }, { where: { numeracion_comprobante: comprobante.numeracion_documento_afectado, tipo_comprobante: comprobante.tipo_documento_afectado } });
+        }
+        if (comprobante.tipo_comprobante == constantes_1.default.TipoComprobante.Factura) {
+            (0, helpers_1.log4js)(`nuevoComprobante: Inicio Actualizando las notas de despacho asociadas a la factura: ${JSON.stringify(comprobante.items)}`);
+            comprobante.items.forEach(({ codigo_producto }) => {
+                if (Number.isInteger(codigo_producto)) {
+                    exports.Comprobante.update({
+                        estado_nota_despacho: 1,
+                        comprobante_facturado_nota_despacho: correlativo,
+                        fecha_facturado_nota_despacho: (0, date_values_1.getTodayDate)(),
+                    }, {
+                        where: { id: codigo_producto, tipo_comprobante: constantes_1.default.TipoComprobante.NotaDespacho },
+                        returning: true
+                    });
+                }
+            });
+            (0, helpers_1.log4js)(`nuevoComprobante: Fin Actualizando las notas de despacho asociadas a la factura `);
         }
         (0, helpers_1.log4js)(`Fin nuevoComprobante: ${JSON.stringify(newComprobante)}`);
         if (newComprobante) {
@@ -228,6 +259,7 @@ const actualizarComprobante = (props, idComprobante, createOrderMiFact) => __awa
             pdf_bytes: createOrderMiFact ? props.pdf_bytes : '',
             url: createOrderMiFact ? props.url : '',
             errors: createOrderMiFact ? props.errors : '',
+            enviado: 1
         }, {
             where: { id: idComprobante },
             returning: true
@@ -536,7 +568,21 @@ exports.Comprobante = config_1.Sqlcn.define('Comprobantes', {
     },
     ruc: {
         type: sequelize_1.DataTypes.STRING
-    }
+    },
+    enviado: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    estado_nota_despacho: {
+        type: sequelize_1.DataTypes.BOOLEAN,
+        defaultValue: false
+    },
+    comprobante_nota_despacho: {
+        type: sequelize_1.DataTypes.STRING
+    },
+    fecha_facturado_nota_despacho: {
+        type: sequelize_1.DataTypes.DATE
+    },
 }, {
     timestamps: false
 });
@@ -609,6 +655,18 @@ gastos_1.default.belongsTo(cierreturno_1.default, {
     }
 });
 gastos_1.default.belongsTo(usuario_1.default, {
+    foreignKey: {
+        name: 'UsuarioId',
+        allowNull: false
+    }
+});
+depositos_1.default.belongsTo(cierreturno_1.default, {
+    foreignKey: {
+        name: 'CierreturnoId',
+        allowNull: true
+    }
+});
+depositos_1.default.belongsTo(usuario_1.default, {
     foreignKey: {
         name: 'UsuarioId',
         allowNull: false

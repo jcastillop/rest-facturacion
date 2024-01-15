@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getComprobante = exports.cierreTurnoTotalSoles = exports.cierreTurnoTotalProducto = exports.cierreTurnoGalonaje = exports.historicoCierres = exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.modificaComprobante = exports.generaComprobanteV2 = exports.generaComprobante = void 0;
+exports.getNotasDespacho = exports.getComprobante = exports.cierreTurnoTotalSoles = exports.cierreTurnoTotalProducto = exports.cierreTurnoGalonaje = exports.historicoCierres = exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.modificaComprobante = exports.generaComprobanteV2 = exports.generaComprobante = void 0;
 const receptor_1 = __importStar(require("../models/receptor"));
 const abastecimiento_1 = require("../models/abastecimiento");
 const comprobante_1 = require("../models/comprobante");
@@ -74,30 +74,40 @@ const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, functi
             res.json({ hasError: true, respuesta: messageComprobante });
             return;
         }
-        if (bCreateOrderMiFact) {
-            const { hasErrorMiFact, messageMiFact, response } = yield (0, api_mifact_1.createOrderApiMiFact)(comprobante, receptor, body.tipo, correlativo);
-            responseMiFact = response;
-            if (hasErrorMiFact) {
-                res.json({ hasError: true, respuesta: messageMiFact });
-                return;
-            }
-        }
-        const { hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate } = yield (0, comprobante_1.actualizarComprobante)(responseMiFact, comprobante.id, bCreateOrderMiFact);
-        if (hasErrorActualizaComprobante) {
-            res.json({ hasError: true, respuesta: messageActualizaComprobante });
-            return;
-        }
         const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(body.id, body.tipo);
         if (hasErrorActualizaAbastecimiento) {
             res.json({ hasError: true, respuesta: messageActualizaAbastecimiento });
             return;
         }
-        res.json({
-            hasError: false,
-            receptor: receptor,
-            comprobante: comprobanteUpdate,
-            respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
-        });
+        if (process.env.ENVIOS_ASINCRONOS == '1') {
+            res.json({
+                hasError: false,
+                receptor: receptor,
+                comprobante: comprobante,
+                respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
+            });
+        }
+        else {
+            if (bCreateOrderMiFact) {
+                const { hasErrorMiFact, messageMiFact, response } = yield (0, api_mifact_1.createOrderApiMiFact)(comprobante, receptor, body.tipo, correlativo);
+                responseMiFact = response;
+                if (hasErrorMiFact) {
+                    res.json({ hasError: true, respuesta: messageMiFact });
+                    return;
+                }
+            }
+            const { hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate } = yield (0, comprobante_1.actualizarComprobante)(responseMiFact, comprobante.id, bCreateOrderMiFact);
+            if (hasErrorActualizaComprobante) {
+                res.json({ hasError: true, respuesta: messageActualizaComprobante });
+                return;
+            }
+            res.json({
+                hasError: false,
+                receptor: receptor,
+                comprobante: comprobanteUpdate,
+                respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
+            });
+        }
     }
 });
 exports.generaComprobante = generaComprobante;
@@ -121,25 +131,35 @@ const generaComprobanteV2 = (req, res) => __awaiter(void 0, void 0, void 0, func
         res.json({ hasError: true, respuesta: messageComprobante });
         return;
     }
-    if (bCreateOrderMiFact) {
-        const { hasErrorMiFact, messageMiFact, response } = yield (0, api_mifact_1.createOrderApiMiFact)(comprobante, receptor, tipo_comprobante, correlativo);
-        responseMiFact = response;
-        if (hasErrorMiFact) {
-            res.json({ hasError: true, respuesta: messageMiFact });
+    if (process.env.ENVIOS_ASINCRONOS == '1') {
+        res.json({
+            hasError: false,
+            receptor: receptor,
+            comprobante: comprobante,
+            respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
+        });
+    }
+    else {
+        if (bCreateOrderMiFact) {
+            const { hasErrorMiFact, messageMiFact, response } = yield (0, api_mifact_1.createOrderApiMiFact)(comprobante, receptor, tipo_comprobante, correlativo);
+            responseMiFact = response;
+            if (hasErrorMiFact) {
+                res.json({ hasError: true, respuesta: messageMiFact });
+                return;
+            }
+        }
+        const { hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate } = yield (0, comprobante_1.actualizarComprobante)(responseMiFact, comprobante.id, bCreateOrderMiFact);
+        if (hasErrorActualizaComprobante) {
+            res.json({ hasError: true, respuesta: messageActualizaComprobante });
             return;
         }
+        res.json({
+            hasError: false,
+            receptor: receptor,
+            comprobante: comprobanteUpdate,
+            respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
+        });
     }
-    const { hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate } = yield (0, comprobante_1.actualizarComprobante)(responseMiFact, comprobante.id, bCreateOrderMiFact);
-    if (hasErrorActualizaComprobante) {
-        res.json({ hasError: true, respuesta: messageActualizaComprobante });
-        return;
-    }
-    res.json({
-        hasError: false,
-        receptor: receptor,
-        comprobante: comprobanteUpdate,
-        respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
-    });
 });
 exports.generaComprobanteV2 = generaComprobanteV2;
 const modificaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -312,4 +332,39 @@ const getComprobante = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getComprobante = getComprobante;
+const getNotasDespacho = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id, limite = 15, desde = 0 } = req.params;
+    try {
+        var queryFilters = [];
+        if (id == "0") {
+            queryFilters = [{ estado_nota_despacho: false }, { tipo_comprobante: constantes_1.default.TipoComprobante.NotaDespacho }];
+        }
+        else {
+            queryFilters = [{ estado_nota_despacho: false }, { tipo_comprobante: constantes_1.default.TipoComprobante.NotaDespacho }, { '$Receptore.numero_documento$': id }];
+        }
+        const data = yield comprobante_1.Comprobante.findAndCountAll({
+            include: [
+                {
+                    model: receptor_1.default,
+                    as: 'Receptore'
+                }
+            ],
+            where: { [sequelize_1.Op.and]: queryFilters },
+            offset: Number(desde),
+            limit: Number(limite),
+            raw: true,
+        });
+        res.json({
+            message: "Consulta realizada satisfactoriamente",
+            total: data.count,
+            comprobantes: data.rows
+        });
+    }
+    catch (error) {
+        res.status(404).json({
+            msg: `Error no identificado ${error}`
+        });
+    }
+});
+exports.getNotasDespacho = getNotasDespacho;
 //# sourceMappingURL=comprobantes.js.map

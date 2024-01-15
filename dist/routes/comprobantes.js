@@ -20,5 +20,6 @@ router.get('/cierreturnogalonaje', comprobantes_1.cierreTurnoGalonaje);
 router.get('/cierreturnototalproducto', comprobantes_1.cierreTurnoTotalProducto);
 router.get('/cierreturnototalsoles', comprobantes_1.cierreTurnoTotalSoles);
 router.get('/comprobante', comprobantes_1.getComprobante);
+router.get('/notas/:id', comprobantes_1.getNotasDespacho);
 exports.default = router;
 //# sourceMappingURL=comprobantes.js.map

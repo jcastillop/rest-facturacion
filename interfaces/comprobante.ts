@@ -14,8 +14,8 @@ export interface IComprobanteAdmin {
     fecha_documento_afectado: string;
     motivo_documento_afectado: string;
     gravadas: number;
-    igv: number;
-    total: number;
+    total_igv: number;
+    total_venta: number;
     monto_letras: string;
     cadena_para_codigo_qr: string;
     codigo_hash: string;
@@ -42,6 +42,7 @@ export interface IComprobanteAdmin {
     items: IComprobanteAdminItem[];
 }
 export interface IComprobanteAdminItem {
+    id?: number;
     cantidad: number;
     precio: number;
     valor: number;

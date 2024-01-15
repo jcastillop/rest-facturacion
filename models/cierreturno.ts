@@ -6,6 +6,7 @@ import { getTodayDate } from "../helpers/date-values";
 import { log4js } from "../helpers";
 import { ICierreturno } from "../interfaces/cierreturno";
 import Gastos from "./gastos";
+import Depositos from "./depositos";
 
 interface PropsCerrarTurno{
     cierre?: ICierreturno,
@@ -41,9 +42,9 @@ export const cerrarTurno = async({ sessionID, turno, isla, efectivo, tarjeta, ya
             turno: turno,
             isla: isla,
             fecha: getTodayDate(),
-            efectivo: efectivo,
-            tarjeta: tarjeta,
-            yape: yape
+            efectivo: efectivo.toFixed(2),
+            tarjeta: tarjeta.toFixed(2),
+            yape: yape.toFixed(2)
         });
         log4js( "Procesando cerrarTurno" + cierre);
     
@@ -51,6 +52,7 @@ export const cerrarTurno = async({ sessionID, turno, isla, efectivo, tarjeta, ya
     
         const respUpdate = await Comprobante.update({ CierreturnoId: cierre.id },{where:{UsuarioId: sessionID, CierreturnoId: null}});
         const respGatos = await Gastos.update({ CierreturnoId: cierre.id },{where:{UsuarioId: sessionID, CierreturnoId: null}});
+        const respDepositos = await Depositos.update({ CierreturnoId: cierre.id },{where:{UsuarioId: sessionID, CierreturnoId: null}});
         log4js( "Fin cerrarTurno");
         return {
             cierre,
@@ -58,7 +60,7 @@ export const cerrarTurno = async({ sessionID, turno, isla, efectivo, tarjeta, ya
         }        
 
     } catch (error: any) {
-        log4js( "generaReporteProductoCombustible: " + error.toString(), 'error');
+        log4js( "cerrarTurno: " + error.toString(), 'error');
         return {
             cantidad: 0
         }        

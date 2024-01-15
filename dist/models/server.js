@@ -21,6 +21,9 @@ const usuarios_1 = __importDefault(require("../routes/usuarios"));
 const receptores_1 = __importDefault(require("../routes/receptores"));
 const productos_1 = __importDefault(require("../routes/productos"));
 const gastos_1 = __importDefault(require("../routes/gastos"));
+const depositos_1 = __importDefault(require("../routes/depositos"));
+const cron_1 = require("cron");
+const app_helpers_1 = require("../helpers/app-helpers");
 class Server {
     constructor() {
         this.apiPaths = {
@@ -29,13 +32,15 @@ class Server {
             usuarios: '/api/usuarios',
             receptores: '/api/receptores',
             productos: '/api/productos',
-            gastos: '/api/gastos'
+            gastos: '/api/gastos',
+            depositos: '/api/depositos'
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '8800';
         this.conectarDB();
         this.middlewares();
         this.routes();
+        this.automatismos();
     }
     conectarDB() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -64,11 +69,24 @@ class Server {
         this.app.use(this.apiPaths.receptores, receptores_1.default);
         this.app.use(this.apiPaths.productos, productos_1.default);
         this.app.use(this.apiPaths.gastos, gastos_1.default);
+        this.app.use(this.apiPaths.depositos, depositos_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {
             console.log('Servidor ejecutandose en el puerto: ' + this.port + process.env.SQL_CONTR_HOST);
         });
+    }
+    automatismos() {
+        console.log('Los envíos asincronos se encuentran ' + (process.env.ENVIOS_ASINCRONOS == '1' ? 'ENCENDIDOS' : 'APAGADOS'));
+        if (process.env.ENVIOS_ASINCRONOS == '1') {
+            const job = new cron_1.CronJob('10 * * * * *', // cronTime
+            function () {
+                console.log("ejecutando cada minuto");
+                (0, app_helpers_1.procesarComprobantes)();
+            }, // onTick
+            null, // onComplete
+            true);
+        }
     }
 }
 exports.default = Server;
