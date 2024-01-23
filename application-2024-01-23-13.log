@@ -1,0 +1,151 @@
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Emisores' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Emisores' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Emisores' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Emisores' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Emisores' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Emisores]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Emisores]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Emisores]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Emisores]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Emisores]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Terminales' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Terminales' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Terminales' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Terminales' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Terminales' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Terminales]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Terminales]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Terminales]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Terminales]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Terminales]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Islas' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Islas' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Islas' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Islas' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Islas' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Islas]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Islas]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Islas]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Islas]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Islas]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Pistolas' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Pistolas' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Pistolas' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Pistolas' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Pistolas' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Pistolas]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Pistolas]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Pistolas]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Pistolas]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Pistolas]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Receptores' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Receptores]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Usuarios' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Usuarios]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Cierredias' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Cierredias' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Cierredias' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Cierredias' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Cierredias' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Cierredias]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Cierredias]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Cierredias]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Cierredias]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Cierredias]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Cierreturnos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Cierreturnos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Cierreturnos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Cierreturnos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Cierreturnos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Cierreturnos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Cierreturnos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Cierreturnos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Cierreturnos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Cierreturnos]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Comprobantes' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Comprobantes]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Items' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Items]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Gastos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Gastos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Gastos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Gastos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Gastos]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Gastos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Gastos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Gastos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Gastos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Gastos]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Depositos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Depositos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Depositos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Depositos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Depositos]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Depositos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Depositos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Depositos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Depositos]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Logins' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Depositos]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Logins' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Logins' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Logins' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Logins]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Logins' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Logins]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Logins]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Logins]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Logins]';\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Productos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Productos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Productos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Productos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): SELECT TABLE_NAME, TABLE_SCHEMA FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = N'Productos' AND TABLE_SCHEMA = N'dbo'\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Productos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Productos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Productos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Productos]';\""}
+{"level":"info","message":"\"Executing (default): EXEC sys.sp_helpindex @objname = N'[Productos]';\""}
+{"level":"info","message":"\"Executing (default): SELECT [Islas].[id], [Islas].[nombre], [Islas].[ip], [Islas].[cantidad], [Islas].[estado], [Islas].[TerminalId], [Pistolas].[id] AS [Pistolas.id], [Pistolas].[codigo] AS [Pistolas.codigo], [Pistolas].[nombre] AS [Pistolas.nombre], [Pistolas].[codigo_producto] AS [Pistolas.codigo_producto], [Pistolas].[desc_producto] AS [Pistolas.desc_producto], [Pistolas].[color] AS [Pistolas.color], [Pistolas].[precio_producto] AS [Pistolas.precio_producto], [Pistolas].[estado] AS [Pistolas.estado], [Pistolas].[IslaId] AS [Pistolas.IslaId] FROM [Islas] AS [Islas] LEFT OUTER JOIN [Pistolas] AS [Pistolas] ON [Islas].[id] = [Pistolas].[IslaId] WHERE ([Islas].[ip] = N'127.0.0.1' AND [Islas].[estado] = 1);\""}
+{"level":"info","message":"\"Executing (default): SELECT [id], [codigo], [nombre], [codigo_producto], [desc_producto], [color], [precio_producto], [estado], [IslaId] FROM [Pistolas] AS [Pistolas];\""}
+{"level":"info","message":"\"Executing (default): SELECT [Comprobantes].[id], [Comprobantes].[tipo_comprobante], [Comprobantes].[numeracion_comprobante], [Comprobantes].[fecha_emision], [Comprobantes].[tipo_moneda], [Comprobantes].[tipo_operacion], [Comprobantes].[tipo_nota], [Comprobantes].[tipo_documento_afectado], [Comprobantes].[fecha_documento_afectado], [Comprobantes].[numeracion_documento_afectado], [Comprobantes].[motivo_documento_afectado], [Comprobantes].[total_gravadas], [Comprobantes].[total_igv], [Comprobantes].[total_venta], [Comprobantes].[monto_letras], [Comprobantes].[cadena_para_codigo_qr], [Comprobantes].[codigo_hash], [Comprobantes].[pdf_bytes], [Comprobantes].[url], [Comprobantes].[errors], [Comprobantes].[id_abastecimiento], [Comprobantes].[pistola], [Comprobantes].[codigo_combustible], [Comprobantes].[dec_combustible], [Comprobantes].[volumen], [Comprobantes].[fecha_abastecimiento], [Comprobantes].[tiempo_abastecimiento], [Comprobantes].[volumen_tanque], [Comprobantes].[comentario], [Comprobantes].[pago_tarjeta], [Comprobantes].[pago_efectivo], [Comprobantes].[pago_yape], [Comprobantes].[placa], [Comprobantes].[billete], [Comprobantes].[producto_precio], [Comprobantes].[ruc], [Comprobantes].[enviado], [Comprobantes].[estado_nota_despacho], [Comprobantes].[comprobante_nota_despacho], [Comprobantes].[fecha_facturado_nota_despacho], [Comprobantes].[ReceptorId], [Comprobantes].[UsuarioId], [Comprobantes].[CierreturnoId], [Items].[id] AS [Items.id], [Items].[ComprobanteId] AS [Items.ComprobanteId], [Items].[cantidad] AS [Items.cantidad], [Items].[valor_unitario] AS [Items.valor_unitario], [Items].[precio_unitario] AS [Items.precio_unitario], [Items].[igv] AS [Items.igv], [Items].[descripcion] AS [Items.descripcion], [Items].[codigo_producto] AS [Items.codigo_producto], [Items].[placa] AS [Items.placa], [Items].[medida] AS [Items.medida] FROM [Comprobantes] AS [Comprobantes] LEFT OUTER JOIN [Items] AS [Items] ON [Comprobantes].[id] = [Items].[ComprobanteId] WHERE [Comprobantes].[enviado] = 0 AND [Comprobantes].[tipo_comprobante] IN (N'01', N'03', N'07');\""}
+{"level":"info","message":"\"Executing (default): SELECT [Islas].[id], [Islas].[nombre], [Islas].[ip], [Islas].[cantidad], [Islas].[estado], [Islas].[TerminalId], [Pistolas].[id] AS [Pistolas.id], [Pistolas].[codigo] AS [Pistolas.codigo], [Pistolas].[nombre] AS [Pistolas.nombre], [Pistolas].[codigo_producto] AS [Pistolas.codigo_producto], [Pistolas].[desc_producto] AS [Pistolas.desc_producto], [Pistolas].[color] AS [Pistolas.color], [Pistolas].[precio_producto] AS [Pistolas.precio_producto], [Pistolas].[estado] AS [Pistolas.estado], [Pistolas].[IslaId] AS [Pistolas.IslaId] FROM [Islas] AS [Islas] LEFT OUTER JOIN [Pistolas] AS [Pistolas] ON [Islas].[id] = [Pistolas].[IslaId] WHERE ([Islas].[ip] = N'127.0.0.1' AND [Islas].[estado] = 1);\""}
+{"level":"info","message":"\"Executing (default): SELECT [id], [codigo], [nombre], [codigo_producto], [desc_producto], [color], [precio_producto], [estado], [IslaId] FROM [Pistolas] AS [Pistolas];\""}
+{"level":"info","message":"\"Executing (default): SELECT [Islas].[id], [Islas].[nombre], [Islas].[ip], [Islas].[cantidad], [Islas].[estado], [Islas].[TerminalId], [Pistolas].[id] AS [Pistolas.id], [Pistolas].[codigo] AS [Pistolas.codigo], [Pistolas].[nombre] AS [Pistolas.nombre], [Pistolas].[codigo_producto] AS [Pistolas.codigo_producto], [Pistolas].[desc_producto] AS [Pistolas.desc_producto], [Pistolas].[color] AS [Pistolas.color], [Pistolas].[precio_producto] AS [Pistolas.precio_producto], [Pistolas].[estado] AS [Pistolas.estado], [Pistolas].[IslaId] AS [Pistolas.IslaId] FROM [Islas] AS [Islas] LEFT OUTER JOIN [Pistolas] AS [Pistolas] ON [Islas].[id] = [Pistolas].[IslaId] WHERE ([Islas].[ip] = N'127.0.0.1' AND [Islas].[estado] = 1);\""}
+{"level":"info","message":"\"Executing (default): SELECT [id], [codigo], [nombre], [codigo_producto], [desc_producto], [color], [precio_producto], [estado], [IslaId] FROM [Pistolas] AS [Pistolas];\""}
+{"level":"info","message":"\"Executing (default): SELECT [Islas].[id], [Islas].[nombre], [Islas].[ip], [Islas].[cantidad], [Islas].[estado], [Islas].[TerminalId], [Pistolas].[id] AS [Pistolas.id], [Pistolas].[codigo] AS [Pistolas.codigo], [Pistolas].[nombre] AS [Pistolas.nombre], [Pistolas].[codigo_producto] AS [Pistolas.codigo_producto], [Pistolas].[desc_producto] AS [Pistolas.desc_producto], [Pistolas].[color] AS [Pistolas.color], [Pistolas].[precio_producto] AS [Pistolas.precio_producto], [Pistolas].[estado] AS [Pistolas.estado], [Pistolas].[IslaId] AS [Pistolas.IslaId] FROM [Islas] AS [Islas] LEFT OUTER JOIN [Pistolas] AS [Pistolas] ON [Islas].[id] = [Pistolas].[IslaId] WHERE ([Islas].[ip] = N'127.0.0.1' AND [Islas].[estado] = 1);\""}
+{"level":"info","message":"\"Executing (default): SELECT [id], [codigo], [nombre], [codigo_producto], [desc_producto], [color], [precio_producto], [estado], [IslaId] FROM [Pistolas] AS [Pistolas];\""}
+{"level":"info","message":"\"Executing (default): SELECT [Islas].[id], [Islas].[nombre], [Islas].[ip], [Islas].[cantidad], [Islas].[estado], [Islas].[TerminalId], [Pistolas].[id] AS [Pistolas.id], [Pistolas].[codigo] AS [Pistolas.codigo], [Pistolas].[nombre] AS [Pistolas.nombre], [Pistolas].[codigo_producto] AS [Pistolas.codigo_producto], [Pistolas].[desc_producto] AS [Pistolas.desc_producto], [Pistolas].[color] AS [Pistolas.color], [Pistolas].[precio_producto] AS [Pistolas.precio_producto], [Pistolas].[estado] AS [Pistolas.estado], [Pistolas].[IslaId] AS [Pistolas.IslaId] FROM [Islas] AS [Islas] LEFT OUTER JOIN [Pistolas] AS [Pistolas] ON [Islas].[id] = [Pistolas].[IslaId] WHERE ([Islas].[ip] = N'127.0.0.1' AND [Islas].[estado] = 1);\""}
+{"level":"info","message":"\"Executing (default): SELECT [id], [codigo], [nombre], [codigo_producto], [desc_producto], [color], [precio_producto], [estado], [IslaId] FROM [Pistolas] AS [Pistolas];\""}

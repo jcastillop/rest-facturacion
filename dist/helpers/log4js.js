@@ -31,21 +31,45 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.log4js = void 0;
-const log4jsConfigure = __importStar(require("log4js"));
+const winston = __importStar(require("winston"));
+const winston_daily_rotate_file_1 = __importDefault(require("winston-daily-rotate-file"));
 const log4js = (data, logLevel = 'debug') => __awaiter(void 0, void 0, void 0, function* () {
-    log4jsConfigure.configure('./data/config/log4js.json');
-    const logger = log4jsConfigure.getLogger();
-    logger.level = logLevel;
-    switch (logLevel) {
-        case 'error':
-            logger.error(JSON.stringify(data));
-            break;
-        default:
-            logger.debug(JSON.stringify(data));
-            break;
-    }
+    logger.info(JSON.stringify(data));
+    logger.log({
+        level: logLevel,
+        message: JSON.stringify(data)
+    });
+    // log4jsConfigure.configure('./data/config/log4js.json');
+    // const logger = log4jsConfigure.getLogger();
+    // logger.level = logLevel;
+    // switch (logLevel) {
+    //     case 'error' :
+    //         logger.error(JSON.stringify(data));
+    //         break;
+    //     default:
+    //         logger.debug(JSON.stringify(data));
+    //         break;
+    // }
 });
 exports.log4js = log4js;
+const transport = new winston_daily_rotate_file_1.default({
+    filename: 'log/fact-%DATE%.log',
+    datePattern: 'YYYY-MM-DD-HH',
+    zippedArchive: true,
+    maxSize: '20m',
+    maxFiles: '14d'
+});
+transport.on('rotate', function (oldFilename, newFilename) {
+    // do something fun
+});
+const logger = winston.createLogger({
+    transports: [
+        transport
+    ]
+});
 //# sourceMappingURL=log4js.js.map
