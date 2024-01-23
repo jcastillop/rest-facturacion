@@ -23,7 +23,6 @@ const cerrarDia = ({ sessionID, fecha }) => __awaiter(void 0, void 0, void 0, fu
         type: sequelize_1.QueryTypes.SELECT,
         plain: true
     }).then((results) => {
-        console.log(results);
         montoCierre = results.suma;
     });
     const cierre = Cierredia.build({

@@ -99,7 +99,7 @@ export const postUsuarioLogin = async (req: Request, res: Response) => {
     const { user, password, turno, isla, terminal } = req.body;
     
     let remoteAddress = req.ip;
-    //console.log(remoteAddress);
+
     if (ipaddr.isValid(req.ip)) {
       remoteAddress = ipaddr.process(req.ip).toString();
     }
@@ -108,12 +108,8 @@ export const postUsuarioLogin = async (req: Request, res: Response) => {
     today.setHours(today.getHours() - 5);    
 
     try {
-        //console.log(remoteAddress);
-
-        //const isla: any = await Isla.findOne({ where: { ip: remoteAddress }, include: [ { model: Terminal } ]});
-        //console.log(isla);
         const usuario = await nuevoLogin(user, password, terminal, isla, turno, remoteAddress, today)
-        
+       
         log4js( usuario, 'debug');
         if(usuario){
             res.json({usuario});            

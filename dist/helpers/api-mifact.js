@@ -33,10 +33,11 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
         var str_tot_precio_venta = (tot_valor_venta * 1.18).toFixed(2);
         var str_tot_igv = (tot_valor_venta * 0.18).toFixed(2);
         var arr_items = [];
+        const placa = comprobante.placa ? ('| PLACA: ' + comprobante.placa.toUpperCase()) : '';
         comprobante.Items.forEach((item) => {
             arr_items.push({
                 "COD_ITEM": "BCF-RR01",
-                "COD_UNID_ITEM": "NIU",
+                "COD_UNID_ITEM": item.medida ? item.medida : "GLL",
                 "CANT_UNID_ITEM": item.cantidad,
                 "VAL_UNIT_ITEM": item.valor_unitario,
                 "PRC_VTA_UNIT_ITEM": parseFloat(item.precio_unitario).toFixed(2),
@@ -48,7 +49,7 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
                 "COD_TRIB_IGV_ITEM": "1000",
                 "POR_IGV_ITEM": "18",
                 "MNT_IGV_ITEM": parseFloat(item.igv).toFixed(2),
-                "TXT_DESC_ITEM": `${item.descripcion} | ${comprobante.placa}`,
+                "TXT_DESC_ITEM": `${item.descripcion}${placa}`,
                 "DET_VAL_ADIC01": "",
                 "DET_VAL_ADIC02": "",
                 "DET_VAL_ADIC03": "",
@@ -56,9 +57,9 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
             });
         });
         const body = {
-            "TOKEN": "gN8zNRBV+/FVxTLwdaZx0w==",
+            "TOKEN": "gN8zNRBV+/FVxTLwdaZx0w==", // token del emisor, este token gN8zNRBV+/FVxTLwdaZx0w== es de pruebas
             "COD_TIP_NIF_EMIS": "6",
-            "NUM_NIF_EMIS": "20100100100",
+            "NUM_NIF_EMIS": "20100100100", //20100100100            
             // "TOKEN":"tOcEEdPoW/SnZ0lYcWH/eA==", // token del emisor, este token gN8zNRBV+/FVxTLwdaZx0w== es de pruebas
             // "COD_TIP_NIF_EMIS": "6",
             // "NUM_NIF_EMIS": "20609785269",
@@ -149,7 +150,6 @@ const consultaRucMiFact = (ruc) => __awaiter(void 0, void 0, void 0, function* (
             "RUC_RECEPTOR": ruc
         };
         const { data } = yield api_1.posApi.post(`${process.env.CONSULTA_RUC}`, body);
-        console.log(data);
         if (data.aCod_MensajeAPP == "0") {
             return {
                 hasErrorMiFact: false,

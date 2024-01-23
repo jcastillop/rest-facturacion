@@ -118,10 +118,10 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
 });
 exports.nuevoComprobante = nuevoComprobante;
 const nuevoComprobanteV2 = (comprobante, correlativo, receptor) => __awaiter(void 0, void 0, void 0, function* () {
-    (0, helpers_1.log4js)(`Inicio nuevoComprobante(${correlativo}):  ${JSON.stringify(comprobante.toString())}`);
+    (0, helpers_1.log4js)(`Inicio nuevoComprobanteV2(${correlativo}):  ${JSON.stringify(comprobante)}`);
     try {
         var arr_items = [];
-        comprobante.items.forEach(({ cantidad, valor, precio, igv, descripcion, codigo_producto }) => {
+        comprobante.items.forEach(({ cantidad, valor, precio, igv, descripcion, codigo_producto, medida }) => {
             arr_items.push({
                 cantidad: cantidad,
                 valor_unitario: valor,
@@ -129,6 +129,7 @@ const nuevoComprobanteV2 = (comprobante, correlativo, receptor) => __awaiter(voi
                 igv: igv,
                 descripcion: descripcion,
                 codigo_producto: codigo_producto,
+                medida: medida,
                 placa: null
             });
         });
@@ -258,7 +259,7 @@ const actualizarComprobante = (props, idComprobante, createOrderMiFact) => __awa
             codigo_hash: createOrderMiFact ? props.codigo_hash : '',
             pdf_bytes: createOrderMiFact ? props.pdf_bytes : '',
             url: createOrderMiFact ? props.url : '',
-            errors: createOrderMiFact ? props.errors : '',
+            errors: createOrderMiFact ? props.errors.substring(0, 255) : '',
             enviado: 1
         }, {
             where: { id: idComprobante },
@@ -339,7 +340,6 @@ const generaReporteProductoCombustibleTurno = (fecha, turnos, usuarios) => __awa
             data = results;
         });
         (0, helpers_1.log4js)("Fin generaReporteProductoCombustibleTurno ");
-        console.log(data);
         return {
             hasError: false,
             message: "Reporte generado satisfactoriamente",

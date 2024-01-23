@@ -10,7 +10,6 @@ export const validarCampos = (req: Request, res: Response) => {
 
 export const onlyNumbers = (array: string[]): boolean => {
     return array.every(element => {
-        console.log(parseInt(element));
         if(Number.isNaN(parseInt(element))) {return false}
         return typeof parseInt(element) === 'number';
     });

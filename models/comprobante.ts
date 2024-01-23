@@ -115,10 +115,10 @@ export const nuevoComprobante = async (idAbastecimiento: string, tipo:string, re
 }
 
 export const nuevoComprobanteV2 = async (comprobante: IComprobanteAdmin, correlativo: string, receptor: any): Promise<any> => {
-    log4js( `Inicio nuevoComprobante(${correlativo}):  ${JSON.stringify(comprobante.toString())}`);
+    log4js( `Inicio nuevoComprobanteV2(${correlativo}):  ${JSON.stringify(comprobante)}`);
     try {
         var arr_items: any = [] 
-        comprobante.items.forEach(({ cantidad, valor, precio, igv, descripcion, codigo_producto}:IComprobanteAdminItem) => {
+        comprobante.items.forEach(({ cantidad, valor, precio, igv, descripcion, codigo_producto, medida}:IComprobanteAdminItem) => {
             arr_items.push({
                 cantidad:           cantidad,
                 valor_unitario:     valor,
@@ -126,6 +126,7 @@ export const nuevoComprobanteV2 = async (comprobante: IComprobanteAdmin, correla
                 igv:                igv,
                 descripcion:        descripcion,
                 codigo_producto:    codigo_producto,
+                medida:             medida,
                 placa:              null
             })
         })
@@ -266,7 +267,7 @@ export const actualizarComprobante = async (props: any, idComprobante: number, c
                 codigo_hash:            createOrderMiFact? props.codigo_hash:'',
                 pdf_bytes:              createOrderMiFact? props.pdf_bytes:'',
                 url:                    createOrderMiFact? props.url:'',
-                errors:                 createOrderMiFact? props.errors:'',
+                errors:                 createOrderMiFact? props.errors.substring(0, 255):'',
                 enviado:                1
             },
             {
@@ -360,7 +361,6 @@ export const generaReporteProductoCombustibleTurno = async (fecha: string, turno
             });
 
             log4js( "Fin generaReporteProductoCombustibleTurno ");
-            console.log(data);
             return {
                 hasError: false,
                 message: "Reporte generado satisfactoriamente",

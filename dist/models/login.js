@@ -41,7 +41,6 @@ const nuevoLogin = (user, password, terminal, isla, jornada, ip, fecha_registro)
                     inicio_sesion = results.inicio_sesion;
                 });
             }
-            console.log(inicio_sesion);
             const login = Login.build({
                 UsuarioId: usuario.id,
                 terminal: terminal,

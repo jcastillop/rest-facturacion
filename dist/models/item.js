@@ -37,6 +37,9 @@ const Item = config_1.Sqlcn.define('Items', {
     placa: {
         type: sequelize_1.DataTypes.STRING
     },
+    medida: {
+        type: sequelize_1.DataTypes.STRING
+    }
 }, {
     timestamps: false
 });

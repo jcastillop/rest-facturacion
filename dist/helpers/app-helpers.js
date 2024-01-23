@@ -26,7 +26,6 @@ const procesarComprobantes = () => __awaiter(void 0, void 0, void 0, function* (
         where: { enviado: 0, tipo_comprobante: [constantes_1.default.TipoComprobante.Factura, constantes_1.default.TipoComprobante.Boleta, constantes_1.default.TipoComprobante.NotaCredito] }
     });
     pendientes.every((comprobante) => __awaiter(void 0, void 0, void 0, function* () {
-        console.log(comprobante);
         const receptor = yield receptor_1.default.findByPk(comprobante.ReceptorId, { raw: true });
         const { hasErrorMiFact, messageMiFact, response } = yield (0, api_mifact_1.createOrderApiMiFact)(comprobante, receptor, comprobante.tipo_comprobante, comprobante.numeracion_comprobante);
         if (!hasErrorMiFact) {

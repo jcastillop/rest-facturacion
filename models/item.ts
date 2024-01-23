@@ -36,7 +36,10 @@ const Item = Sqlcn.define('Items', {
     },   
     placa:{
         type: DataTypes.STRING
-    },                                                                             
+    },         
+    medida:{
+        type: DataTypes.STRING
+    }
 }, {
     timestamps: false
 });

@@ -22,7 +22,7 @@ exports.ControladorSQL = new sequelize_1.Sequelize(process.env.SQL_CONTR_DB || "
     host: process.env.SQL_CONTR_HOST,
     dialect: 'mssql',
     dialectOptions: {
-        useUTC: false,
+        useUTC: false, // for reading from database
         dateStrings: true,
     },
     // logging: function (sql, queryObject: any) {

@@ -37,7 +37,7 @@ export const getProductosTipo = async (req: Request, res: Response) => {
 
     try {
 
-        const um = (id=='USER_ROLE')?'NIU':'GAL'
+        const um = (id=='USER_ROLE')?'NIU':'GLL'
 
         const data: any = await Producto.findAndCountAll({      
             where: { medida: um },

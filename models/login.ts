@@ -35,8 +35,6 @@ export const nuevoLogin = async (user: string, password:string, terminal: string
                     });                
             }
 
-            console.log(inicio_sesion)
-
             const login = Login.build({
                 UsuarioId: usuario.id,
                 terminal: terminal,

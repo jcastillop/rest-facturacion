@@ -11,7 +11,6 @@ const validarCampos = (req, res) => {
 exports.validarCampos = validarCampos;
 const onlyNumbers = (array) => {
     return array.every(element => {
-        console.log(parseInt(element));
         if (Number.isNaN(parseInt(element))) {
             return false;
         }

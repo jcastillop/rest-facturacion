@@ -40,7 +40,7 @@ exports.getProductos = getProductos;
 const getProductosTipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const um = (id == 'USER_ROLE') ? 'NIU' : 'GAL';
+        const um = (id == 'USER_ROLE') ? 'NIU' : 'GLL';
         const data = yield producto_1.default.findAndCountAll({
             where: { medida: um },
             raw: true

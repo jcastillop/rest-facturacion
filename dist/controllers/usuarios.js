@@ -123,16 +123,12 @@ exports.getValidaIp = getValidaIp;
 const postUsuarioLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { user, password, turno, isla, terminal } = req.body;
     let remoteAddress = req.ip;
-    //console.log(remoteAddress);
     if (ipaddr_js_1.default.isValid(req.ip)) {
         remoteAddress = ipaddr_js_1.default.process(req.ip).toString();
     }
     var today = new Date();
     today.setHours(today.getHours() - 5);
     try {
-        //console.log(remoteAddress);
-        //const isla: any = await Isla.findOne({ where: { ip: remoteAddress }, include: [ { model: Terminal } ]});
-        //console.log(isla);
         const usuario = yield (0, login_1.nuevoLogin)(user, password, terminal, isla, turno, remoteAddress, today);
         (0, helpers_1.log4js)(usuario, 'debug');
         if (usuario) {

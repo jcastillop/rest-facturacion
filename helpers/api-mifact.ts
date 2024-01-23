@@ -35,11 +35,13 @@ export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo
 
         var arr_items: any = [] 
 
+        const placa = comprobante.placa? ('| PLACA: ' + comprobante.placa.toUpperCase()) :''
+
         comprobante.Items.forEach((item:any) => {
             arr_items.push(
                 {
                     "COD_ITEM": "BCF-RR01",
-                    "COD_UNID_ITEM": "NIU",
+                    "COD_UNID_ITEM": item.medida?item.medida:"GLL",
                     "CANT_UNID_ITEM": item.cantidad,
                     "VAL_UNIT_ITEM": item.valor_unitario,
                     "PRC_VTA_UNIT_ITEM": parseFloat(item.precio_unitario).toFixed(2),      
@@ -51,7 +53,7 @@ export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo
                     "COD_TRIB_IGV_ITEM": "1000",
                     "POR_IGV_ITEM": "18",
                     "MNT_IGV_ITEM": parseFloat(item.igv).toFixed(2),
-                    "TXT_DESC_ITEM": `${item.descripcion} | ${comprobante.placa}`,                  
+                    "TXT_DESC_ITEM": `${item.descripcion}${placa}`,
                     "DET_VAL_ADIC01": "",
                     "DET_VAL_ADIC02": "",
                     "DET_VAL_ADIC03": "",
@@ -156,8 +158,6 @@ export const consultaRucMiFact = async (ruc: string): Promise<PropsConsultaRucMi
         }
 
         const { data } = await posApi.post(`${process.env.CONSULTA_RUC}`, body);
-
-        console.log(data)
 
         if(data.aCod_MensajeAPP == "0"){
             return {

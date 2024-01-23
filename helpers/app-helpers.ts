@@ -13,7 +13,6 @@ export const procesarComprobantes = async() => {
         where: { enviado: 0, tipo_comprobante:[Constantes.TipoComprobante.Factura, Constantes.TipoComprobante.Boleta, Constantes.TipoComprobante.NotaCredito] } 
     });
     pendientes.every(async (comprobante: any)=>{
-        console.log(comprobante)
         const receptor = await Receptor.findByPk(comprobante.ReceptorId,{ raw: true });
         const {hasErrorMiFact, messageMiFact, response} = await createOrderApiMiFact(comprobante, receptor, comprobante.tipo_comprobante, comprobante.numeracion_comprobante);
         if(!hasErrorMiFact){

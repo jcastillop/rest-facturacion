@@ -149,7 +149,6 @@ export const getAbastecimiento = async (req: Request, res: Response) => {
             });
         }             
     } catch (error) {
-        console.log(error);
         log4js( error, 'error');
         res.status(404).json({
             msg: `No existe abastecimiento con el123 id ${ id }`

@@ -21,7 +21,6 @@ export const cerrarDia = async({ sessionID, fecha }:ParamsCerrarTurno): Promise<
             type: QueryTypes.SELECT,
             plain: true
         }).then((results: any)=>{
-            console.log(results)
             montoCierre= results.suma
         });
            

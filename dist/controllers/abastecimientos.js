@@ -134,7 +134,6 @@ const getAbastecimiento = (req, res) => __awaiter(void 0, void 0, void 0, functi
         }
     }
     catch (error) {
-        console.log(error);
         (0, helpers_1.log4js)(error, 'error');
         res.status(404).json({
             msg: `No existe abastecimiento con el123 id ${id}`
