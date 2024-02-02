@@ -13,12 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getAbastecimiento = exports.getCountAbastecimientos = exports.getAbastecimientos = void 0;
-const abastecimiento_1 = __importDefault(require("../models/abastecimiento"));
 const sequelize_1 = require("sequelize");
+const abastecimiento_1 = __importDefault(require("../models/abastecimiento"));
 const helpers_1 = require("../helpers");
 const ipaddr_js_1 = __importDefault(require("ipaddr.js"));
 const isla_1 = __importDefault(require("../models/isla"));
 const pistola_1 = __importDefault(require("../models/pistola"));
+const app_helpers_1 = require("../helpers/app-helpers");
 const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let remoteAddress = req.ip;
     let arrCodPistola = [];
@@ -49,6 +50,7 @@ const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, funct
     if (serviceParams.pistola) {
         arrPistolas = serviceParams.pistola.split(',');
     }
+    queryAnd.push({ estado: 0 });
     if (serviceParams.desde) {
         queryAnd.push({ fechaHora: { [sequelize_1.Op.gt]: new Date(serviceParams.desde) } });
     }
@@ -61,35 +63,42 @@ const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, funct
     else {
         queryWhere = { [sequelize_1.Op.and]: queryAnd };
     }
-    queryAnd.push({ estado: 0 });
+    //
     // if(arrPistolas.length > 0 && onlyNumbers(arrPistolas)){
     //     queryWhere = { [Op.and] : queryAnd, pistola: { [Op.in]: arrPistolas } }            
     // }else{
     //     queryWhere = { [Op.and] : queryAnd }
     // }
-    const queryParams = {
+    var fields = [
+        'idAbastecimiento',
+        'registro',
+        'pistola',
+        'codigoCombustible',
+        'valorTotal',
+        'volTotal',
+        'precioUnitario',
+        'tiempo',
+        'fechaHora',
+        'totInicio',
+        'totFinal',
+        'IDoperador',
+        'IDcliente',
+        'volTanque'
+    ];
+    //process.env.EMISOR_DIR,
+    // ${process.env.MODIFY_TIMEZONE!}
+    var time = process.env.AUTOMATIC_BILLING_TIMEOUT.split(' ');
+    if (process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3) {
+        fields.push([(0, sequelize_1.literal)(`DATEADD(hour , ${process.env.MODIFY_TIMEZONE} , getdate())`), 'actual']);
+        fields.push([(0, sequelize_1.literal)(`CASE WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[0]} THEN 3 WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[1]} THEN 2 WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[2]} THEN 1 ELSE 0 END`), 'alertAutomatic']);
+    }
+    const data = yield abastecimiento_1.default.findAndCountAll({
         where: queryWhere,
-        attributes: [
-            'idAbastecimiento',
-            'registro',
-            'pistola',
-            'codigoCombustible',
-            'valorTotal',
-            'volTotal',
-            'precioUnitario',
-            'tiempo',
-            'fechaHora',
-            'totInicio',
-            'totFinal',
-            'IDoperador',
-            'IDcliente',
-            'volTanque',
-        ],
+        attributes: { include: fields },
         offset: Number(serviceParams.offset),
         limit: Number(serviceParams.limit),
         raw: true
-    };
-    const data = yield abastecimiento_1.default.findAndCountAll(queryParams);
+    });
     data.rows.map((abastecimiento) => {
         const pistola = pistolas.filter((value) => value.codigo === abastecimiento.pistola);
         if (pistola) {
@@ -97,6 +106,19 @@ const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, funct
             abastecimiento.styleCombustible = pistola[0].color;
         }
     });
+    if (data.rows[0]) {
+        const abastecimiento = data.rows[0];
+        if (process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3 && abastecimiento.alertAutomatic == 0) {
+            console.log(serviceParams.id);
+            console.log(abastecimiento.idAbastecimiento);
+            (0, app_helpers_1.automatismoGenerarComprobantes)(abastecimiento.idAbastecimiento, Number(serviceParams.id), abastecimiento.descripcionCombustible, abastecimiento.valorTotal);
+        }
+    }
+    //facturacion automatica
+    //que no sean usuarios administradores
+    //validar que no esten logueados dos usurios
+    //evaluar el tiempo de generado que tiene el comprobante
+    //recibir el usuario en el request
     res.json({
         total: data.count,
         abastecimientos: data.rows

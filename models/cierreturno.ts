@@ -91,7 +91,7 @@ export const obtieneCierreTurnoGalonaje = async( usuario: string ):Promise<any> 
     var resultado
     //cambios
     await Sqlcn.query(
-        'select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\') then volumen else 0 END) as total_galones, sum(CASE when tipo_comprobante = \'50\' then volumen else 0 END) as despacho_galones, sum(CASE when tipo_comprobante = \'51\' then volumen else 0 END) as calibracion_galones, sum(CASE when tipo_comprobante in (\'01\',\'03\') then CONVERT(float, total_venta) else 0 END) as total_soles, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho_soles, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion_soles from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', 
+        'select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\',\'52\') then volumen else 0 END) as total_galones, sum(CASE when tipo_comprobante = \'50\' then volumen else 0 END) as despacho_galones, sum(CASE when tipo_comprobante = \'51\' then volumen else 0 END) as calibracion_galones, sum(CASE when tipo_comprobante in (\'01\',\'03\',\'52\') then CONVERT(float, total_venta) else 0 END) as total_soles, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho_soles, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion_soles from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', 
         {
             replacements: { usuario },
             type: QueryTypes.SELECT,
@@ -109,7 +109,7 @@ export const obtieneCierreTurnoTotalProducto = async( usuario: string ):Promise<
     var resultado
 
     await Sqlcn.query(
-        'select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\') then CONVERT(float, total_venta) else 0 END) as total, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', 
+        'select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\',\'52\') then CONVERT(float, total_venta) else 0 END) as total, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', 
         {
             replacements: { usuario },
             type: QueryTypes.SELECT,
@@ -127,7 +127,7 @@ export const obtieneCierreTurnoTotalSoles= async( usuario: string ):Promise<any>
     var resultado
 
     await Sqlcn.query(
-        'select sum(pago_efectivo) as efectivo, sum(pago_tarjeta) as tarjeta, sum(pago_yape) as yape from Comprobantes where CierreturnoId is null and tipo_comprobante in (\'01\',\'03\') and UsuarioId = :usuario ', 
+        'select sum(pago_efectivo) as efectivo, sum(pago_tarjeta) as tarjeta, sum(pago_yape) as yape from Comprobantes where CierreturnoId is null and tipo_comprobante in (\'01\',\'03\',\'52\') and UsuarioId = :usuario ', 
         {
             replacements: { usuario },
             type: QueryTypes.SELECT,

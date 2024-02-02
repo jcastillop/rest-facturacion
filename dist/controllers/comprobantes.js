@@ -220,18 +220,20 @@ const historicoComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, fu
             queryAnd.push({ CierreturnoId: { [sequelize_1.Op.ne]: null } });
         }
         queryWhere = { [sequelize_1.Op.and]: queryAnd };
-        const queryParams = {
+        const data = yield comprobante_1.Comprobante.findAndCountAll({
             include: [
                 { model: receptor_1.default, required: true },
                 { model: cierreturno_1.default, required: false },
                 { model: usuario_1.default, required: true }
             ],
             where: queryWhere,
+            order: [
+                ['id', 'DESC']
+            ],
             offset: Number(comprobanteParams.offset),
             limit: Number(comprobanteParams.limit),
             raw: true
-        };
-        const data = yield comprobante_1.Comprobante.findAndCountAll(queryParams);
+        });
         res.json({
             total: data.count,
             comprobantes: data.rows

@@ -73,7 +73,7 @@ const obtieneCierreTurnoGalonaje = (usuario) => __awaiter(void 0, void 0, void 0
     (0, helpers_1.log4js)("Inicio obtieneCierreTurnoGalonaje ");
     var resultado;
     //cambios
-    yield config_1.Sqlcn.query('select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\') then volumen else 0 END) as total_galones, sum(CASE when tipo_comprobante = \'50\' then volumen else 0 END) as despacho_galones, sum(CASE when tipo_comprobante = \'51\' then volumen else 0 END) as calibracion_galones, sum(CASE when tipo_comprobante in (\'01\',\'03\') then CONVERT(float, total_venta) else 0 END) as total_soles, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho_soles, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion_soles from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', {
+    yield config_1.Sqlcn.query('select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\',\'52\') then volumen else 0 END) as total_galones, sum(CASE when tipo_comprobante = \'50\' then volumen else 0 END) as despacho_galones, sum(CASE when tipo_comprobante = \'51\' then volumen else 0 END) as calibracion_galones, sum(CASE when tipo_comprobante in (\'01\',\'03\',\'52\') then CONVERT(float, total_venta) else 0 END) as total_soles, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho_soles, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion_soles from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', {
         replacements: { usuario },
         type: sequelize_1.QueryTypes.SELECT,
         plain: false,
@@ -88,7 +88,7 @@ exports.obtieneCierreTurnoGalonaje = obtieneCierreTurnoGalonaje;
 const obtieneCierreTurnoTotalProducto = (usuario) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio obtieneCierreTurnoTotalProducto ");
     var resultado;
-    yield config_1.Sqlcn.query('select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\') then CONVERT(float, total_venta) else 0 END) as total, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', {
+    yield config_1.Sqlcn.query('select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\',\'52\') then CONVERT(float, total_venta) else 0 END) as total, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion from Comprobantes where CierreturnoId is null and UsuarioId = :usuario group by dec_combustible;', {
         replacements: { usuario },
         type: sequelize_1.QueryTypes.SELECT,
         plain: false,
@@ -103,7 +103,7 @@ exports.obtieneCierreTurnoTotalProducto = obtieneCierreTurnoTotalProducto;
 const obtieneCierreTurnoTotalSoles = (usuario) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio obtieneCierreTurnoTotalSoles");
     var resultado;
-    yield config_1.Sqlcn.query('select sum(pago_efectivo) as efectivo, sum(pago_tarjeta) as tarjeta, sum(pago_yape) as yape from Comprobantes where CierreturnoId is null and tipo_comprobante in (\'01\',\'03\') and UsuarioId = :usuario ', {
+    yield config_1.Sqlcn.query('select sum(pago_efectivo) as efectivo, sum(pago_tarjeta) as tarjeta, sum(pago_yape) as yape from Comprobantes where CierreturnoId is null and tipo_comprobante in (\'01\',\'03\',\'52\') and UsuarioId = :usuario ', {
         replacements: { usuario },
         type: sequelize_1.QueryTypes.SELECT,
         plain: true,

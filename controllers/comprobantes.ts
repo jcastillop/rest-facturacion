@@ -186,21 +186,20 @@ export const historicoComprobantes = async (req: Request, res: Response) => {
     
         queryWhere = { [Op.and] : queryAnd }
     
-        const queryParams = {
+        const data: any = await Comprobante.findAndCountAll({
             include: [
                 { model: Receptor, required: true },
                 { model: Cierreturno, required: false },
                 { model: Usuario, required: true }
             ],
             where:  queryWhere,
+            order: [
+                ['id', 'DESC']
+            ],            
             offset: Number(comprobanteParams.offset),
             limit:  Number(comprobanteParams.limit),
-            raw:    true
-        }
-    
-        const data: any = await Comprobante.findAndCountAll(
-            queryParams
-        );
+            raw:    true            
+        });
     
         res.json({
             total: data.count, 

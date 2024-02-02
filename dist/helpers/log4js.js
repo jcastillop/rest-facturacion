@@ -37,6 +37,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.log4js = void 0;
 const winston = __importStar(require("winston"));
+const winston_1 = require("winston");
 const winston_daily_rotate_file_1 = __importDefault(require("winston-daily-rotate-file"));
 const log4js = (data, logLevel = 'debug') => __awaiter(void 0, void 0, void 0, function* () {
     logger.info(JSON.stringify(data));
@@ -57,12 +58,15 @@ const log4js = (data, logLevel = 'debug') => __awaiter(void 0, void 0, void 0, f
     // }
 });
 exports.log4js = log4js;
+const timezoned = () => {
+    return new Date().toLocaleString('es-PE', {
+        timeZone: 'America/Lima'
+    });
+};
 const transport = new winston_daily_rotate_file_1.default({
     filename: 'log/fact-%DATE%.log',
     datePattern: 'YYYY-MM-DD-HH',
-    zippedArchive: true,
-    maxSize: '20m',
-    maxFiles: '14d'
+    format: winston_1.format.combine(winston_1.format.timestamp({ format: timezoned }), winston_1.format.prettyPrint()),
 });
 transport.on('rotate', function (oldFilename, newFilename) {
     // do something fun

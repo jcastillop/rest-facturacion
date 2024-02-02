@@ -304,7 +304,7 @@ export const generaReporteProductoCombustible = async (fecha: string): Promise<{
     var data = null;
     try {
         await Sqlcn.query(
-            'SELECT fecha_emision as Fecha, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total  from Comprobantes where fecha_emision = :fecha  and tipo_comprobante in (\'01\',\'03\') group by fecha_emision, dec_combustible;', 
+            'SELECT fecha_emision as Fecha, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total  from Comprobantes where fecha_emision = :fecha  and tipo_comprobante in (\'01\',\'03\',\'52\') group by fecha_emision, dec_combustible;', 
             {
                 replacements: { fecha },
                 type: QueryTypes.SELECT
@@ -337,10 +337,10 @@ export const generaReporteProductoCombustibleTurno = async (fecha: string, turno
 
     var querySelect = 
         'SELECT t.turno as Turno, dec_combustible as Producto, ' + 
-        'cast(sum(case tipo_comprobante when \'01\' then volumen when \'03\' then volumen else \'0\' end) as decimal(10,3)) as VolumenVenta, '+
+        'cast(sum(case tipo_comprobante when \'01\' then volumen when \'03\' then volumen when \'52\' then volumen else \'0\' end) as decimal(10,3)) as VolumenVenta, '+
         'cast(sum(case tipo_comprobante when \'50\' then volumen else \'0\' end) as decimal(10,3)) as VolumenDespacho, '+
         'cast(sum(case tipo_comprobante when \'51\' then volumen else \'0\' end) as decimal(10,3)) as VolumenCalibracion, '+
-        'sum(convert(float,case tipo_comprobante when \'01\' then total_venta when \'03\' then total_venta else \'0\' end)) as TotalVenta, '+
+        'sum(convert(float,case tipo_comprobante when \'01\' then total_venta when \'03\' then total_venta when \'52\' then total_venta else \'0\' end)) as TotalVenta, '+
         'sum(convert(float,case tipo_comprobante when \'50\' then total_venta else \'0\' end)) as TotalDespacho, '+
         'sum(convert(float,case tipo_comprobante when \'51\' then total_venta else \'0\' end)) as TotalCalibracion ';
     var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id '

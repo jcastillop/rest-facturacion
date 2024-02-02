@@ -9,7 +9,7 @@ import productoRoutes from '../routes/productos';
 import gastoRoutes from '../routes/gastos';
 import depositoRoutes from '../routes/depositos';
 import { CronJob } from 'cron';
-import { procesarComprobantes } from '../helpers/app-helpers';
+import { automatismosCambiarComprobantesInternos, procesarComprobantes } from '../helpers/app-helpers';
 
 class Server{
 
@@ -73,19 +73,27 @@ class Server{
     automatismos(){
         console.log('Los envíos asincronos se encuentran ' + (process.env.ENVIOS_ASINCRONOS=='1'? 'ENCENDIDOS':'APAGADOS'))
         if(process.env.ENVIOS_ASINCRONOS == '1'){
+
+
             const job = new CronJob(
-                '10 * * * * *', // cronTime
+                '* * * * *', // cronTime
                 function () {
-                    console.log("ejecutando cada minuto");
                     procesarComprobantes()
                 }, // onTick
                 null, // onComplete
                 true, // start
             );            
         }
-
-
-
+        if(process.env.AUTOMATIC_BILLING == '1'){
+            const job = new CronJob(
+                '* * * * *', // cronTime
+                function () {
+                    automatismosCambiarComprobantesInternos()
+                }, // onTick
+                null, // onComplete
+                true, // start
+            );              
+        }
     }
 }
 

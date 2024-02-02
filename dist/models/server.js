@@ -79,10 +79,17 @@ class Server {
     automatismos() {
         console.log('Los envíos asincronos se encuentran ' + (process.env.ENVIOS_ASINCRONOS == '1' ? 'ENCENDIDOS' : 'APAGADOS'));
         if (process.env.ENVIOS_ASINCRONOS == '1') {
-            const job = new cron_1.CronJob('10 * * * * *', // cronTime
+            const job = new cron_1.CronJob('* * * * *', // cronTime
             function () {
-                console.log("ejecutando cada minuto");
                 (0, app_helpers_1.procesarComprobantes)();
+            }, // onTick
+            null, // onComplete
+            true);
+        }
+        if (process.env.AUTOMATIC_BILLING == '1') {
+            const job = new cron_1.CronJob('* * * * *', // cronTime
+            function () {
+                (0, app_helpers_1.automatismosCambiarComprobantesInternos)();
             }, // onTick
             null, // onComplete
             true);
