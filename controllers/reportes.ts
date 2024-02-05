@@ -1,12 +1,12 @@
 import { Request, Response } from "express";
 
-import { generaReporteProductoCombustible, generaReporteProductoCombustibleTurno, generaReporteDeclaracionMensual, generaReporteCierreTurno } from "../models/comprobante";
+import { generaReporteDiarioRangos, generaReporteProductoCombustibleTurno, generaReporteDeclaracionMensual, generaReporteCierreTurno } from "../models/comprobante";
 
-export const rptProducto = async (req: Request, res: Response) => {
+export const rptDiarioRangos = async (req: Request, res: Response) => {
 
-    const { fecha } = req.body;
+    const { fecha_inicio, fecha_fin } = req.body;
 
-    const { hasError, message, data } = await generaReporteProductoCombustible(fecha);
+    const { hasError, message, data } = await generaReporteDiarioRangos( fecha_inicio, fecha_fin );
 
     res.json({
         hasError: hasError,
@@ -18,15 +18,15 @@ export const rptProducto = async (req: Request, res: Response) => {
 
 export const rptProductoTurno = async (req: Request, res: Response) => {
 
-    const { fecha, turnos, usuarios } = req.body;
+    const { fecha } = req.query;
 
-    const { hasError, message, data } = await generaReporteProductoCombustibleTurno(fecha, turnos, usuarios);
+    const { hasError, message, data } = await generaReporteProductoCombustibleTurno(fecha?.toString()||"");
 
     res.json({
         hasError: hasError,
         message: message,
         data: data
-    });     
+    });       
 
 }
 
@@ -46,9 +46,9 @@ export const rptDeclaracionMensual = async (req: Request, res: Response) => {
 
 export const rptCierreTurnos = async (req: Request, res: Response) => {
 
-    const { fecha } = req.body;
+    const { fecha } = req.query;
 
-    const { hasError, message, data } = await generaReporteCierreTurno(fecha);
+    const { hasError, message, data } = await generaReporteCierreTurno(fecha?.toString()||"");
 
     res.json({
         hasError: hasError,

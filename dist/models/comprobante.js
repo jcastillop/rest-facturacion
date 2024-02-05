@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteCierreTurno = exports.generaReporteDeclaracionMensual = exports.generaReporteProductoCombustibleTurno = exports.generaReporteProductoCombustible = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
+exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteCierreTurno = exports.generaReporteDeclaracionMensual = exports.generaReporteProductoCombustibleTurno = exports.generaReporteDiarioRangos = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const numeros_letras_1 = require("../helpers/numeros-letras");
@@ -289,17 +289,28 @@ const actualizarComprobante = (props, idComprobante, createOrderMiFact) => __awa
     }
 });
 exports.actualizarComprobante = actualizarComprobante;
-const generaReporteProductoCombustible = (fecha) => __awaiter(void 0, void 0, void 0, function* () {
-    (0, helpers_1.log4js)("Inicio generaReporteProductoCombustible");
+const generaReporteDiarioRangos = (fecha_inicio, fecha_fin) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio generaReporteDiarioRangos");
     var data = null;
+    var querySelect = 'SELECT ' +
+        'fecha_emision as Fecha, dec_combustible as Producto, tipo_comprobante as Tipo, numeracion_comprobante as Comprobante, ' +
+        'r.razon_social as Cliente, r.numero_documento as Documento, cast(volumen as decimal(10,3)) as Volumen, ' +
+        'cast(total_venta as decimal(10,2)) as Volumen, cast(total_gravadas as decimal(10,2)) as Gravadas, ' +
+        'cast(total_igv as decimal(10,2)) as IGV, cast(total_venta as decimal(10,2)) as Total, u.nombre as Usuario, ' +
+        'cast(pago_efectivo as decimal(10,2)) as Efectivo, cast(pago_tarjeta as decimal(10,2)) as Tarjeta, ' +
+        'cast(pago_yape as decimal(10,2)) as YapePlin ' +
+        'from Comprobantes c ' +
+        'inner join Usuarios u on c.UsuarioId = u.id ' +
+        'inner join Receptores r on c.ReceptorId = r.id ' +
+        'where fecha_emision >= :fecha_inicio and fecha_emision <= :fecha_fin';
     try {
-        yield config_1.Sqlcn.query('SELECT fecha_emision as Fecha, dec_combustible as Producto, cast(sum(volumen) as decimal(10,3)) as Volumen, sum(convert(float,total_venta)) as Total  from Comprobantes where fecha_emision = :fecha  and tipo_comprobante in (\'01\',\'03\',\'52\') group by fecha_emision, dec_combustible;', {
-            replacements: { fecha },
+        yield config_1.Sqlcn.query(querySelect, {
+            replacements: { fecha_inicio, fecha_fin },
             type: sequelize_1.QueryTypes.SELECT
         }).then((results) => {
             data = results;
         });
-        (0, helpers_1.log4js)("Fin generaReporteProductoCombustible ");
+        (0, helpers_1.log4js)("Fin generaReporteDiarioRangos ");
         return {
             hasError: false,
             message: "Reporte generado satisfactoriamente",
@@ -307,34 +318,33 @@ const generaReporteProductoCombustible = (fecha) => __awaiter(void 0, void 0, vo
         };
     }
     catch (error) {
-        (0, helpers_1.log4js)("generaReporteProductoCombustible: " + error.toString(), 'error');
+        (0, helpers_1.log4js)("generaReporteDiarioRangos: " + error.toString(), 'error');
         return {
             hasError: true,
-            message: "generaReporteProductoCombustible: " + error.toString(),
+            message: "generaReporteDiarioRangos: " + error.toString(),
             data: data
         };
     }
 });
-exports.generaReporteProductoCombustible = generaReporteProductoCombustible;
-const generaReporteProductoCombustibleTurno = (fecha, turnos, usuarios) => __awaiter(void 0, void 0, void 0, function* () {
+exports.generaReporteDiarioRangos = generaReporteDiarioRangos;
+const generaReporteProductoCombustibleTurno = (fecha) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurno");
-    const array = turnos.split(',');
     const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00';
-    var querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, ' +
+    var querySelect = 'SELECT ROW_NUMBER() OVER (ORDER BY t.turno DESC) AS id, t.turno as Turno, dec_combustible as Producto, ' +
         'cast(sum(case tipo_comprobante when \'01\' then volumen when \'03\' then volumen when \'52\' then volumen else \'0\' end) as decimal(10,3)) as VolumenVenta, ' +
         'cast(sum(case tipo_comprobante when \'50\' then volumen else \'0\' end) as decimal(10,3)) as VolumenDespacho, ' +
         'cast(sum(case tipo_comprobante when \'51\' then volumen else \'0\' end) as decimal(10,3)) as VolumenCalibracion, ' +
-        'sum(convert(float,case tipo_comprobante when \'01\' then total_venta when \'03\' then total_venta when \'52\' then total_venta else \'0\' end)) as TotalVenta, ' +
-        'sum(convert(float,case tipo_comprobante when \'50\' then total_venta else \'0\' end)) as TotalDespacho, ' +
-        'sum(convert(float,case tipo_comprobante when \'51\' then total_venta else \'0\' end)) as TotalCalibracion ';
+        'cast(sum(convert(float,case tipo_comprobante when \'01\' then total_venta when \'03\' then total_venta when \'52\' then total_venta else \'0\' end)) as decimal(10,2)) as TotalVenta, ' +
+        'cast(sum(convert(float,case tipo_comprobante when \'50\' then total_venta else \'0\' end)) as decimal(10,2)) as TotalDespacho, ' +
+        'cast(sum(convert(float,case tipo_comprobante when \'51\' then total_venta else \'0\' end)) as decimal(10,2)) as TotalCalibracion ';
     var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id ';
-    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
+    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha))';
     var queryGroup = 'group by t.turno, dec_combustible order by t.turno desc;';
     var prepareQuery = querySelect + queryFrom + queryWhere + queryGroup;
     var data = null;
     try {
         yield config_1.Sqlcn.query(prepareQuery, {
-            replacements: { fecha, fecha_abastecimiento, array },
+            replacements: { fecha, fecha_abastecimiento },
             type: sequelize_1.QueryTypes.SELECT
         }).then((results) => {
             data = results;
@@ -392,7 +402,7 @@ const generaReporteCierreTurno = (fecha) => __awaiter(void 0, void 0, void 0, fu
     (0, helpers_1.log4js)("Inicio generaReporteCierreTurno");
     var data = null;
     try {
-        var query = 'SELECT c.turno as Turno, c.isla as Isla, u.nombre as Usuario, RIGHT( CONVERT(DATETIME, c.fecha),8) as Hora, CAST(c.efectivo AS DECIMAL(10,2)) as Efectivo, CAST(c.tarjeta AS DECIMAL(10,2)) as Tarjeta, CAST(c.yape AS DECIMAL(10,2)) as Yape, CAST(c.total AS DECIMAL(10,2)) as Total ' +
+        var query = 'SELECT c.id as Id, c.turno as Turno, c.isla as Isla, u.nombre as Usuario, RIGHT( CONVERT(DATETIME, c.fecha),8) as Hora, CAST(c.efectivo AS DECIMAL(10,2)) as Efectivo, CAST(c.tarjeta AS DECIMAL(10,2)) as Tarjeta, CAST(c.yape AS DECIMAL(10,2)) as Yape, CAST(c.total AS DECIMAL(10,2)) as Total ' +
             'FROM Cierreturnos c ' +
             'INNER JOIN Usuarios u on c.UsuarioId = u.id ' +
             'where CAST(fecha as DATE) = CAST(:fecha as DATE)';

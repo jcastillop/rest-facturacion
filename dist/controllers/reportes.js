@@ -9,21 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rptCierreTurnos = exports.rptDeclaracionMensual = exports.rptProductoTurno = exports.rptProducto = void 0;
+exports.rptCierreTurnos = exports.rptDeclaracionMensual = exports.rptProductoTurno = exports.rptDiarioRangos = void 0;
 const comprobante_1 = require("../models/comprobante");
-const rptProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fecha } = req.body;
-    const { hasError, message, data } = yield (0, comprobante_1.generaReporteProductoCombustible)(fecha);
+const rptDiarioRangos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { fecha_inicio, fecha_fin } = req.body;
+    const { hasError, message, data } = yield (0, comprobante_1.generaReporteDiarioRangos)(fecha_inicio, fecha_fin);
     res.json({
         hasError: hasError,
         message: message,
         data: data
     });
 });
-exports.rptProducto = rptProducto;
+exports.rptDiarioRangos = rptDiarioRangos;
 const rptProductoTurno = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fecha, turnos, usuarios } = req.body;
-    const { hasError, message, data } = yield (0, comprobante_1.generaReporteProductoCombustibleTurno)(fecha, turnos, usuarios);
+    const { fecha } = req.query;
+    const { hasError, message, data } = yield (0, comprobante_1.generaReporteProductoCombustibleTurno)((fecha === null || fecha === void 0 ? void 0 : fecha.toString()) || "");
     res.json({
         hasError: hasError,
         message: message,
@@ -42,8 +42,8 @@ const rptDeclaracionMensual = (req, res) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.rptDeclaracionMensual = rptDeclaracionMensual;
 const rptCierreTurnos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fecha } = req.body;
-    const { hasError, message, data } = yield (0, comprobante_1.generaReporteCierreTurno)(fecha);
+    const { fecha } = req.query;
+    const { hasError, message, data } = yield (0, comprobante_1.generaReporteCierreTurno)((fecha === null || fecha === void 0 ? void 0 : fecha.toString()) || "");
     res.json({
         hasError: hasError,
         message: message,
