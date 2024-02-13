@@ -32,6 +32,7 @@ const constantes_1 = __importDefault(require("../helpers/constantes"));
 const date_values_1 = require("../helpers/date-values");
 const gastos_1 = __importDefault(require("./gastos"));
 const depositos_1 = __importDefault(require("./depositos"));
+const receptorplaca_1 = __importDefault(require("./receptorplaca"));
 const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tipo_afectado, numeracion_afectado, fecha_afectado, tarjeta = 0, efectivo = 0, yape = 0, billete = 0) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio nuevoComprobante");
     try {
@@ -82,6 +83,8 @@ const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, 
                     descripcion: producto,
                     codigo_producto: abastecimiento.codigoCombustible,
                     placa: placa,
+                    total_unitario: abastecimiento.valorTotal,
+                    medida: 'GLL'
                 }]
         }, {
             include: [
@@ -121,16 +124,17 @@ const nuevoComprobanteV2 = (comprobante, correlativo, receptor) => __awaiter(voi
     (0, helpers_1.log4js)(`Inicio nuevoComprobanteV2(${correlativo}):  ${JSON.stringify(comprobante)}`);
     try {
         var arr_items = [];
-        comprobante.items.forEach(({ cantidad, valor, precio, igv, descripcion, codigo_producto, medida }) => {
+        comprobante.items.forEach(({ cantidad, valor, precio, igv, descripcion, codigo_producto, medida, precio_venta }) => {
             arr_items.push({
-                cantidad: cantidad,
-                valor_unitario: valor,
-                precio_unitario: precio,
-                igv: igv,
-                descripcion: descripcion,
-                codigo_producto: codigo_producto,
-                medida: medida,
-                placa: null
+                cantidad: cantidad.toString(),
+                valor_unitario: valor.toString(),
+                precio_unitario: precio.toString(),
+                igv: igv.toString(),
+                descripcion: descripcion.toString(),
+                codigo_producto: codigo_producto.toString(),
+                medida: medida.toString(),
+                total_unitario: precio_venta.toString(),
+                placa: comprobante.placa.toString()
             });
         });
         const numeracion = correlativo.split("-");
@@ -293,7 +297,7 @@ const generaReporteDiarioRangos = (fecha_inicio, fecha_fin) => __awaiter(void 0,
     (0, helpers_1.log4js)("Inicio generaReporteDiarioRangos");
     var data = null;
     var querySelect = 'SELECT ' +
-        'fecha_emision as Fecha, dec_combustible as Producto, tipo_comprobante as Tipo, numeracion_comprobante as Comprobante, ' +
+        'fecha_emision as Fecha, t.turno as Turno, dec_combustible as Producto, tipo_comprobante as Tipo, numeracion_comprobante as Comprobante, ' +
         'r.razon_social as Cliente, r.numero_documento as Documento, cast(volumen as decimal(10,3)) as Volumen, ' +
         'cast(total_venta as decimal(10,2)) as Volumen, cast(total_gravadas as decimal(10,2)) as Gravadas, ' +
         'cast(total_igv as decimal(10,2)) as IGV, cast(total_venta as decimal(10,2)) as Total, u.nombre as Usuario, ' +
@@ -302,6 +306,7 @@ const generaReporteDiarioRangos = (fecha_inicio, fecha_fin) => __awaiter(void 0,
         'from Comprobantes c ' +
         'inner join Usuarios u on c.UsuarioId = u.id ' +
         'inner join Receptores r on c.ReceptorId = r.id ' +
+        'left join Cierreturnos t on c.CierreturnoId = t.id ' +
         'where fecha_emision >= :fecha_inicio and fecha_emision <= :fecha_fin';
     try {
         yield config_1.Sqlcn.query(querySelect, {
@@ -367,7 +372,7 @@ const generaReporteProductoCombustibleTurno = (fecha) => __awaiter(void 0, void 
 });
 exports.generaReporteProductoCombustibleTurno = generaReporteProductoCombustibleTurno;
 const generaReporteDeclaracionMensual = (month, year) => __awaiter(void 0, void 0, void 0, function* () {
-    (0, helpers_1.log4js)("Inicio generaReporteDeclaracionMensual");
+    (0, helpers_1.log4js)("Inicio generaReporteDeclaracionMensual ");
     var data = null;
     try {
         var query = 'select c.tipo_comprobante, r.tipo_documento, r.numero_documento, c.numeracion_comprobante, c.tipo_documento_afectado, c.numeracion_documento_afectado, c.fecha_emision, LEFT(convert(varchar,c.fecha_abastecimiento,108), 8), CAST(c.total_gravadas as decimal(10,2)) as total_gravadas, CAST(c.total_igv as decimal(10,2)) as total_igv, CAST(c.total_venta as decimal(10,2)) as total_venta, c.dec_combustible, c.volumen, c.pistola, c.tiempo_abastecimiento, c.ruc ' +
@@ -381,7 +386,7 @@ const generaReporteDeclaracionMensual = (month, year) => __awaiter(void 0, void 
         }).then((results) => {
             data = results;
         });
-        (0, helpers_1.log4js)("Fin generaReporteDeclaracionMensual ");
+        (0, helpers_1.log4js)("Fin generaReporteDeclaracionMensual");
         return {
             hasError: false,
             message: "Reporte generado satisfactoriamente",
@@ -679,6 +684,12 @@ depositos_1.default.belongsTo(cierreturno_1.default, {
 depositos_1.default.belongsTo(usuario_1.default, {
     foreignKey: {
         name: 'UsuarioId',
+        allowNull: false
+    }
+});
+receptorplaca_1.default.belongsTo(receptor_1.default, {
+    foreignKey: {
+        name: 'ReceptorId',
         allowNull: false
     }
 });

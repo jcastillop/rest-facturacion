@@ -231,7 +231,7 @@ const historicoComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, fu
                 ['id', 'DESC']
             ],
             offset: Number(comprobanteParams.offset),
-            limit: Number(comprobanteParams.limit),
+            limit: 5000,
             raw: true
         });
         res.json({

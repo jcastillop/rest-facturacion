@@ -197,8 +197,8 @@ export const historicoComprobantes = async (req: Request, res: Response) => {
                 ['id', 'DESC']
             ],            
             offset: Number(comprobanteParams.offset),
-            limit:  Number(comprobanteParams.limit),
-            raw:    true            
+            limit:  5000,
+            raw:    true
         });
     
         res.json({

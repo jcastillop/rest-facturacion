@@ -24,6 +24,10 @@ const Item = Sqlcn.define('Items', {
         type: DataTypes.STRING,
         allowNull: false
     },   
+    total_unitario:{
+        type: DataTypes.STRING,
+        allowNull: false
+    },    
     igv:{
         type: DataTypes.STRING,
         allowNull: false

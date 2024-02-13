@@ -24,6 +24,10 @@ const Item = config_1.Sqlcn.define('Items', {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false
     },
+    total_unitario: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false
+    },
     igv: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false
