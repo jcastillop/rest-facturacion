@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rptCierreTurnos = exports.rptDeclaracionMensual = exports.rptProductoTurno = exports.rptDiarioRangos = void 0;
+exports.rptCierreTurnos = exports.rptDeclaracionMensual = exports.rptProductoTurnoTotalizados = exports.rptProductoTurno = exports.rptDiarioRangos = void 0;
 const comprobante_1 = require("../models/comprobante");
 const rptDiarioRangos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fecha_inicio, fecha_fin } = req.body;
@@ -31,6 +31,16 @@ const rptProductoTurno = (req, res) => __awaiter(void 0, void 0, void 0, functio
     });
 });
 exports.rptProductoTurno = rptProductoTurno;
+const rptProductoTurnoTotalizados = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { fecha, turnos, usuarios } = req.body;
+    const { hasError, message, data } = yield (0, comprobante_1.generaReporteProductoCombustibleTurnoExcel)(fecha, turnos, usuarios);
+    res.json({
+        hasError: hasError,
+        message: message,
+        data: data
+    });
+});
+exports.rptProductoTurnoTotalizados = rptProductoTurnoTotalizados;
 const rptDeclaracionMensual = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { month, year } = req.body;
     const { hasError, message, data } = yield (0, comprobante_1.generaReporteDeclaracionMensual)(month, year);

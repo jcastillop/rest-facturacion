@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteCierreTurno = exports.generaReporteDeclaracionMensual = exports.generaReporteProductoCombustibleTurno = exports.generaReporteDiarioRangos = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
+exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteCierreTurno = exports.generaReporteDeclaracionMensual = exports.generaReporteProductoCombustibleTurnoExcel = exports.generaReporteProductoCombustibleTurno = exports.generaReporteDiarioRangos = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const numeros_letras_1 = require("../helpers/numeros-letras");
@@ -371,6 +371,46 @@ const generaReporteProductoCombustibleTurno = (fecha) => __awaiter(void 0, void 
     }
 });
 exports.generaReporteProductoCombustibleTurno = generaReporteProductoCombustibleTurno;
+const generaReporteProductoCombustibleTurnoExcel = (fecha, turnos, usuarios) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurno");
+    const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00';
+    const array = turnos.split(',');
+    var querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, ' +
+        'cast(sum(case tipo_comprobante when \'01\' then volumen when \'03\' then volumen when \'52\' then volumen else \'0\' end) as decimal(10,3)) as VolumenVenta, ' +
+        'cast(sum(case tipo_comprobante when \'50\' then volumen else \'0\' end) as decimal(10,3)) as VolumenDespacho, ' +
+        'cast(sum(case tipo_comprobante when \'51\' then volumen else \'0\' end) as decimal(10,3)) as VolumenCalibracion, ' +
+        'sum(convert(float,case tipo_comprobante when \'01\' then total_venta when \'03\' then total_venta when \'52\' then total_venta else \'0\' end)) as TotalVenta, ' +
+        'sum(convert(float,case tipo_comprobante when \'50\' then total_venta else \'0\' end)) as TotalDespacho, ' +
+        'sum(convert(float,case tipo_comprobante when \'51\' then total_venta else \'0\' end)) as TotalCalibracion ';
+    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id ';
+    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
+    var queryGroup = 'group by t.turno, dec_combustible order by t.turno desc;';
+    var prepareQuery = querySelect + queryFrom + queryWhere + queryGroup;
+    var data = null;
+    try {
+        yield config_1.Sqlcn.query(prepareQuery, {
+            replacements: { fecha, fecha_abastecimiento, array },
+            type: sequelize_1.QueryTypes.SELECT
+        }).then((results) => {
+            data = results;
+        });
+        (0, helpers_1.log4js)("Fin generaReporteProductoCombustibleTurno ");
+        return {
+            hasError: false,
+            message: "Reporte generado satisfactoriamente",
+            data: data
+        };
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("generaReporteProductoCombustibleTurno: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteProductoCombustibleTurno: " + error.toString(),
+            data: data
+        };
+    }
+});
+exports.generaReporteProductoCombustibleTurnoExcel = generaReporteProductoCombustibleTurnoExcel;
 const generaReporteDeclaracionMensual = (month, year) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio generaReporteDeclaracionMensual ");
     var data = null;

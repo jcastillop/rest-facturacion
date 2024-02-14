@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 
-import { generaReporteDiarioRangos, generaReporteProductoCombustibleTurno, generaReporteDeclaracionMensual, generaReporteCierreTurno } from "../models/comprobante";
+import { generaReporteDiarioRangos, generaReporteProductoCombustibleTurno, generaReporteDeclaracionMensual, generaReporteCierreTurno, generaReporteProductoCombustibleTurnoExcel } from "../models/comprobante";
 
 export const rptDiarioRangos = async (req: Request, res: Response) => {
 
@@ -27,6 +27,19 @@ export const rptProductoTurno = async (req: Request, res: Response) => {
         message: message,
         data: data
     });       
+
+}
+export const rptProductoTurnoTotalizados = async (req: Request, res: Response) => {
+
+    const { fecha, turnos, usuarios } = req.body;
+
+    const { hasError, message, data } = await generaReporteProductoCombustibleTurnoExcel(fecha, turnos, usuarios);
+
+    res.json({
+        hasError: hasError,
+        message: message,
+        data: data
+    });   
 
 }
 

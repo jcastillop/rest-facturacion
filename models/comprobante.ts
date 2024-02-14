@@ -392,6 +392,53 @@ export const generaReporteProductoCombustibleTurno = async (fecha: string): Prom
     }
 }
 
+export const generaReporteProductoCombustibleTurnoExcel = async (fecha: string, turnos: string, usuarios: string): Promise<{ hasError: boolean; message: string; data: any; }> => {
+    log4js("Inicio generaReporteProductoCombustibleTurno");
+
+    const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00'
+    const array: string[] = turnos.split(',');
+
+    var querySelect = 
+        'SELECT t.turno as Turno, dec_combustible as Producto, ' + 
+        'cast(sum(case tipo_comprobante when \'01\' then volumen when \'03\' then volumen when \'52\' then volumen else \'0\' end) as decimal(10,3)) as VolumenVenta, '+
+        'cast(sum(case tipo_comprobante when \'50\' then volumen else \'0\' end) as decimal(10,3)) as VolumenDespacho, '+
+        'cast(sum(case tipo_comprobante when \'51\' then volumen else \'0\' end) as decimal(10,3)) as VolumenCalibracion, '+
+        'sum(convert(float,case tipo_comprobante when \'01\' then total_venta when \'03\' then total_venta when \'52\' then total_venta else \'0\' end)) as TotalVenta, '+
+        'sum(convert(float,case tipo_comprobante when \'50\' then total_venta else \'0\' end)) as TotalDespacho, '+
+        'sum(convert(float,case tipo_comprobante when \'51\' then total_venta else \'0\' end)) as TotalCalibracion ';
+    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id '
+    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
+    var queryGroup = 'group by t.turno, dec_combustible order by t.turno desc;'
+
+    var prepareQuery = querySelect + queryFrom + queryWhere + queryGroup;
+
+    var data = null;
+    try {
+        await Sqlcn.query(
+            prepareQuery,
+            {
+                replacements: { fecha, fecha_abastecimiento, array },
+                type: QueryTypes.SELECT
+            }).then((results: any) => {
+                data = results
+            });
+
+        log4js("Fin generaReporteProductoCombustibleTurno ");
+        return {
+            hasError: false,
+            message: "Reporte generado satisfactoriamente",
+            data: data
+        };
+    } catch (error: any) {
+        log4js("generaReporteProductoCombustibleTurno: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteProductoCombustibleTurno: " + error.toString(),
+            data: data
+        };
+    }
+}
+
 export const generaReporteDeclaracionMensual = async (month: string, year: string): Promise<{ hasError: boolean; message: string; data: any; }> => {
     log4js("Inicio generaReporteDeclaracionMensual ");
     var data = null;
