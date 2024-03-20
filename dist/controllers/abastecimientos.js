@@ -109,8 +109,6 @@ const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, funct
     if (data.rows[0]) {
         const abastecimiento = data.rows[0];
         if (process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3 && abastecimiento.alertAutomatic == 0) {
-            console.log(serviceParams.id);
-            console.log(abastecimiento.idAbastecimiento);
             (0, app_helpers_1.automatismoGenerarComprobantes)(abastecimiento.idAbastecimiento, Number(serviceParams.id), abastecimiento.descripcionCombustible, abastecimiento.valorTotal);
         }
     }

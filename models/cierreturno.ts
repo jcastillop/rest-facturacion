@@ -71,17 +71,31 @@ export const cerrarTurno = async({ sessionID, turno, isla, efectivo, tarjeta, ya
 
 export const obtenerCierreTurno = async(): Promise<any> =>{
 
-    const data: any = await Cierreturno.findAll({ 
-        include: [
-            { model: Usuario, required: true }
-        ],             
-        where: { CierrediaId: null },
-        order: [
-            ['fecha', 'DESC'],
-            ['turno', 'ASC'],
-        ]
-    });
-
+    // const data: any = await Cierreturno.findAll({ 
+    //     include: [
+    //         { model: Usuario, required: true }
+    //     ],             
+    //     where: { CierrediaId: null },
+    //     order: [
+    //         ['fecha', 'DESC'],
+    //         ['turno', 'ASC'],
+    //     ]
+    // });
+    var data
+    await Sqlcn.query(
+        'select u.nombre, t.fecha, t.isla, t.turno, t.total, t.efectivo, t.tarjeta, t.yape, cast(s.total as float) as valido ' +
+        'from Cierreturnos t ' +
+        'inner join Usuarios u on t.UsuarioId = u.id ' +
+        'left join (select CierreturnoId, sum(cast(total_venta as float)) as Total from Comprobantes group by CierreturnoId) s on s.CierreturnoId = t.id ' +
+        'where CierrediaId is null ' +
+        'order by fecha desc, turno asc',
+        {
+            type: QueryTypes.SELECT,
+            plain: false,
+            raw: false
+        }).then((results: any)=>{
+            data= results            
+        })
 
     return data;
 }

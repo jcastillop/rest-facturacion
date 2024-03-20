@@ -38,8 +38,7 @@ const transport: DailyRotateFile = new DailyRotateFile({
     filename: 'log/fact-%DATE%.log',
     datePattern: 'YYYY-MM-DD-HH',
     format:format.combine(
-        format.timestamp({ format: timezoned }),
-        format.prettyPrint()
+        format.timestamp({ format: timezoned })
     ),
 });
 transport.on('rotate', function(oldFilename, newFilename) {

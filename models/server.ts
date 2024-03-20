@@ -9,7 +9,7 @@ import productoRoutes from '../routes/productos';
 import gastoRoutes from '../routes/gastos';
 import depositoRoutes from '../routes/depositos';
 import { CronJob } from 'cron';
-import { automatismosCambiarComprobantesInternos, procesarComprobantes } from '../helpers/app-helpers';
+import { automatismosCambiarComprobantesInternos, automatismosReiniciarConsumoActual, procesarComprobantes } from '../helpers/app-helpers';
 
 class Server{
 
@@ -66,15 +66,13 @@ class Server{
 
     listen(){
         this.app.listen(this.port, ()=>{
-            console.log('Servidor ejecutandose en el puerto: ' + this.port + process.env.SQL_CONTR_HOST )
+            console.log('Servidor ejecutandose en el puertos: ' + this.port + process.env.SQL_CONTR_HOST )
         })
     }
 
     automatismos(){
         console.log('Los envíos asincronos se encuentran ' + (process.env.ENVIOS_ASINCRONOS=='1'? 'ENCENDIDOS':'APAGADOS'))
         if(process.env.ENVIOS_ASINCRONOS == '1'){
-
-
             const job = new CronJob(
                 '* * * * *', // cronTime
                 function () {
@@ -84,6 +82,7 @@ class Server{
                 true, // start
             );            
         }
+        console.log('Los envíos automatismos se encuentran ' + (process.env.AUTOMATIC_BILLING=='1'? 'ENCENDIDOS':'APAGADOS'))
         if(process.env.AUTOMATIC_BILLING == '1'){
             const job = new CronJob(
                 '* * * * *', // cronTime
@@ -92,7 +91,15 @@ class Server{
                 }, // onTick
                 null, // onComplete
                 true, // start
-            );              
+            );  
+            const restartJob = new CronJob(
+                '0 0 1 * *', // cronTime
+                function () {
+                    automatismosReiniciarConsumoActual()
+                }, // onTick
+                null, // onComplete
+                true, // start
+            );                         
         }
     }
 }

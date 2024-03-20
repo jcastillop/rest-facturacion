@@ -73,7 +73,7 @@ class Server {
     }
     listen() {
         this.app.listen(this.port, () => {
-            console.log('Servidor ejecutandose en el puerto: ' + this.port + process.env.SQL_CONTR_HOST);
+            console.log('Servidor ejecutandose en el puertos: ' + this.port + process.env.SQL_CONTR_HOST);
         });
     }
     automatismos() {
@@ -86,10 +86,17 @@ class Server {
             null, // onComplete
             true);
         }
+        console.log('Los envíos automatismos se encuentran ' + (process.env.AUTOMATIC_BILLING == '1' ? 'ENCENDIDOS' : 'APAGADOS'));
         if (process.env.AUTOMATIC_BILLING == '1') {
             const job = new cron_1.CronJob('* * * * *', // cronTime
             function () {
                 (0, app_helpers_1.automatismosCambiarComprobantesInternos)();
+            }, // onTick
+            null, // onComplete
+            true);
+            const restartJob = new cron_1.CronJob('0 0 1 * *', // cronTime
+            function () {
+                (0, app_helpers_1.automatismosReiniciarConsumoActual)();
             }, // onTick
             null, // onComplete
             true);

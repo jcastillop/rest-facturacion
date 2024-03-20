@@ -16,7 +16,6 @@ exports.obtieneCierreTurnoTotalSoles = exports.obtieneCierreTurnoTotalProducto =
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const comprobante_1 = require("./comprobante");
-const usuario_1 = __importDefault(require("./usuario"));
 const date_values_1 = require("../helpers/date-values");
 const helpers_1 = require("../helpers");
 const gastos_1 = __importDefault(require("./gastos"));
@@ -56,15 +55,28 @@ const cerrarTurno = ({ sessionID, turno, isla, efectivo, tarjeta, yape }) => __a
 });
 exports.cerrarTurno = cerrarTurno;
 const obtenerCierreTurno = () => __awaiter(void 0, void 0, void 0, function* () {
-    const data = yield Cierreturno.findAll({
-        include: [
-            { model: usuario_1.default, required: true }
-        ],
-        where: { CierrediaId: null },
-        order: [
-            ['fecha', 'DESC'],
-            ['turno', 'ASC'],
-        ]
+    // const data: any = await Cierreturno.findAll({ 
+    //     include: [
+    //         { model: Usuario, required: true }
+    //     ],             
+    //     where: { CierrediaId: null },
+    //     order: [
+    //         ['fecha', 'DESC'],
+    //         ['turno', 'ASC'],
+    //     ]
+    // });
+    var data;
+    yield config_1.Sqlcn.query('select u.nombre, t.fecha, t.isla, t.turno, t.total, t.efectivo, t.tarjeta, t.yape, cast(s.total as float) as valido ' +
+        'from Cierreturnos t ' +
+        'inner join Usuarios u on t.UsuarioId = u.id ' +
+        'left join (select CierreturnoId, sum(cast(total_venta as float)) as Total from Comprobantes group by CierreturnoId) s on s.CierreturnoId = t.id ' +
+        'where CierrediaId is null ' +
+        'order by fecha desc, turno asc', {
+        type: sequelize_1.QueryTypes.SELECT,
+        plain: false,
+        raw: false
+    }).then((results) => {
+        data = results;
     });
     return data;
 });

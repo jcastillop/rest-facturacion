@@ -19,6 +19,15 @@ const ReceptorPlaca = config_1.Sqlcn.define('ReceptoresPlacas', {
         type: sequelize_1.DataTypes.TINYINT,
         defaultValue: 1
     },
+    ProductoId: {
+        type: sequelize_1.DataTypes.INTEGER,
+    },
+    consumo_promedio: {
+        type: sequelize_1.DataTypes.FLOAT,
+    },
+    consumo_actual: {
+        type: sequelize_1.DataTypes.FLOAT,
+    },
 }, {
     timestamps: false
 });

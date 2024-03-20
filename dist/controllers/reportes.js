@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.rptCierreTurnos = exports.rptDeclaracionMensual = exports.rptProductoTurnoTotalizados = exports.rptProductoTurno = exports.rptDiarioRangos = void 0;
+exports.rptCierreTurnos = exports.rptComprobantes = exports.rptDeclaracionMensual = exports.rptProductoTurnoTotalizados = exports.rptProductoTurno = exports.rptDiarioRangos = void 0;
 const comprobante_1 = require("../models/comprobante");
 const rptDiarioRangos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fecha_inicio, fecha_fin } = req.body;
@@ -33,11 +33,18 @@ const rptProductoTurno = (req, res) => __awaiter(void 0, void 0, void 0, functio
 exports.rptProductoTurno = rptProductoTurno;
 const rptProductoTurnoTotalizados = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fecha, turnos, usuarios } = req.body;
-    const { hasError, message, data } = yield (0, comprobante_1.generaReporteProductoCombustibleTurnoExcel)(fecha, turnos, usuarios);
+    const [combustible_turno, combustible_turno_totalizado] = yield Promise.all([
+        (0, comprobante_1.generaReporteProductoCombustibleTurnoExcel)(fecha, turnos, usuarios),
+        (0, comprobante_1.generaReporteProductoCombustibleTurnoTotalizadoExcel)(fecha, turnos, usuarios)
+    ]);
+    //const { hasError, message, data } = await generaReporteProductoCombustibleTurnoExcel(fecha, turnos, usuarios);
     res.json({
-        hasError: hasError,
-        message: message,
-        data: data
+        hasError: combustible_turno.hasError && combustible_turno_totalizado.hasError,
+        message: combustible_turno.message,
+        data: {
+            turnos: combustible_turno.data,
+            totales: combustible_turno_totalizado.data
+        }
     });
 });
 exports.rptProductoTurnoTotalizados = rptProductoTurnoTotalizados;
@@ -51,6 +58,16 @@ const rptDeclaracionMensual = (req, res) => __awaiter(void 0, void 0, void 0, fu
     });
 });
 exports.rptDeclaracionMensual = rptDeclaracionMensual;
+const rptComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { fecha, usuario, ruc, tipo_comprobante } = req.body;
+    const { hasError, message, data } = yield (0, comprobante_1.generaReporteComprobantes)(fecha, usuario, ruc, tipo_comprobante);
+    res.json({
+        hasError: hasError,
+        message: message,
+        data: data
+    });
+});
+exports.rptComprobantes = rptComprobantes;
 const rptCierreTurnos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { fecha } = req.query;
     const { hasError, message, data } = yield (0, comprobante_1.generaReporteCierreTurno)((fecha === null || fecha === void 0 ? void 0 : fecha.toString()) || "");

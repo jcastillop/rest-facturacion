@@ -320,17 +320,26 @@ export const getComprobante = async (req: Request, res: Response) => {
 
 export const getNotasDespacho = async (req: Request, res: Response) => {
 
-    const { id, limite = 15, desde = 0 } = req.params;
+    const { id, rs, fecIni, fecFin, limite = 2000, desde = 0 } = req.query;
 
     try {
       
-        var queryFilters = []
+                
+        var queryFilters:any[] = []
+        queryFilters = [{ estado_nota_despacho: false }, { tipo_comprobante: Constantes.TipoComprobante.NotaDespacho }]
 
-        if(id == "0"){
-            queryFilters = [{ estado_nota_despacho: false }, { tipo_comprobante: Constantes.TipoComprobante.NotaDespacho }]
-        }else{
-            queryFilters = [{ estado_nota_despacho: false }, { tipo_comprobante: Constantes.TipoComprobante.NotaDespacho }, { '$Receptore.numero_documento$': id }]
+        if(id){
+            queryFilters.push({ '$Receptore.numero_documento$': id })
         }
+        if(rs){
+            queryFilters.push({ '$Receptore.razon_social$': { [Op.like]: '%' + rs + '%'} })
+        }
+        if(fecIni){
+            queryFilters.push({ fecha_emision: { [Op.gte]: fecIni }  })
+        }
+        if(fecFin){
+            queryFilters.push({ fecha_emision: { [Op.lte]: fecFin }  })
+        }          
 
         const data: any = await Comprobante.findAndCountAll({
             include: [

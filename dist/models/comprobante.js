@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteCierreTurno = exports.generaReporteDeclaracionMensual = exports.generaReporteProductoCombustibleTurnoExcel = exports.generaReporteProductoCombustibleTurno = exports.generaReporteDiarioRangos = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
+exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.generaReporteCierreTurno = exports.generaReporteComprobantes = exports.generaReporteDeclaracionMensual = exports.generaReporteProductoCombustibleTurnoExcel = exports.generaReporteProductoCombustibleTurnoTotalizadoExcel = exports.generaReporteProductoCombustibleTurno = exports.generaReporteDiarioRangos = exports.actualizarComprobante = exports.obtieneComprobante = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const numeros_letras_1 = require("../helpers/numeros-letras");
@@ -335,7 +335,8 @@ exports.generaReporteDiarioRangos = generaReporteDiarioRangos;
 const generaReporteProductoCombustibleTurno = (fecha) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurno");
     const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00';
-    var querySelect = 'SELECT ROW_NUMBER() OVER (ORDER BY t.turno DESC) AS id, t.turno as Turno, dec_combustible as Producto, ' +
+    const fecha_abastecimiento_fin = fecha + ' 08:00:00.0000000 +00:00';
+    var querySelect = 'SELECT ROW_NUMBER() OVER (ORDER BY t.turno DESC) AS id, t.turno as Turno, case len(dec_combustible) when 0 then \'MARKET\' else dec_combustible end as Producto, ' +
         'cast(sum(case tipo_comprobante when \'01\' then volumen when \'03\' then volumen when \'52\' then volumen else \'0\' end) as decimal(10,3)) as VolumenVenta, ' +
         'cast(sum(case tipo_comprobante when \'50\' then volumen else \'0\' end) as decimal(10,3)) as VolumenDespacho, ' +
         'cast(sum(case tipo_comprobante when \'51\' then volumen else \'0\' end) as decimal(10,3)) as VolumenCalibracion, ' +
@@ -343,13 +344,13 @@ const generaReporteProductoCombustibleTurno = (fecha) => __awaiter(void 0, void 
         'cast(sum(convert(float,case tipo_comprobante when \'50\' then total_venta else \'0\' end)) as decimal(10,2)) as TotalDespacho, ' +
         'cast(sum(convert(float,case tipo_comprobante when \'51\' then total_venta else \'0\' end)) as decimal(10,2)) as TotalCalibracion ';
     var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id ';
-    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha))';
+    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or (fecha_emision = :fecha and fecha_abastecimiento < CAST(:fecha_abastecimiento_fin AS datetimeoffset) and t.turno = \'TURNO1\') or (fecha_emision = :fecha and t.turno in (\'TURNO2\',\'TURNO3\')))';
     var queryGroup = 'group by t.turno, dec_combustible order by t.turno desc;';
     var prepareQuery = querySelect + queryFrom + queryWhere + queryGroup;
     var data = null;
     try {
         yield config_1.Sqlcn.query(prepareQuery, {
-            replacements: { fecha, fecha_abastecimiento },
+            replacements: { fecha, fecha_abastecimiento, fecha_abastecimiento_fin },
             type: sequelize_1.QueryTypes.SELECT
         }).then((results) => {
             data = results;
@@ -371,8 +372,42 @@ const generaReporteProductoCombustibleTurno = (fecha) => __awaiter(void 0, void 
     }
 });
 exports.generaReporteProductoCombustibleTurno = generaReporteProductoCombustibleTurno;
+const generaReporteProductoCombustibleTurnoTotalizadoExcel = (fecha, turnos, usuarios) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurnoExcel");
+    const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00';
+    const array = turnos.split(',');
+    var querySelect = 'select dec_combustible as Producto, count(c.id) as NroVentas, sum(c.volumen) as VolumenTotal, sum(convert(float, c.total_venta)) as SolesTotal ';
+    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id ';
+    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or  (fecha_emision = :fecha)) and t.turno in( :array ) ';
+    var queryGroup = 'group by dec_combustible;';
+    var prepareQuery = querySelect + queryFrom + queryWhere + queryGroup;
+    var data = null;
+    try {
+        yield config_1.Sqlcn.query(prepareQuery, {
+            replacements: { fecha, fecha_abastecimiento, array },
+            type: sequelize_1.QueryTypes.SELECT
+        }).then((results) => {
+            data = results;
+        });
+        (0, helpers_1.log4js)("Fin generaReporteProductoCombustibleTurnoExcel ");
+        return {
+            hasError: false,
+            message: "Reporte generado satisfactoriamente",
+            data: data
+        };
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("generaReporteProductoCombustibleTurnoExcel: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteProductoCombustibleTurnoExcel: " + error.toString(),
+            data: data
+        };
+    }
+});
+exports.generaReporteProductoCombustibleTurnoTotalizadoExcel = generaReporteProductoCombustibleTurnoTotalizadoExcel;
 const generaReporteProductoCombustibleTurnoExcel = (fecha, turnos, usuarios) => __awaiter(void 0, void 0, void 0, function* () {
-    (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurno");
+    (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurnoTotalizadoExcel");
     const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00';
     const array = turnos.split(',');
     var querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, ' +
@@ -394,7 +429,7 @@ const generaReporteProductoCombustibleTurnoExcel = (fecha, turnos, usuarios) => 
         }).then((results) => {
             data = results;
         });
-        (0, helpers_1.log4js)("Fin generaReporteProductoCombustibleTurno ");
+        (0, helpers_1.log4js)("Fin generaReporteProductoCombustibleTurnoTotalizadoExcel ");
         return {
             hasError: false,
             message: "Reporte generado satisfactoriamente",
@@ -402,10 +437,10 @@ const generaReporteProductoCombustibleTurnoExcel = (fecha, turnos, usuarios) => 
         };
     }
     catch (error) {
-        (0, helpers_1.log4js)("generaReporteProductoCombustibleTurno: " + error.toString(), 'error');
+        (0, helpers_1.log4js)("generaReporteProductoCombustibleTurnoTotalizadoExcel: " + error.toString(), 'error');
         return {
             hasError: true,
-            message: "generaReporteProductoCombustibleTurno: " + error.toString(),
+            message: "generaReporteProductoCombustibleTurnoTotalizadoExcel: " + error.toString(),
             data: data
         };
     }
@@ -443,6 +478,52 @@ const generaReporteDeclaracionMensual = (month, year) => __awaiter(void 0, void 
     }
 });
 exports.generaReporteDeclaracionMensual = generaReporteDeclaracionMensual;
+const generaReporteComprobantes = (fecha, usuario, ruc, tipo_comprobante) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio generaReporteComprobantes s");
+    const array = tipo_comprobante.split(',');
+    var data = null;
+    var where = 'where 1=1';
+    if (fecha || usuario || ruc || tipo_comprobante) {
+        if (fecha) {
+            where += ' and CAST(fecha_emision as DATE) = CAST(:fecha as DATE)';
+        }
+        if (usuario) {
+            where += ' and c.UsuarioId = :usuario';
+        }
+        if (ruc) {
+            where += ' and c.ruc = :ruc';
+        }
+        if (tipo_comprobante) {
+            where += ' and tipo_comprobante in( :array )';
+        }
+    }
+    try {
+        var query = 'select c.id, c.fecha_emision, r.numero_documento, r.razon_social, c.placa, c.dec_combustible, c.total_venta ' +
+            'from Comprobantes c  ' +
+            'inner join Receptores r on c.ReceptorId = r.id ' + where;
+        yield config_1.Sqlcn.query(query, {
+            replacements: { fecha, usuario, ruc, array },
+            type: sequelize_1.QueryTypes.SELECT
+        }).then((results) => {
+            data = results;
+        });
+        (0, helpers_1.log4js)("Fin generaReporteComprobantes");
+        return {
+            hasError: false,
+            message: "Reporte generado satisfactoriamente",
+            data: data
+        };
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("generaReporteDeclaracionMensual: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteDeclaracionMensual: " + error.toString(),
+            data: data
+        };
+    }
+});
+exports.generaReporteComprobantes = generaReporteComprobantes;
 const generaReporteCierreTurno = (fecha) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio generaReporteCierreTurno");
     var data = null;

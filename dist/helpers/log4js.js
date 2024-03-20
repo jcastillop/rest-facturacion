@@ -66,7 +66,7 @@ const timezoned = () => {
 const transport = new winston_daily_rotate_file_1.default({
     filename: 'log/fact-%DATE%.log',
     datePattern: 'YYYY-MM-DD-HH',
-    format: winston_1.format.combine(winston_1.format.timestamp({ format: timezoned }), winston_1.format.prettyPrint()),
+    format: winston_1.format.combine(winston_1.format.timestamp({ format: timezoned })),
 });
 transport.on('rotate', function (oldFilename, newFilename) {
     // do something fun

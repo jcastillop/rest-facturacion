@@ -335,14 +335,21 @@ const getComprobante = (req, res) => __awaiter(void 0, void 0, void 0, function*
 });
 exports.getComprobante = getComprobante;
 const getNotasDespacho = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id, limite = 15, desde = 0 } = req.params;
+    const { id, rs, fecIni, fecFin, limite = 2000, desde = 0 } = req.query;
     try {
         var queryFilters = [];
-        if (id == "0") {
-            queryFilters = [{ estado_nota_despacho: false }, { tipo_comprobante: constantes_1.default.TipoComprobante.NotaDespacho }];
+        queryFilters = [{ estado_nota_despacho: false }, { tipo_comprobante: constantes_1.default.TipoComprobante.NotaDespacho }];
+        if (id) {
+            queryFilters.push({ '$Receptore.numero_documento$': id });
         }
-        else {
-            queryFilters = [{ estado_nota_despacho: false }, { tipo_comprobante: constantes_1.default.TipoComprobante.NotaDespacho }, { '$Receptore.numero_documento$': id }];
+        if (rs) {
+            queryFilters.push({ '$Receptore.razon_social$': { [sequelize_1.Op.like]: '%' + rs + '%' } });
+        }
+        if (fecIni) {
+            queryFilters.push({ fecha_emision: { [sequelize_1.Op.gte]: fecIni } });
+        }
+        if (fecFin) {
+            queryFilters.push({ fecha_emision: { [sequelize_1.Op.lte]: fecFin } });
         }
         const data = yield comprobante_1.Comprobante.findAndCountAll({
             include: [

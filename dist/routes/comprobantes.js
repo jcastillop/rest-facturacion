@@ -15,12 +15,13 @@ router.post('/reportediario', reportes_1.rptDiarioRangos);
 router.get('/reporteproductoturnos', reportes_1.rptProductoTurno);
 router.post('/reporteproductoturnostotalizados', reportes_1.rptProductoTurnoTotalizados);
 router.post('/reportedeclaracionmensual', reportes_1.rptDeclaracionMensual);
+router.post('/reportecomprobantes', reportes_1.rptComprobantes);
 router.get('/reportecierres', reportes_1.rptCierreTurnos);
 router.get('/cierreturnohistorico', comprobantes_1.historicoCierres);
 router.get('/cierreturnogalonaje', comprobantes_1.cierreTurnoGalonaje);
 router.get('/cierreturnototalproducto', comprobantes_1.cierreTurnoTotalProducto);
 router.get('/cierreturnototalsoles', comprobantes_1.cierreTurnoTotalSoles);
 router.get('/comprobante', comprobantes_1.getComprobante);
-router.get('/notas/:id', comprobantes_1.getNotasDespacho);
+router.get('/notas', comprobantes_1.getNotasDespacho);
 exports.default = router;
 //# sourceMappingURL=comprobantes.js.map

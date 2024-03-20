@@ -19,6 +19,15 @@ const ReceptorPlaca = Sqlcn.define('ReceptoresPlacas', {
         type: DataTypes.TINYINT,
         defaultValue: 1
     },  
+    ProductoId:{
+        type: DataTypes.INTEGER,
+    },      
+    consumo_promedio:{
+        type: DataTypes.FLOAT,
+    },          
+    consumo_actual:{
+        type: DataTypes.FLOAT,
+    },              
 }, {
     timestamps: false
 });
