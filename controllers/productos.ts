@@ -79,7 +79,7 @@ export const getProducto = async (req: Request, res: Response) => {
 
 export const putProducto = async (req: Request, res: Response) => {
     log4js( "Inicio putProducto");
-    const { codigo, nombre, medida, descripcion, precio,valor, stock } = req.body;
+    const { codigo, nombre, medida, descripcion, precio,valor, stock, img } = req.body;
     try {
         const producto = Producto.build({ 
             nombre,
@@ -88,7 +88,8 @@ export const putProducto = async (req: Request, res: Response) => {
             codigo,
             precio,
             valor,
-            stock
+            stock,
+            img
         })
 
         await producto.save();
@@ -118,11 +119,11 @@ export const putProducto = async (req: Request, res: Response) => {
 
 export const updateProducto = async (req: Request, res: Response) => {
     log4js( "Inicio updateProducto");
-    const { id, codigo, nombre, medida, descripcion, precio, valor, stock } = req.body;
+    const { id, codigo, nombre, medida, descripcion, precio, valor, stock, img } = req.body;
     try {
 
         const producto = await Producto.update({ 
-            codigo, nombre, medida, descripcion, precio,valor, stock
+            codigo, nombre, medida, descripcion, precio,valor, stock, img
         },{
             where: { id: id },
             returning: true      

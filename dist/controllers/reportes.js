@@ -59,8 +59,8 @@ const rptDeclaracionMensual = (req, res) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.rptDeclaracionMensual = rptDeclaracionMensual;
 const rptComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { fecha, usuario, ruc, tipo_comprobante } = req.body;
-    const { hasError, message, data } = yield (0, comprobante_1.generaReporteComprobantes)(fecha, usuario, ruc, tipo_comprobante);
+    const { fecha, fecha_fin, usuario, ruc, tipo_comprobante } = req.body;
+    const { hasError, message, data } = yield (0, comprobante_1.generaReporteComprobantes)(fecha, fecha_fin, usuario, ruc, tipo_comprobante);
     res.json({
         hasError: hasError,
         message: message,

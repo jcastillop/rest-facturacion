@@ -37,6 +37,13 @@ const Producto  = Sqlcn.define('Productos', {
         type: DataTypes.FLOAT,
         defaultValue: 0
     },
+    color:{
+        type: DataTypes.STRING,
+        defaultValue: "#fb7105"
+    },
+    img:{
+        type: DataTypes.STRING
+    },              
     estado:{
         type: DataTypes.TINYINT,
         defaultValue: 1

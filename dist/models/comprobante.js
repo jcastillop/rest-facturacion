@@ -478,31 +478,34 @@ const generaReporteDeclaracionMensual = (month, year) => __awaiter(void 0, void 
     }
 });
 exports.generaReporteDeclaracionMensual = generaReporteDeclaracionMensual;
-const generaReporteComprobantes = (fecha, usuario, ruc, tipo_comprobante) => __awaiter(void 0, void 0, void 0, function* () {
+const generaReporteComprobantes = (fecha, fecha_fin, usuario, ruc, tipo_comprobante) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio generaReporteComprobantes s");
     const array = tipo_comprobante.split(',');
     var data = null;
     var where = 'where 1=1';
     if (fecha || usuario || ruc || tipo_comprobante) {
         if (fecha) {
-            where += ' and CAST(fecha_emision as DATE) = CAST(:fecha as DATE)';
+            where += ' and CAST(fecha_emision as DATE) >= CAST(:fecha as DATE)';
+        }
+        if (fecha_fin) {
+            where += ' and CAST(fecha_emision as DATE) <= CAST(:fecha as DATE)';
         }
         if (usuario) {
             where += ' and c.UsuarioId = :usuario';
         }
         if (ruc) {
-            where += ' and c.ruc = :ruc';
+            where += ' and r.numero_documento = :ruc';
         }
         if (tipo_comprobante) {
             where += ' and tipo_comprobante in( :array )';
         }
     }
     try {
-        var query = 'select c.id, c.fecha_emision, r.numero_documento, r.razon_social, c.placa, c.dec_combustible, c.total_venta ' +
+        var query = 'select c.id, numeracion_comprobante as numeracion, c.fecha_emision as fecha, fecha_abastecimiento as fechahora, r.numero_documento, r.razon_social, c.placa, c.dec_combustible, c.total_venta ' +
             'from Comprobantes c  ' +
             'inner join Receptores r on c.ReceptorId = r.id ' + where;
         yield config_1.Sqlcn.query(query, {
-            replacements: { fecha, usuario, ruc, array },
+            replacements: { fecha, fecha_fin, usuario, ruc, array },
             type: sequelize_1.QueryTypes.SELECT
         }).then((results) => {
             data = results;

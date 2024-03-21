@@ -67,9 +67,9 @@ export const rptDeclaracionMensual = async (req: Request, res: Response) => {
 
 export const rptComprobantes = async (req: Request, res: Response) => {
 
-    const { fecha, usuario, ruc, tipo_comprobante } = req.body;
+    const { fecha, fecha_fin, usuario, ruc, tipo_comprobante } = req.body;
 
-    const { hasError, message, data } = await generaReporteComprobantes( fecha, usuario, ruc, tipo_comprobante );
+    const { hasError, message, data } = await generaReporteComprobantes( fecha, fecha_fin, usuario, ruc, tipo_comprobante );
 
     res.json({
         hasError: hasError,

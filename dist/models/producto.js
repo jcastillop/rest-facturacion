@@ -38,6 +38,13 @@ const Producto = config_1.Sqlcn.define('Productos', {
         type: sequelize_1.DataTypes.FLOAT,
         defaultValue: 0
     },
+    color: {
+        type: sequelize_1.DataTypes.STRING,
+        defaultValue: "#fb7105"
+    },
+    img: {
+        type: sequelize_1.DataTypes.STRING
+    },
     estado: {
         type: sequelize_1.DataTypes.TINYINT,
         defaultValue: 1

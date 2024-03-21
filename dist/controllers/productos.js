@@ -77,7 +77,7 @@ const getProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getProducto = getProducto;
 const putProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio putProducto");
-    const { codigo, nombre, medida, descripcion, precio, valor, stock } = req.body;
+    const { codigo, nombre, medida, descripcion, precio, valor, stock, img } = req.body;
     try {
         const producto = producto_1.default.build({
             nombre,
@@ -86,7 +86,8 @@ const putProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             codigo,
             precio,
             valor,
-            stock
+            stock,
+            img
         });
         yield producto.save();
         (0, helpers_1.log4js)("Fin putProducto: " + JSON.stringify(producto));
@@ -114,10 +115,10 @@ const putProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.putProducto = putProducto;
 const updateProducto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio updateProducto");
-    const { id, codigo, nombre, medida, descripcion, precio, valor, stock } = req.body;
+    const { id, codigo, nombre, medida, descripcion, precio, valor, stock, img } = req.body;
     try {
         const producto = yield producto_1.default.update({
-            codigo, nombre, medida, descripcion, precio, valor, stock
+            codigo, nombre, medida, descripcion, precio, valor, stock, img
         }, {
             where: { id: id },
             returning: true
