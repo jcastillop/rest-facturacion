@@ -528,7 +528,7 @@ export const generaReporteComprobantes = async (fecha: string, fecha_fin: string
             where += ' and CAST(fecha_emision as DATE) >= CAST(:fecha as DATE)'
         }
         if(fecha_fin){
-            where += ' and CAST(fecha_emision as DATE) <= CAST(:fecha as DATE)'
+            where += ' and CAST(fecha_emision as DATE) <= CAST(:fecha_fin as DATE)'
         }        
         if(usuario){
             where += ' and c.UsuarioId = :usuario'

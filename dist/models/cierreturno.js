@@ -69,7 +69,7 @@ const obtenerCierreTurno = () => __awaiter(void 0, void 0, void 0, function* () 
     yield config_1.Sqlcn.query('select u.nombre, t.fecha, t.isla, t.turno, t.total, t.efectivo, t.tarjeta, t.yape, cast(s.total as float) as valido ' +
         'from Cierreturnos t ' +
         'inner join Usuarios u on t.UsuarioId = u.id ' +
-        'left join (select CierreturnoId, sum(cast(total_venta as float)) as Total from Comprobantes group by CierreturnoId) s on s.CierreturnoId = t.id ' +
+        'left join (select CierreturnoId, sum(cast(total_venta as float)) as Total from Comprobantes where tipo_comprobante in (\'01\',\'03\') group by CierreturnoId) s on s.CierreturnoId = t.id ' +
         'where CierrediaId is null ' +
         'order by fecha desc, turno asc', {
         type: sequelize_1.QueryTypes.SELECT,
