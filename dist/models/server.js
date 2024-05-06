@@ -88,13 +88,13 @@ class Server {
         }
         console.log('Los envíos automatismos se encuentran ' + (process.env.AUTOMATIC_BILLING == '1' ? 'ENCENDIDOS' : 'APAGADOS'));
         if (process.env.AUTOMATIC_BILLING == '1') {
-            const job = new cron_1.CronJob('* * * * *', // cronTime
+            const job = new cron_1.CronJob('* * * * *', // cronTime 
             function () {
                 (0, app_helpers_1.automatismosCambiarComprobantesInternos)();
             }, // onTick
             null, // onComplete
             true);
-            const restartJob = new cron_1.CronJob('0 0 1 * *', // cronTime
+            const restartJob = new cron_1.CronJob('59 23 * * *', // cronTime
             function () {
                 (0, app_helpers_1.automatismosReiniciarConsumoActual)();
             }, // onTick

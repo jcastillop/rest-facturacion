@@ -100,37 +100,52 @@ export const getAbastecimientos = async (req: Request, res: Response) => {
 
     //process.env.EMISOR_DIR,
     // ${process.env.MODIFY_TIMEZONE!}
-    var time = process.env.AUTOMATIC_BILLING_TIMEOUT!.split(' ');
-    if(process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3){
-        fields.push([literal(`DATEADD(hour , ${process.env.MODIFY_TIMEZONE!} , getdate())`), 'actual'])
-        fields.push([literal(`CASE WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[0]} THEN 3 WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[1]} THEN 2 WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[2]} THEN 1 ELSE 0 END`), 'alertAutomatic'])
-    }
+    // var time = process.env.AUTOMATIC_BILLING_TIMEOUT!.split(' ');
+    // if(process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3){
+    //     fields.push([literal(`DATEADD(hour , ${process.env.MODIFY_TIMEZONE!} , getdate())`), 'actual'])
+    //     fields.push([literal(`CASE WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[0]} THEN 3 WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[1]} THEN 2 WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[2]} THEN 1 ELSE 0 END`), 'alertAutomatic'])
+    // }
 
     const data: any = await Abastecimiento.findAndCountAll({
         where: queryWhere,
         attributes: { include: fields }, 
         offset: Number(serviceParams.offset),
         limit: Number(serviceParams.limit),
+        order: [ ['idAbastecimiento', 'DESC'] ], 
         raw: true        
     });
 
-    
+    var pendings: any[] = []
 
-    data.rows.map((abastecimiento: { idAbastecimiento: any; pistola: any; descripcionCombustible: any; styleCombustible: any; fechaHora:any; alertAutomatic:any; valorTotal:any}) => {
+    data.rows.map((abastecimiento: { idAbastecimiento: any; pistola: any; descripcionCombustible: any; styleCombustible: any; fechaHora:any; alertAutomatic:any; valorTotal:any; registro:number}) => {
         const pistola = pistolas.filter((value: { codigo: any; }) => value.codigo === abastecimiento.pistola);            
         if(pistola){
             abastecimiento.descripcionCombustible = pistola[0].desc_producto
             abastecimiento.styleCombustible = pistola[0].color
         }
-
     });
 
-    if(data.rows[0]){
-        const abastecimiento = data.rows[0];
-        if(process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3 && abastecimiento.alertAutomatic == 0){
-            automatismoGenerarComprobantes(abastecimiento.idAbastecimiento, Number(serviceParams.id), abastecimiento.descripcionCombustible, abastecimiento.valorTotal)
-        }   
+    if(process.env.AUTOMATIC_BILLING == '1' && serviceParams.id){
+        for (var i = 0; i < data.rows.length; i++) {
+            if(pendings.find(element => element == data.rows[i].pistola)){
+                const comprobante = await automatismoGenerarComprobantes(data.rows[i].idAbastecimiento, Number(serviceParams.id), data.rows[i].descripcionCombustible, data.rows[i].valorTotal)
+                break
+                //facturar
+            }else{
+                pendings.push(data.rows[i].pistola)
+            }
+        }
     }
+
+
+
+
+    // if(data.rows[0]){
+    //     const abastecimiento = data.rows[0];
+    //     if(process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3 && abastecimiento.alertAutomatic == 0){
+    //         automatismoGenerarComprobantes(abastecimiento.idAbastecimiento, Number(serviceParams.id), abastecimiento.descripcionCombustible, abastecimiento.valorTotal)
+    //     }   
+    // }
 
     //facturacion automatica
     //que no sean usuarios administradores

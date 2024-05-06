@@ -19,4 +19,6 @@ __exportStar(require("./responses"), exports);
 __exportStar(require("./comprobante"), exports);
 __exportStar(require("./receptor"), exports);
 __exportStar(require("./cierreturno"), exports);
+__exportStar(require("./comprobante_master"), exports);
+__exportStar(require("./comprobante_detail"), exports);
 //# sourceMappingURL=index.js.map

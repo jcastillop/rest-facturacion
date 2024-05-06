@@ -85,7 +85,17 @@ const obtieneCierreTurnoGalonaje = (usuario) => __awaiter(void 0, void 0, void 0
     (0, helpers_1.log4js)("Inicio obtieneCierreTurnoGalonaje ");
     var resultado;
     //cambios
-    yield config_1.Sqlcn.query('select dec_combustible as producto, sum(CASE when tipo_comprobante in (\'01\',\'03\',\'52\') then volumen else 0 END) as total_galones, sum(CASE when tipo_comprobante = \'50\' then volumen else 0 END) as despacho_galones, sum(CASE when tipo_comprobante = \'51\' then volumen else 0 END) as calibracion_galones, sum(CASE when tipo_comprobante in (\'01\',\'03\',\'52\') then CONVERT(float, total_venta) else 0 END) as total_soles, sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, total_venta) else 0 END) as despacho_soles, sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, total_venta) else 0 END) as calibracion_soles from Comprobantes where CierreturnoId is null and UsuarioId = :usuario and codigo_combustible <> \'\' group by dec_combustible;', {
+    yield config_1.Sqlcn.query('select i.descripcion as producto, ' +
+        'sum(CASE when tipo_comprobante in (\'01\',\'03\',\'52\') then CONVERT(float, i.cantidad) else 0 END) as total_galones, ' +
+        'sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, i.cantidad) else 0 END) as despacho_galones, ' +
+        'sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, i.cantidad) else 0 END) as calibracion_galones, ' +
+        'sum(CASE when tipo_comprobante in (\'01\',\'03\',\'52\') then CONVERT(float, i.total_unitario) else 0 END) as total_soles, ' +
+        'sum(CASE when tipo_comprobante = \'50\' then CONVERT(float, i.total_unitario) else 0 END) as despacho_soles, ' +
+        'sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, i.total_unitario) else 0 END) as calibracion_soles ' +
+        'from Comprobantes c ' +
+        'inner join Items i on c.id = i.ComprobanteId ' +
+        'where CierreturnoId is null and UsuarioId = :usuario ' +
+        'group by i.descripcion;', {
         replacements: { usuario },
         type: sequelize_1.QueryTypes.SELECT,
         plain: false,

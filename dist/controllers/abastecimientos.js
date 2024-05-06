@@ -87,18 +87,20 @@ const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, funct
     ];
     //process.env.EMISOR_DIR,
     // ${process.env.MODIFY_TIMEZONE!}
-    var time = process.env.AUTOMATIC_BILLING_TIMEOUT.split(' ');
-    if (process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3) {
-        fields.push([(0, sequelize_1.literal)(`DATEADD(hour , ${process.env.MODIFY_TIMEZONE} , getdate())`), 'actual']);
-        fields.push([(0, sequelize_1.literal)(`CASE WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[0]} THEN 3 WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[1]} THEN 2 WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[2]} THEN 1 ELSE 0 END`), 'alertAutomatic']);
-    }
+    // var time = process.env.AUTOMATIC_BILLING_TIMEOUT!.split(' ');
+    // if(process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3){
+    //     fields.push([literal(`DATEADD(hour , ${process.env.MODIFY_TIMEZONE!} , getdate())`), 'actual'])
+    //     fields.push([literal(`CASE WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[0]} THEN 3 WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[1]} THEN 2 WHEN DATEDIFF(minute, fechaHora, dateadd(hour , ${process.env.MODIFY_TIMEZONE} , getdate())) < ${time[2]} THEN 1 ELSE 0 END`), 'alertAutomatic'])
+    // }
     const data = yield abastecimiento_1.default.findAndCountAll({
         where: queryWhere,
         attributes: { include: fields },
         offset: Number(serviceParams.offset),
         limit: Number(serviceParams.limit),
+        order: [['idAbastecimiento', 'DESC']],
         raw: true
     });
+    var pendings = [];
     data.rows.map((abastecimiento) => {
         const pistola = pistolas.filter((value) => value.codigo === abastecimiento.pistola);
         if (pistola) {
@@ -106,12 +108,24 @@ const getAbastecimientos = (req, res) => __awaiter(void 0, void 0, void 0, funct
             abastecimiento.styleCombustible = pistola[0].color;
         }
     });
-    if (data.rows[0]) {
-        const abastecimiento = data.rows[0];
-        if (process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3 && abastecimiento.alertAutomatic == 0) {
-            (0, app_helpers_1.automatismoGenerarComprobantes)(abastecimiento.idAbastecimiento, Number(serviceParams.id), abastecimiento.descripcionCombustible, abastecimiento.valorTotal);
+    if (process.env.AUTOMATIC_BILLING == '1' && serviceParams.id) {
+        for (var i = 0; i < data.rows.length; i++) {
+            if (pendings.find(element => element == data.rows[i].pistola)) {
+                const comprobante = yield (0, app_helpers_1.automatismoGenerarComprobantes)(data.rows[i].idAbastecimiento, Number(serviceParams.id), data.rows[i].descripcionCombustible, data.rows[i].valorTotal);
+                break;
+                //facturar
+            }
+            else {
+                pendings.push(data.rows[i].pistola);
+            }
         }
     }
+    // if(data.rows[0]){
+    //     const abastecimiento = data.rows[0];
+    //     if(process.env.AUTOMATIC_BILLING == '1' && process.env.MODIFY_TIMEZONE && time.length == 3 && abastecimiento.alertAutomatic == 0){
+    //         automatismoGenerarComprobantes(abastecimiento.idAbastecimiento, Number(serviceParams.id), abastecimiento.descripcionCombustible, abastecimiento.valorTotal)
+    //     }   
+    // }
     //facturacion automatica
     //que no sean usuarios administradores
     //validar que no esten logueados dos usurios

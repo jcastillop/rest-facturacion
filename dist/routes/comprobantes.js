@@ -5,6 +5,7 @@ const comprobantes_1 = require("../controllers/comprobantes");
 const reportes_1 = require("../controllers/reportes");
 const router = (0, express_1.Router)();
 router.post('/', comprobantes_1.generaComprobante);
+router.post('/billing', comprobantes_1.comprobanteNuevo);
 router.post('/comprobanteadmin', comprobantes_1.generaComprobanteV2);
 router.post('/modifica', comprobantes_1.modificaComprobante);
 router.get('/historico', comprobantes_1.historicoComprobantes);
@@ -23,5 +24,6 @@ router.get('/cierreturnototalproducto', comprobantes_1.cierreTurnoTotalProducto)
 router.get('/cierreturnototalsoles', comprobantes_1.cierreTurnoTotalSoles);
 router.get('/comprobante', comprobantes_1.getComprobante);
 router.get('/notas', comprobantes_1.getNotasDespacho);
+router.post('/descuentos', comprobantes_1.obtieneDescuentos);
 exports.default = router;
 //# sourceMappingURL=comprobantes.js.map

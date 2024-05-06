@@ -1,10 +1,12 @@
 import { Router } from 'express';
-import { cierreTurno, createCierreDia, generaComprobante, listaTurnosPorCerrar, historicoComprobantes, modificaComprobante, historicoCierres, cierreTurnoGalonaje, cierreTurnoTotalProducto, cierreTurnoTotalSoles, generaComprobanteV2, getComprobante, getNotasDespacho } from '../controllers/comprobantes';
+import { cierreTurno, createCierreDia, generaComprobante, listaTurnosPorCerrar, historicoComprobantes, modificaComprobante, historicoCierres, cierreTurnoGalonaje, cierreTurnoTotalProducto, cierreTurnoTotalSoles, generaComprobanteV2, getComprobante, getNotasDespacho, comprobanteNuevo, obtieneDescuentos } from '../controllers/comprobantes';
 import { rptCierreTurnos, rptComprobantes, rptDeclaracionMensual, rptDiarioRangos, rptProductoTurno, rptProductoTurnoTotalizados } from '../controllers/reportes';
 
 const router = Router();
 
 router.post('/',            generaComprobante);
+
+router.post('/billing',    comprobanteNuevo);
 
 router.post('/comprobanteadmin',            generaComprobanteV2);
 
@@ -41,6 +43,8 @@ router.get('/cierreturnototalsoles',   cierreTurnoTotalSoles);
 router.get('/comprobante',            getComprobante);
 
 router.get('/notas',            getNotasDespacho);
+
+router.post('/descuentos',        obtieneDescuentos);
 
 
 export default router;

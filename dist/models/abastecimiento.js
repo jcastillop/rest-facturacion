@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.actualizaAbastecimiento = void 0;
+exports.RollBackAbastecimiento = exports.actualizaAbastecimiento = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const helpers_1 = require("../helpers");
@@ -51,6 +51,40 @@ const actualizaAbastecimiento = (idAbastecimiento, tipo_comprobante) => __awaite
     }
 });
 exports.actualizaAbastecimiento = actualizaAbastecimiento;
+const RollBackAbastecimiento = (idAbastecimiento, tipo_comprobante) => __awaiter(void 0, void 0, void 0, function* () {
+    if (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) {
+        (0, helpers_1.log4js)("Fin actualizaAbastecimiento ");
+        return {
+            hasErrorActualizaAbastecimiento: false,
+            messageActualizaAbastecimiento: `No se valida abastecimiento para NC`
+        };
+    }
+    else {
+        try {
+            const abastecimento = yield Abastecimiento.update({ estado: 0 }, { where: { idAbastecimiento: idAbastecimiento } });
+            if (abastecimento) {
+                return {
+                    hasErrorActualizaAbastecimiento: false,
+                    messageActualizaAbastecimiento: `Abastecimiento actualizado correctamente`
+                };
+            }
+            else {
+                return {
+                    hasErrorActualizaAbastecimiento: true,
+                    messageActualizaAbastecimiento: `No se actualizó ningún registro`
+                };
+            }
+        }
+        catch (error) {
+            (0, helpers_1.log4js)("actualizaAbastecimiento: " + error.toString(), 'error');
+            return {
+                hasErrorActualizaAbastecimiento: true,
+                messageActualizaAbastecimiento: error.toString(),
+            };
+        }
+    }
+});
+exports.RollBackAbastecimiento = RollBackAbastecimiento;
 const Abastecimiento = config_1.ControladorSQL.define('Abastecimientos', {
     idAbastecimiento: {
         type: sequelize_1.DataTypes.TINYINT,

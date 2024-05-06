@@ -18,6 +18,7 @@ export interface PropsConsultaRucMiFact {
 export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo_comprobante: string, correlativo: string): Promise<PropsMiFact> => {
     log4js( "Inicio createOrderApiMiFact");
     log4js(comprobante);
+    log4js(receptor);
     try {
 
         var splitted = correlativo.split("-");

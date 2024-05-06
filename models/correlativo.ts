@@ -4,7 +4,7 @@ import { log4js } from '../helpers';
 
 
 export const generaCorrelativo = async (tipo: string, serie: string, prefijo: string = ""): Promise<{ hasErrorCorrelativo: boolean; messageCorrelativo: string; correlativo: string; }> => {
-
+    log4js( "Inicio generaCorrelativo: tipo: " + tipo + " - serie: " + serie + " - prefijo: " + prefijo);
     var correlativo= '';
     const ruc = process.env.EMISOR_RUC
     try {

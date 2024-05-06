@@ -21,6 +21,7 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
     var _a;
     (0, log4js_1.log4js)("Inicio createOrderApiMiFact");
     (0, log4js_1.log4js)(comprobante);
+    (0, log4js_1.log4js)(receptor);
     try {
         var splitted = correlativo.split("-");
         const splitedAfectado = comprobante.numeracion_documento_afectado.split("-");

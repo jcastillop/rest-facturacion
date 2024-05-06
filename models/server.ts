@@ -85,7 +85,7 @@ class Server{
         console.log('Los envíos automatismos se encuentran ' + (process.env.AUTOMATIC_BILLING=='1'? 'ENCENDIDOS':'APAGADOS'))
         if(process.env.AUTOMATIC_BILLING == '1'){
             const job = new CronJob(
-                '* * * * *', // cronTime
+                '* * * * *', // cronTime 
                 function () {
                     automatismosCambiarComprobantesInternos()
                 }, // onTick
@@ -93,7 +93,7 @@ class Server{
                 true, // start
             );  
             const restartJob = new CronJob(
-                '0 0 1 * *', // cronTime
+                '59 23 * * *', // cronTime
                 function () {
                     automatismosReiniciarConsumoActual()
                 }, // onTick

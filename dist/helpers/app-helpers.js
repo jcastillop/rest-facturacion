@@ -23,15 +23,20 @@ const constantes_1 = __importDefault(require("./constantes"));
 const log4js_1 = require("./log4js");
 const receptorplaca_1 = __importDefault(require("../models/receptorplaca"));
 const sequelize_2 = __importDefault(require("sequelize"));
+const abastecimiento_1 = require("../models/abastecimiento");
 const procesarComprobantes = () => __awaiter(void 0, void 0, void 0, function* () {
+    (0, log4js_1.log4js)("Inicio procesarComprobantes");
     const pendientes = yield comprobante_1.Comprobante.findAll({
         include: [
             { model: item_1.default, as: 'Items' }
         ],
         where: { enviado: 0, tipo_comprobante: [constantes_1.default.TipoComprobante.Factura, constantes_1.default.TipoComprobante.Boleta, constantes_1.default.TipoComprobante.NotaCredito] }
     });
+    (0, log4js_1.log4js)(pendientes);
     pendientes.every((comprobante) => __awaiter(void 0, void 0, void 0, function* () {
         const receptor = yield receptor_1.default.findByPk(comprobante.ReceptorId, { raw: true });
+        (0, log4js_1.log4js)("Receptor");
+        (0, log4js_1.log4js)(receptor);
         const { hasErrorMiFact, messageMiFact, response } = yield (0, api_mifact_1.createOrderApiMiFact)(comprobante, receptor, comprobante.tipo_comprobante, comprobante.numeracion_comprobante);
         if (!hasErrorMiFact) {
             const { hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate } = yield (0, comprobante_1.actualizarComprobante)(response, comprobante.id, true);
@@ -46,6 +51,11 @@ const automatismoGenerarComprobantes = (id_abastecimiento, id_usuario, producto,
     const prefijo = 'I';
     const { hasErrorCorrelativo, messageCorrelativo, correlativo, correlativo_resultado, receptor_id, resultado } = yield (0, correlativo_1.generaComprobanteFirstStep)(id_abastecimiento, tipo_comprobante, serie, prefijo, 0, '0');
     const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobante)(id_abastecimiento.toString(), tipo_comprobante, { id: process.env.AUTOAMTIC_RECEPTOR_ID }, correlativo, "", id_usuario, producto, "", "", "", "", 0, monto, 0, 0);
+    if (hasErrorCorrelativo || hasErrorComprobante) {
+        (0, log4js_1.log4js)("Rollback comprobante con abastecimiento " + id_abastecimiento.toString());
+        yield (0, abastecimiento_1.RollBackAbastecimiento)(id_abastecimiento.toString(), tipo_comprobante);
+    }
+    return comprobante;
     (0, log4js_1.log4js)("Inicio automatismoGenerarComprobantes");
 });
 exports.automatismoGenerarComprobantes = automatismoGenerarComprobantes;
@@ -83,37 +93,39 @@ const automatismosCambiarComprobantesInternos = () => __awaiter(void 0, void 0, 
         limit: 1,
         raw: true
     });
-    (0, log4js_1.log4js)("Inicio: " + interno.numeracion_comprobante);
-    const serie = '002';
-    const emisor_id = +process.env.AUTOAMTIC_EMISOR_ID;
-    var cod_correlativo = "";
-    var successComprobante = true;
-    const { receptor, receptor_placa } = yield (0, exports.automatismoObtenerReceptor)(interno.codigo_combustible);
-    if (receptor && receptor_placa) {
-        const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(constantes_1.default.TipoComprobante.Factura, serie, "F");
-        const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobante)(interno.id_abastecimiento, constantes_1.default.TipoComprobante.Factura, receptor, correlativo, receptor_placa.placa, emisor_id, interno.dec_combustible, interno.numeracion_comprobante, "", "", "", 0, interno.pago_efectivo, 0, 0);
-        cod_correlativo = correlativo;
-        successComprobante = !hasErrorCorrelativo && !hasErrorComprobante;
-        (0, log4js_1.log4js)("cambiarComprobantesInternos: " + messageComprobante);
-    }
-    else {
-        const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(constantes_1.default.TipoComprobante.Boleta, serie, "B");
-        const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobante)(interno.id_abastecimiento, constantes_1.default.TipoComprobante.Boleta, { id: process.env.AUTOAMTIC_RECEPTOR_ID }, correlativo, "", emisor_id, interno.dec_combustible, interno.numeracion_comprobante, "", "", "", 0, interno.pago_efectivo, 0, 0);
-        successComprobante = !hasErrorCorrelativo && !hasErrorComprobante;
-        (0, log4js_1.log4js)("cambiarComprobantesInternos: " + messageComprobante);
-    }
-    if (successComprobante) {
-        const tot_venta = interno.total_venta;
-        const comprobante = yield comprobante_1.Comprobante.update({ enviado: 1, comentario: cod_correlativo }, { where: { id: interno.id }, returning: true });
-        (0, log4js_1.log4js)(JSON.stringify(comprobante));
-        (0, log4js_1.log4js)("cambiarComprobantesInternos: comprobante iterno creado " + cod_correlativo);
-        if (receptor_placa) {
-            const id_receptor_placa = receptor_placa.id;
-            const new_receptor_placa = yield receptorplaca_1.default.increment('consumo_actual', { by: tot_venta, where: { id: id_receptor_placa } });
-            (0, log4js_1.log4js)("Actualizando consumo del receptor placa " + new_receptor_placa);
+    if (interno) {
+        (0, log4js_1.log4js)("Inicio: " + interno.numeracion_comprobante);
+        const serie = '002';
+        const emisor_id = +process.env.AUTOAMTIC_EMISOR_ID;
+        var cod_correlativo = "";
+        var successComprobante = true;
+        const { receptor, receptor_placa } = yield (0, exports.automatismoObtenerReceptor)(interno.codigo_combustible);
+        if (receptor && receptor_placa) {
+            const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(constantes_1.default.TipoComprobante.NotaDespacho, serie);
+            const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobante)(interno.id_abastecimiento, constantes_1.default.TipoComprobante.NotaDespacho, receptor, correlativo, receptor_placa.placa, emisor_id, interno.dec_combustible, interno.numeracion_comprobante, "", "", "", 0, interno.pago_efectivo, 0, 0);
+            cod_correlativo = correlativo;
+            successComprobante = !hasErrorCorrelativo && !hasErrorComprobante;
+            (0, log4js_1.log4js)("cambiarComprobantesInternos: " + messageComprobante);
         }
+        else {
+            const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(constantes_1.default.TipoComprobante.Boleta, serie, "B");
+            const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobante)(interno.id_abastecimiento, constantes_1.default.TipoComprobante.Boleta, { id: process.env.AUTOAMTIC_RECEPTOR_ID }, correlativo, "", emisor_id, interno.dec_combustible, interno.numeracion_comprobante, "", "", "", 0, interno.pago_efectivo, 0, 0);
+            successComprobante = !hasErrorCorrelativo && !hasErrorComprobante;
+            (0, log4js_1.log4js)("cambiarComprobantesInternos: " + messageComprobante);
+        }
+        if (successComprobante) {
+            const tot_venta = interno.total_venta;
+            const comprobante = yield comprobante_1.Comprobante.update({ enviado: 1, comentario: cod_correlativo }, { where: { id: interno.id }, returning: true });
+            (0, log4js_1.log4js)(JSON.stringify(comprobante));
+            (0, log4js_1.log4js)("cambiarComprobantesInternos: comprobante iterno creado " + cod_correlativo);
+            if (receptor_placa) {
+                const id_receptor_placa = receptor_placa.id;
+                const new_receptor_placa = yield receptorplaca_1.default.increment('consumo_actual', { by: tot_venta, where: { id: id_receptor_placa } });
+                (0, log4js_1.log4js)("Actualizando consumo del receptor placa " + new_receptor_placa);
+            }
+        }
+        (0, log4js_1.log4js)("Fin: " + interno.numeracion_comprobante);
     }
-    (0, log4js_1.log4js)("Fin: " + interno.numeracion_comprobante);
     (0, log4js_1.log4js)("Fin cambiarComprobantesInternos");
 });
 exports.automatismosCambiarComprobantesInternos = automatismosCambiarComprobantesInternos;
