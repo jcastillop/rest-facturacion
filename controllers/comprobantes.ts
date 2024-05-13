@@ -126,67 +126,77 @@ export const comprobanteNuevo = async (req: Request, res: Response) => {
     const { billing: { cliente, tipo_comprobante, tipo_facturacion, numeracion_comprobante,fecha_emision, fecha_actual, total_gravadas, total_igv, total_venta, pago_tarjeta, pago_efectivo, pago_yape, usuario, items, tipo_documento_afectado, numeracion_documento_afectado, fecha_documento_afectado, id_abastecimiento } } = req.body;
     const { client: { tipo_documento, numero_documento, razon_social, direccion, correo, placa } } = req.body;
 
+    const { hasError:errorAbastecimiento, message: messageAbastecimiento } = await validaComprobanteAbastecimiento(id_abastecimiento, tipo_comprobante);
 
-    const { serie, hasError, message } = await obtieneSerie( tipo_comprobante, tipo_facturacion )
-    if(hasError){ res.json({ hasError: true, respuesta: message}); return; }
-
-    const { hasErrorCorrelativo, messageCorrelativo, correlativo} = await generaCorrelativo(tipo_comprobante, serie)
-    if(hasErrorCorrelativo){ res.json({ hasError: true, respuesta: messageCorrelativo}); return; }
-
-    const {hasErrorReceptor, messageReceptor, receptor} = await obtieneReceptor(numero_documento, tipo_documento, razon_social, direccion, correo, placa);
-    if(hasErrorReceptor){ res.json({ hasError: true, respuesta: messageReceptor}); return; }    
-
-
-    const billing : IComprobanteMaster = {
-        cliente:(receptor as unknown as IReceptor).id_receptor,
-        numeracion_comprobante: correlativo,
-        tipo_documento_afectado: tipo_comprobante == Constantes.TipoComprobante.NotaCredito ? tipo_documento_afectado : "",
-        numeracion_documento_afectado: tipo_comprobante == Constantes.TipoComprobante.NotaCredito ? numeracion_documento_afectado : "",
-        fecha_documento_afectado: tipo_comprobante == Constantes.TipoComprobante.NotaCredito ? fecha_documento_afectado : null,        
-        tipo_comprobante,
-        fecha_emision,
-        total_gravadas,
-        total_igv,
-        total_venta,
-        pago_tarjeta,
-        pago_efectivo,
-        pago_yape,
-        placa,
-        UsuarioId: usuario,
-        id_abastecimiento,
-        ruc: process.env.EMISOR_RUC,
-        ReceptorId:receptor?((receptor as any).id):0,
-        items,
-        pistola: 0,
-        codigo_combustible: '',
-        dec_combustible: '',
-        volumen: 0,
-        fecha_abastecimiento: fecha_emision,
-        tiempo_abastecimiento: 0,
-        volumen_tanque: 0
-    }
-
-
-    const { comprobante } = await saveComprobanteMaster(billing);
-
-    if(comprobante){
-
-        const {hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento} = await actualizaAbastecimiento(id_abastecimiento, tipo_comprobante);
-        if(hasErrorActualizaAbastecimiento){ res.json({ hasError: true, respuesta: messageActualizaAbastecimiento}); return; }  
-              
+    if(errorAbastecimiento){
         res.json({
-            messsage: 'Comprobante almacenado correctamente',
-            comprobante: comprobante,
-            hasError:false
-        }); 
+            hasError: errorAbastecimiento,
+            messsage: messageAbastecimiento
+        });  
 
     }else{
-        res.json({
-            messsage: 'Ocurrió un error durante la creación del comprobante',
-            comprobante: null,
-            hasError:true
-        }); 
-    }    
+
+        const { serie, hasError, message } = await obtieneSerie( tipo_comprobante, tipo_facturacion )
+        if(hasError){ res.json({ hasError: true, respuesta: message}); return; }
+    
+        const { hasErrorCorrelativo, messageCorrelativo, correlativo} = await generaCorrelativo(tipo_comprobante, serie)
+        if(hasErrorCorrelativo){ res.json({ hasError: true, respuesta: messageCorrelativo}); return; }
+    
+        const {hasErrorReceptor, messageReceptor, receptor} = await obtieneReceptor(numero_documento, tipo_documento, razon_social, direccion, correo, placa);
+        if(hasErrorReceptor){ res.json({ hasError: true, respuesta: messageReceptor}); return; }    
+    
+    
+        const billing : IComprobanteMaster = {
+            cliente:(receptor as unknown as IReceptor).id_receptor,
+            numeracion_comprobante: correlativo,
+            tipo_documento_afectado: tipo_comprobante == Constantes.TipoComprobante.NotaCredito ? tipo_documento_afectado : "",
+            numeracion_documento_afectado: tipo_comprobante == Constantes.TipoComprobante.NotaCredito ? numeracion_documento_afectado : "",
+            fecha_documento_afectado: tipo_comprobante == Constantes.TipoComprobante.NotaCredito ? fecha_documento_afectado : null,        
+            tipo_comprobante,
+            fecha_emision,
+            total_gravadas,
+            total_igv,
+            total_venta,
+            pago_tarjeta,
+            pago_efectivo,
+            pago_yape,
+            placa,
+            UsuarioId: usuario,
+            id_abastecimiento,
+            ruc: process.env.EMISOR_RUC,
+            ReceptorId:receptor?((receptor as any).id):0,
+            items,
+            pistola: 0,
+            codigo_combustible: '',
+            dec_combustible: '',
+            volumen: 0,
+            fecha_abastecimiento: fecha_emision,
+            tiempo_abastecimiento: 0,
+            volumen_tanque: 0
+        }
+    
+    
+        const { comprobante } = await saveComprobanteMaster(billing);
+    
+        if(comprobante){
+    
+            const {hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento} = await actualizaAbastecimiento(id_abastecimiento, tipo_comprobante);
+            if(hasErrorActualizaAbastecimiento){ res.json({ hasError: true, respuesta: messageActualizaAbastecimiento}); return; }  
+                  
+            res.json({
+                messsage: 'Comprobante almacenado correctamente ',
+                comprobante: comprobante,
+                hasError:false
+            }); 
+    
+        }else{
+            res.json({
+                messsage: 'Ocurrió un error durante la creación del comprobante',
+                comprobante: null,
+                hasError:true
+            }); 
+        } 
+    }
 
 }
 

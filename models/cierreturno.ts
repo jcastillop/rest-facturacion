@@ -114,7 +114,7 @@ export const obtieneCierreTurnoGalonaje = async( usuario: string ):Promise<any> 
         'sum(CASE when tipo_comprobante = \'51\' then CONVERT(float, i.total_unitario) else 0 END) as calibracion_soles ' + 
         'from Comprobantes c ' + 
         'inner join Items i on c.id = i.ComprobanteId ' + 
-        'where CierreturnoId is null and UsuarioId = :usuario ' + 
+        'where CierreturnoId is null and UsuarioId = :usuario and i.medida=\'GLL\' ' + 
         'group by i.descripcion;', 
         {
             replacements: { usuario },

@@ -166,68 +166,77 @@ exports.generaComprobanteV2 = generaComprobanteV2;
 const comprobanteNuevo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { billing: { cliente, tipo_comprobante, tipo_facturacion, numeracion_comprobante, fecha_emision, fecha_actual, total_gravadas, total_igv, total_venta, pago_tarjeta, pago_efectivo, pago_yape, usuario, items, tipo_documento_afectado, numeracion_documento_afectado, fecha_documento_afectado, id_abastecimiento } } = req.body;
     const { client: { tipo_documento, numero_documento, razon_social, direccion, correo, placa } } = req.body;
-    const { serie, hasError, message } = yield (0, comprobante_1.obtieneSerie)(tipo_comprobante, tipo_facturacion);
-    if (hasError) {
-        res.json({ hasError: true, respuesta: message });
-        return;
-    }
-    const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(tipo_comprobante, serie);
-    if (hasErrorCorrelativo) {
-        res.json({ hasError: true, respuesta: messageCorrelativo });
-        return;
-    }
-    const { hasErrorReceptor, messageReceptor, receptor } = yield (0, receptor_1.obtieneReceptor)(numero_documento, tipo_documento, razon_social, direccion, correo, placa);
-    if (hasErrorReceptor) {
-        res.json({ hasError: true, respuesta: messageReceptor });
-        return;
-    }
-    const billing = {
-        cliente: receptor.id_receptor,
-        numeracion_comprobante: correlativo,
-        tipo_documento_afectado: tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? tipo_documento_afectado : "",
-        numeracion_documento_afectado: tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? numeracion_documento_afectado : "",
-        fecha_documento_afectado: tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? fecha_documento_afectado : null,
-        tipo_comprobante,
-        fecha_emision,
-        total_gravadas,
-        total_igv,
-        total_venta,
-        pago_tarjeta,
-        pago_efectivo,
-        pago_yape,
-        placa,
-        UsuarioId: usuario,
-        id_abastecimiento,
-        ruc: process.env.EMISOR_RUC,
-        ReceptorId: receptor ? (receptor.id) : 0,
-        items,
-        pistola: 0,
-        codigo_combustible: '',
-        dec_combustible: '',
-        volumen: 0,
-        fecha_abastecimiento: fecha_emision,
-        tiempo_abastecimiento: 0,
-        volumen_tanque: 0
-    };
-    const { comprobante } = yield (0, comprobante_1.saveComprobanteMaster)(billing);
-    if (comprobante) {
-        const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(id_abastecimiento, tipo_comprobante);
-        if (hasErrorActualizaAbastecimiento) {
-            res.json({ hasError: true, respuesta: messageActualizaAbastecimiento });
-            return;
-        }
+    const { hasError: errorAbastecimiento, message: messageAbastecimiento } = yield (0, comprobante_1.validaComprobanteAbastecimiento)(id_abastecimiento, tipo_comprobante);
+    if (errorAbastecimiento) {
         res.json({
-            messsage: 'Comprobante almacenado correctamente',
-            comprobante: comprobante,
-            hasError: false
+            hasError: errorAbastecimiento,
+            messsage: messageAbastecimiento
         });
     }
     else {
-        res.json({
-            messsage: 'Ocurrió un error durante la creación del comprobante',
-            comprobante: null,
-            hasError: true
-        });
+        const { serie, hasError, message } = yield (0, comprobante_1.obtieneSerie)(tipo_comprobante, tipo_facturacion);
+        if (hasError) {
+            res.json({ hasError: true, respuesta: message });
+            return;
+        }
+        const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(tipo_comprobante, serie);
+        if (hasErrorCorrelativo) {
+            res.json({ hasError: true, respuesta: messageCorrelativo });
+            return;
+        }
+        const { hasErrorReceptor, messageReceptor, receptor } = yield (0, receptor_1.obtieneReceptor)(numero_documento, tipo_documento, razon_social, direccion, correo, placa);
+        if (hasErrorReceptor) {
+            res.json({ hasError: true, respuesta: messageReceptor });
+            return;
+        }
+        const billing = {
+            cliente: receptor.id_receptor,
+            numeracion_comprobante: correlativo,
+            tipo_documento_afectado: tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? tipo_documento_afectado : "",
+            numeracion_documento_afectado: tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? numeracion_documento_afectado : "",
+            fecha_documento_afectado: tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? fecha_documento_afectado : null,
+            tipo_comprobante,
+            fecha_emision,
+            total_gravadas,
+            total_igv,
+            total_venta,
+            pago_tarjeta,
+            pago_efectivo,
+            pago_yape,
+            placa,
+            UsuarioId: usuario,
+            id_abastecimiento,
+            ruc: process.env.EMISOR_RUC,
+            ReceptorId: receptor ? (receptor.id) : 0,
+            items,
+            pistola: 0,
+            codigo_combustible: '',
+            dec_combustible: '',
+            volumen: 0,
+            fecha_abastecimiento: fecha_emision,
+            tiempo_abastecimiento: 0,
+            volumen_tanque: 0
+        };
+        const { comprobante } = yield (0, comprobante_1.saveComprobanteMaster)(billing);
+        if (comprobante) {
+            const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(id_abastecimiento, tipo_comprobante);
+            if (hasErrorActualizaAbastecimiento) {
+                res.json({ hasError: true, respuesta: messageActualizaAbastecimiento });
+                return;
+            }
+            res.json({
+                messsage: 'Comprobante almacenado correctamente ',
+                comprobante: comprobante,
+                hasError: false
+            });
+        }
+        else {
+            res.json({
+                messsage: 'Ocurrió un error durante la creación del comprobante',
+                comprobante: null,
+                hasError: true
+            });
+        }
     }
 });
 exports.comprobanteNuevo = comprobanteNuevo;
