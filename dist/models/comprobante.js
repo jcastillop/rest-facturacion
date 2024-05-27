@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.getDescuentoPorItem = exports.generaReporteCierreTurno = exports.generaReporteComprobantes = exports.generaReporteDeclaracionMensual = exports.generaReporteProductoCombustibleTurnoExcel = exports.generaReporteProductoCombustibleTurnoTotalizadoExcel = exports.generaReporteProductoCombustibleTurno = exports.generaReporteDiarioRangos = exports.actualizarComprobante = exports.obtieneComprobante = exports.obtieneSerie = exports.saveComprobanteMaster = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
+exports.Comprobante = exports.validaComprobanteAbastecimiento = exports.getDescuentoPorItem = exports.generaReporteComprobantes = exports.generaReporteDeclaracionMensual = exports.generaReporteProductoCombustibleTurnoExcel = exports.generaReporteProductoCombustibleTurnoTotalizadoExcel = exports.generaReporteProductoCombustibleTurno = exports.generaReporteCierreTurno = exports.generaReporteDiarioRangos = exports.actualizarComprobante = exports.obtieneFechaUltimoComprobante = exports.obtieneComprobante = exports.obtieneSerie = exports.saveComprobanteMaster = exports.nuevoComprobanteV2 = exports.nuevoComprobante = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const numeros_letras_1 = require("../helpers/numeros-letras");
@@ -157,6 +157,7 @@ const nuevoComprobanteV2 = (comprobante, correlativo, receptor) => __awaiter(voi
             codigo_combustible: comprobante.codigo_combustible,
             dec_combustible: comprobante.dec_combustible,
             volumen: comprobante.volumen,
+            fecha_emision: comprobante.fecha_emision ? comprobante.fecha_emision : (0, date_values_1.getTodayDate)(),
             fecha_abastecimiento: (0, date_values_1.getTodayDate)(),
             tiempo_abastecimiento: comprobante.tiempo_abastecimiento,
             volumen_tanque: comprobante.volumen_tanque,
@@ -323,6 +324,41 @@ const obtieneComprobante = (idComprobante) => __awaiter(void 0, void 0, void 0, 
     }
 });
 exports.obtieneComprobante = obtieneComprobante;
+const obtieneFechaUltimoComprobante = (serie) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("obtieneFechaUltimoComprobante: " + serie);
+    var data;
+    var querySelect = 'select max (fecha_emision) as fecha_emision from Comprobantes where numeracion_comprobante like \'%F' + serie + '%\'';
+    try {
+        yield config_1.Sqlcn.query(querySelect, {
+            type: sequelize_1.QueryTypes.SELECT
+        }).then((results) => {
+            data = results;
+        });
+        if (data) {
+            return {
+                hasError: false,
+                message: "Fecha obtenida satisfactoriamente",
+                fecha: data[0].fecha_emision
+            };
+        }
+        else {
+            return {
+                hasError: false,
+                message: "No existe fecha que coincida con los valores",
+                fecha: data
+            };
+        }
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("obtieneFechaUltimoComprobante: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "obtieneFechaUltimoComprobante: " + error.toString(),
+            fecha: data
+        };
+    }
+});
+exports.obtieneFechaUltimoComprobante = obtieneFechaUltimoComprobante;
 const actualizarComprobante = (props, idComprobante, createOrderMiFact) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio actualizarComprobante");
     try {
@@ -365,7 +401,7 @@ const generaReporteDiarioRangos = (fecha_inicio, fecha_fin) => __awaiter(void 0,
     (0, helpers_1.log4js)("Inicio generaReporteDiarioRangos");
     var data = null;
     var querySelect = 'SELECT ' +
-        'fecha_emision as Fecha, t.turno as Turno, dec_combustible as Producto, tipo_comprobante as Tipo, numeracion_comprobante as Comprobante, ' +
+        'fecha_emision as Fecha, fecha_abastecimiento as Abastecimiento, t.turno as Turno, tipo_comprobante as Tipo, numeracion_comprobante as Comprobante, c.placa as Placa, ' +
         'r.razon_social as Cliente, r.numero_documento as Documento, cast(volumen as decimal(10,3)) as Volumen, ' +
         'cast(total_venta as decimal(10,2)) as Volumen, cast(total_gravadas as decimal(10,2)) as Gravadas, ' +
         'cast(total_igv as decimal(10,2)) as IGV, cast(total_venta as decimal(10,2)) as Total, u.nombre as Usuario, ' +
@@ -374,7 +410,7 @@ const generaReporteDiarioRangos = (fecha_inicio, fecha_fin) => __awaiter(void 0,
         'from Comprobantes c ' +
         'inner join Usuarios u on c.UsuarioId = u.id ' +
         'inner join Receptores r on c.ReceptorId = r.id ' +
-        'left join Cierreturnos t on c.CierreturnoId = t.id ' +
+        'inner join Cierreturnos t on c.CierreturnoId = t.id ' +
         'where fecha_emision >= :fecha_inicio and fecha_emision <= :fecha_fin';
     try {
         yield config_1.Sqlcn.query(querySelect, {
@@ -400,6 +436,38 @@ const generaReporteDiarioRangos = (fecha_inicio, fecha_fin) => __awaiter(void 0,
     }
 });
 exports.generaReporteDiarioRangos = generaReporteDiarioRangos;
+const generaReporteCierreTurno = (fecha) => __awaiter(void 0, void 0, void 0, function* () {
+    (0, helpers_1.log4js)("Inicio generaReporteCierreTurno");
+    var data = null;
+    try {
+        var query = 'SELECT c.id as Id, c.turno as Turno, c.isla as Isla, u.nombre as Usuario, RIGHT( CONVERT(DATETIME, c.fecha),8) as Hora, CAST(c.efectivo AS DECIMAL(10,2)) as Efectivo, CAST(c.tarjeta AS DECIMAL(10,2)) as Tarjeta, CAST(c.yape AS DECIMAL(10,2)) as Yape, CAST(c.total AS DECIMAL(10,2)) as Total ' +
+            'FROM Cierreturnos c ' +
+            'INNER JOIN Usuarios u on c.UsuarioId = u.id ' +
+            'INNER JOIN Cierredias d on c.CierrediaId=d.id ' +
+            'where CAST(d.fecha as DATE) = CAST(:fecha as DATE)';
+        yield config_1.Sqlcn.query(query, {
+            replacements: { fecha },
+            type: sequelize_1.QueryTypes.SELECT
+        }).then((results) => {
+            data = results;
+        });
+        (0, helpers_1.log4js)("Fin generaReporteCierreTurno ");
+        return {
+            hasError: false,
+            message: "Reporte generado satisfactoriamente",
+            data: data
+        };
+    }
+    catch (error) {
+        (0, helpers_1.log4js)("generaReporteCierreTurno: " + error.toString(), 'error');
+        return {
+            hasError: true,
+            message: "generaReporteCierreTurno: " + error.toString(),
+            data: data
+        };
+    }
+});
+exports.generaReporteCierreTurno = generaReporteCierreTurno;
 const generaReporteProductoCombustibleTurno = (fecha) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurno");
     const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00';
@@ -411,8 +479,8 @@ const generaReporteProductoCombustibleTurno = (fecha) => __awaiter(void 0, void 
         'cast(sum(convert(float,case tipo_comprobante when \'01\' then CONVERT(float, i.total_unitario) when \'03\' then CONVERT(float, i.total_unitario) when \'52\' then CONVERT(float, i.total_unitario) else 0 end)) as decimal(10,2)) as TotalVenta, ' +
         'cast(sum(convert(float,case tipo_comprobante when \'50\' then CONVERT(float, i.total_unitario) else 0 end)) as decimal(10,2)) as TotalDespacho, ' +
         'cast(sum(convert(float,case tipo_comprobante when \'51\' then CONVERT(float, i.total_unitario) else 0 end)) as decimal(10,2)) as TotalCalibracion ';
-    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id inner join Items i on c.id = i.ComprobanteId ';
-    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or (fecha_emision = :fecha and fecha_abastecimiento < CAST(:fecha_abastecimiento_fin AS datetimeoffset) and t.turno = \'TURNO1\') or (fecha_emision = :fecha and t.turno in (\'TURNO2\',\'TURNO3\')))';
+    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id inner join Items i on c.id = i.ComprobanteId inner join Cierredias d on t.CierrediaId = d.id ';
+    var queryWhere = 'where CONVERT(date, d.fecha) = :fecha ';
     var queryGroup = 'group by t.turno, dec_combustible order by t.turno desc;';
     var prepareQuery = querySelect + queryFrom + queryWhere + queryGroup;
     var data = null;
@@ -441,14 +509,14 @@ const generaReporteProductoCombustibleTurno = (fecha) => __awaiter(void 0, void 
 });
 exports.generaReporteProductoCombustibleTurno = generaReporteProductoCombustibleTurno;
 const generaReporteProductoCombustibleTurnoTotalizadoExcel = (fecha, turnos, usuarios) => __awaiter(void 0, void 0, void 0, function* () {
-    (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurnoExcel");
+    (0, helpers_1.log4js)("Inicio generaReporteProductoCombustibleTurnoTotalizadoExcel");
     const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00';
     const fecha_abastecimiento_end = fecha + ' 15:00:00.0000000 +00:00';
     const array = turnos.split(',');
-    var querySelect = 'select dec_combustible as Producto, count(c.id) as NroVentas, sum(c.volumen) as VolumenTotal, sum(convert(float, c.total_venta)) as SolesTotal ';
-    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id ';
-    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or (fecha_emision = :fecha and fecha_abastecimiento < CAST(:fecha_abastecimiento_end AS datetimeoffset) and t.turno = \'TURNO1\') or (fecha_emision = :fecha and t.turno in (\'TURNO2\',\'TURNO3\'))) ';
-    var queryGroup = 'group by dec_combustible;';
+    var querySelect = 'select i.descripcion as Producto, count(c.id) as Ventas, sum(convert(float,i.cantidad) ) as Cantidad, sum(convert(float, i.total_unitario)) as Total ';
+    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id inner join Usuarios u on t.UsuarioId = u.id inner join Items i on c.id = i.ComprobanteId inner join Cierredias d on t.CierrediaId = d.id ';
+    var queryWhere = 'where CONVERT(date, d.fecha) = :fecha ';
+    var queryGroup = 'group by i.codigo_producto, i.descripcion order by i.codigo_producto desc;';
     var prepareQuery = querySelect + queryFrom + queryWhere + queryGroup;
     var data = null;
     try {
@@ -458,7 +526,7 @@ const generaReporteProductoCombustibleTurnoTotalizadoExcel = (fecha, turnos, usu
         }).then((results) => {
             data = results;
         });
-        (0, helpers_1.log4js)("Fin generaReporteProductoCombustibleTurnoExcel ");
+        (0, helpers_1.log4js)("Fin generaReporteProductoCombustibleTurnoTotalizadoExcel ");
         return {
             hasError: false,
             message: "Reporte generado satisfactoriamente",
@@ -466,7 +534,7 @@ const generaReporteProductoCombustibleTurnoTotalizadoExcel = (fecha, turnos, usu
         };
     }
     catch (error) {
-        (0, helpers_1.log4js)("generaReporteProductoCombustibleTurnoExcel: " + error.toString(), 'error');
+        (0, helpers_1.log4js)("generaReporteProductoCombustibleTurnoTotalizadoExcel: " + error.toString(), 'error');
         return {
             hasError: true,
             message: "generaReporteProductoCombustibleTurnoExcel: " + error.toString(),
@@ -480,16 +548,16 @@ const generaReporteProductoCombustibleTurnoExcel = (fecha, turnos, usuarios) => 
     const fecha_abastecimiento = fecha + ' 20:00:00.0000000 +00:00';
     const fecha_abastecimiento_end = fecha + ' 15:00:00.0000000 +00:00';
     const array = turnos.split(',');
-    var querySelect = 'SELECT t.turno as Turno, dec_combustible as Producto, ' +
-        'cast(sum(case tipo_comprobante when \'01\' then volumen when \'03\' then volumen when \'52\' then volumen else \'0\' end) as decimal(10,3)) as VolumenVenta, ' +
-        'cast(sum(case tipo_comprobante when \'50\' then volumen else \'0\' end) as decimal(10,3)) as VolumenDespacho, ' +
-        'cast(sum(case tipo_comprobante when \'51\' then volumen else \'0\' end) as decimal(10,3)) as VolumenCalibracion, ' +
-        'sum(convert(float,case tipo_comprobante when \'01\' then total_venta when \'03\' then total_venta when \'52\' then total_venta else \'0\' end)) as TotalVenta, ' +
-        'sum(convert(float,case tipo_comprobante when \'50\' then total_venta else \'0\' end)) as TotalDespacho, ' +
-        'sum(convert(float,case tipo_comprobante when \'51\' then total_venta else \'0\' end)) as TotalCalibracion ';
-    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id ';
-    var queryWhere = 'where ((fecha_emision = DATEADD(day, -1,CAST(:fecha AS DATE)) and fecha_abastecimiento > DATEADD(day, -1,CAST(:fecha_abastecimiento AS datetimeoffset)) and t.turno = \'TURNO1\') or (fecha_emision = :fecha and fecha_abastecimiento < CAST(:fecha_abastecimiento_end AS datetimeoffset) and t.turno = \'TURNO1\') or (fecha_emision = :fecha and t.turno in (\'TURNO2\',\'TURNO3\'))) ';
-    var queryGroup = 'group by t.turno, dec_combustible order by t.turno desc;';
+    var querySelect = 'SELECT t.turno as Turno, i.descripcion as Producto, ' +
+        'cast(sum(case tipo_comprobante when \'01\' then convert(float, i.cantidad) when \'03\' then convert(float, i.cantidad) when \'52\' then convert(float, i.cantidad) else 0 end) as decimal(10,3)) as VolumenVenta, ' +
+        'cast(sum(case tipo_comprobante when \'50\' then convert(float, i.cantidad) else 0 end) as decimal(10,3)) as VolumenDespacho, ' +
+        'cast(sum(case tipo_comprobante when \'51\' then convert(float, i.cantidad) else 0 end) as decimal(10,3)) as VolumenCalibracion, ' +
+        'sum(convert(float,case tipo_comprobante when \'01\' then i.total_unitario when \'03\' then i.total_unitario when \'52\' then i.total_unitario else \'0\' end)) as TotalVenta, ' +
+        'sum(convert(float,case tipo_comprobante when \'50\' then i.total_unitario else \'0\' end)) as TotalDespacho, ' +
+        'sum(convert(float,case tipo_comprobante when \'51\' then i.total_unitario else \'0\' end)) as TotalCalibracion ';
+    var queryFrom = 'from Comprobantes c inner join Cierreturnos t on c.CierreturnoId = t.id inner join Items i on c.id = i.ComprobanteId inner join Cierredias d on t.CierrediaId = d.id ';
+    var queryWhere = 'where CONVERT(date, d.fecha) = :fecha ';
+    var queryGroup = 'group by t.turno, i.descripcion order by t.turno desc;';
     var prepareQuery = querySelect + queryFrom + queryWhere + queryGroup;
     var data = null;
     try {
@@ -597,38 +665,7 @@ const generaReporteComprobantes = (fecha, fecha_fin, usuario, ruc, tipo_comproba
     }
 });
 exports.generaReporteComprobantes = generaReporteComprobantes;
-const generaReporteCierreTurno = (fecha) => __awaiter(void 0, void 0, void 0, function* () {
-    (0, helpers_1.log4js)("Inicio generaReporteCierreTurno");
-    var data = null;
-    try {
-        var query = 'SELECT c.id as Id, c.turno as Turno, c.isla as Isla, u.nombre as Usuario, RIGHT( CONVERT(DATETIME, c.fecha),8) as Hora, CAST(c.efectivo AS DECIMAL(10,2)) as Efectivo, CAST(c.tarjeta AS DECIMAL(10,2)) as Tarjeta, CAST(c.yape AS DECIMAL(10,2)) as Yape, CAST(c.total AS DECIMAL(10,2)) as Total ' +
-            'FROM Cierreturnos c ' +
-            'INNER JOIN Usuarios u on c.UsuarioId = u.id ' +
-            'where CAST(fecha as DATE) = CAST(:fecha as DATE)';
-        yield config_1.Sqlcn.query(query, {
-            replacements: { fecha },
-            type: sequelize_1.QueryTypes.SELECT
-        }).then((results) => {
-            data = results;
-        });
-        (0, helpers_1.log4js)("Fin generaReporteCierreTurno ");
-        return {
-            hasError: false,
-            message: "Reporte generado satisfactoriamente",
-            data: data
-        };
-    }
-    catch (error) {
-        (0, helpers_1.log4js)("generaReporteCierreTurno: " + error.toString(), 'error');
-        return {
-            hasError: true,
-            message: "generaReporteCierreTurno: " + error.toString(),
-            data: data
-        };
-    }
-});
-exports.generaReporteCierreTurno = generaReporteCierreTurno;
-const getDescuentoPorItem = (numero_documento, codigo_producto, items) => __awaiter(void 0, void 0, void 0, function* () {
+const getDescuentoPorItem = (numero_documento, tipo, codigo_producto, items) => __awaiter(void 0, void 0, void 0, function* () {
     (0, helpers_1.log4js)("Inicio obtieneDescuentos ");
     var arr = [];
     items.forEach(item => {
@@ -641,10 +678,10 @@ const getDescuentoPorItem = (numero_documento, codigo_producto, items) => __awai
         var query = "";
         var query = 'select d.id, d.codigo_producto, d.numero_documento, d.monto_descuento, c.codigo_producto ' +
             'from Descuentos d ' +
-            'left join Condiciones c on d.id = c.DescuentoId ' +
-            'where d.numero_documento = :numero_documento and d.codigo_producto = :codigo_producto and c.codigo_producto in ( :str_arr )';
+            'left join Condiciones c on d.id = c.DescuentoId and c.codigo_producto in ( :str_arr ) ' +
+            'where d.numero_documento = :numero_documento and d.tipo = :tipo and d.codigo_producto = :codigo_producto';
         yield config_1.Sqlcn.query(query, {
-            replacements: { numero_documento, codigo_producto, str_arr },
+            replacements: { numero_documento, tipo, codigo_producto, str_arr },
             type: sequelize_1.QueryTypes.SELECT
         }).then((results) => {
             data = results;
@@ -665,7 +702,7 @@ const getDescuentoPorItem = (numero_documento, codigo_producto, items) => __awai
         (0, helpers_1.log4js)("obtieneDescuentos: " + error.toString(), 'error');
         return {
             hasError: true,
-            message: "generaReporteCierreTurno: " + error.toString(),
+            message: "obtieneDescuentos: " + error.toString(),
             descuento
         };
     }

@@ -262,3 +262,15 @@ Stacktrace:   en System.Runtime.InteropServices.Marshal.ThrowExceptionForHRInter
 2024-05-02 09:29:59 - Started 8228
 2024-05-08 18:22:07 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
 2024-05-08 18:22:07 - Started 8432
+2024-05-14 18:35:08 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-05-14 18:35:08 - Started 8496
+2024-05-15 22:28:44 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-05-15 22:28:44 - Started 8076
+2024-05-16 09:27:57 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-05-16 09:27:57 - Started 7760
+2024-05-24 20:05:03 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-05-24 20:05:03 - Started 8448
+2024-05-26 13:08:39 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-05-26 13:08:39 - Started 8160
+2024-05-27 05:13:10 - Starting D:\Programas\nodejs\node.exe  --harmony D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\node_modules\node-windows\lib\wrapper.js --file D:\SolucionesOP\FacturacionOP\Fuentes\rest-facturacion\dist\app.js --scriptoptions= --log "RESTFACTURACION wrapper" --grow 0.25 --wait 1 --maxrestarts 3 --abortonerror n --stopparentfirst undefined
+2024-05-27 05:13:10 - Started 8572

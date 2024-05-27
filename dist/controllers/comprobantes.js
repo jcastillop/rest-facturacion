@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.obtieneDescuentos = exports.getNotasDespacho = exports.getComprobante = exports.cierreTurnoTotalSoles = exports.cierreTurnoTotalProducto = exports.cierreTurnoGalonaje = exports.historicoCierres = exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.modificaComprobante = exports.comprobanteNuevo = exports.generaComprobanteV2 = exports.generaComprobante = void 0;
+exports.obtieneDescuentos = exports.getNotasDespacho = exports.getFechaUltimoComprobante = exports.getComprobante = exports.cierreTurnoTotalSoles = exports.cierreTurnoTotalProducto = exports.cierreTurnoGalonaje = exports.historicoCierres = exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.modificaComprobante = exports.comprobanteNuevo = exports.generaComprobanteV2 = void 0;
 const receptor_1 = __importStar(require("../models/receptor"));
 const abastecimiento_1 = require("../models/abastecimiento");
 const comprobante_1 = require("../models/comprobante");
@@ -47,76 +47,17 @@ const sequelize_1 = require("sequelize");
 const cierredia_1 = require("../models/cierredia");
 const usuario_1 = __importDefault(require("../models/usuario"));
 const item_1 = __importDefault(require("../models/item"));
-const generaComprobante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { body } = req;
-    const serie = '001';
-    const bCreateOrderMiFact = (body.tipo == constantes_1.default.TipoComprobante.Boleta || body.tipo == constantes_1.default.TipoComprobante.Factura || body.tipo == constantes_1.default.TipoComprobante.NotaCredito);
-    var responseMiFact;
-    const { hasError, message } = yield (0, comprobante_1.validaComprobanteAbastecimiento)(body.id, body.tipo);
-    if (hasError) {
-        res.json({
-            hasError: hasError,
-            respuesta: message
-        });
-    }
-    else {
-        const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(body.tipo, serie, body.prefijo ? body.prefijo : "");
-        if (hasErrorCorrelativo) {
-            res.json({ hasError: true, respuesta: messageCorrelativo });
-            return;
-        }
-        const { hasErrorReceptor, messageReceptor, receptor } = yield (0, receptor_1.obtieneReceptor)(body.numero_documento ? body.numero_documento : 0, body.tipo_documento, body.razon_social, body.direccion, body.correo, body.placa);
-        if (hasErrorReceptor) {
-            res.json({ hasError: true, respuesta: messageReceptor });
-            return;
-        }
-        const { hasErrorComprobante, messageComprobante, comprobante } = yield (0, comprobante_1.nuevoComprobante)(body.id, body.tipo, receptor, correlativo, body.placa, body.usuario, body.producto, body.comentario, body.tipo_afectado, body.numeracion_afectado, body.fecha_afectado, body.tarjeta, body.efectivo, body.yape, body.billete);
-        if (hasErrorComprobante) {
-            res.json({ hasError: true, respuesta: messageComprobante });
-            return;
-        }
-        const { hasErrorActualizaAbastecimiento, messageActualizaAbastecimiento } = yield (0, abastecimiento_1.actualizaAbastecimiento)(body.id, body.tipo);
-        if (hasErrorActualizaAbastecimiento) {
-            res.json({ hasError: true, respuesta: messageActualizaAbastecimiento });
-            return;
-        }
-        if (process.env.ENVIOS_ASINCRONOS == '1') {
-            res.json({
-                hasError: false,
-                receptor: receptor,
-                comprobante: comprobante,
-                respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
-            });
-        }
-        else {
-            if (bCreateOrderMiFact) {
-                const { hasErrorMiFact, messageMiFact, response } = yield (0, api_mifact_1.createOrderApiMiFact)(comprobante, receptor, body.tipo, correlativo);
-                responseMiFact = response;
-                if (hasErrorMiFact) {
-                    res.json({ hasError: true, respuesta: messageMiFact });
-                    return;
-                }
-            }
-            const { hasErrorActualizaComprobante, messageActualizaComprobante, comprobanteUpdate } = yield (0, comprobante_1.actualizarComprobante)(responseMiFact, comprobante.id, bCreateOrderMiFact);
-            if (hasErrorActualizaComprobante) {
-                res.json({ hasError: true, respuesta: messageActualizaComprobante });
-                return;
-            }
-            res.json({
-                hasError: false,
-                receptor: receptor,
-                comprobante: comprobanteUpdate,
-                respuesta: bCreateOrderMiFact ? "Comprobante guardado y enviado a SUNAT" : "Comprobante generado"
-            });
-        }
-    }
-});
-exports.generaComprobante = generaComprobante;
+const date_values_1 = require("../helpers/date-values");
 const generaComprobanteV2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { tipo_comprobante, prefijo, Receptor } = req.body;
-    const serie = '002';
+    const { tipo_comprobante, tipo_facturacion, prefijo, Receptor } = req.body;
+    //const serie: string = '002';
     const bCreateOrderMiFact = (tipo_comprobante == constantes_1.default.TipoComprobante.Boleta || tipo_comprobante == constantes_1.default.TipoComprobante.Factura || tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito);
     var responseMiFact;
+    const { serie, hasError: hasErrorSerie, message: messageSerie } = yield (0, comprobante_1.obtieneSerie)(tipo_comprobante, tipo_facturacion);
+    if (hasErrorSerie) {
+        res.json({ hasError: true, respuesta: messageSerie });
+        return;
+    }
     const { hasErrorCorrelativo, messageCorrelativo, correlativo } = yield (0, correlativo_1.generaCorrelativo)(tipo_comprobante, serie, prefijo ? prefijo : "");
     if (hasErrorCorrelativo) {
         res.json({ hasError: true, respuesta: messageCorrelativo });
@@ -166,6 +107,7 @@ exports.generaComprobanteV2 = generaComprobanteV2;
 const comprobanteNuevo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { billing: { cliente, tipo_comprobante, tipo_facturacion, numeracion_comprobante, fecha_emision, fecha_actual, total_gravadas, total_igv, total_venta, pago_tarjeta, pago_efectivo, pago_yape, usuario, items, tipo_documento_afectado, numeracion_documento_afectado, fecha_documento_afectado, id_abastecimiento } } = req.body;
     const { client: { tipo_documento, numero_documento, razon_social, direccion, correo, placa } } = req.body;
+    console.log((0, date_values_1.getTodayDateFormat)(fecha_emision));
     const { hasError: errorAbastecimiento, message: messageAbastecimiento } = yield (0, comprobante_1.validaComprobanteAbastecimiento)(id_abastecimiento, tipo_comprobante);
     if (errorAbastecimiento) {
         res.json({
@@ -196,7 +138,7 @@ const comprobanteNuevo = (req, res) => __awaiter(void 0, void 0, void 0, functio
             numeracion_documento_afectado: tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? numeracion_documento_afectado : "",
             fecha_documento_afectado: tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito ? fecha_documento_afectado : null,
             tipo_comprobante,
-            fecha_emision,
+            fecha_emision: (0, date_values_1.getTodayDateFormat)(fecha_emision),
             total_gravadas,
             total_igv,
             total_venta,
@@ -213,7 +155,7 @@ const comprobanteNuevo = (req, res) => __awaiter(void 0, void 0, void 0, functio
             codigo_combustible: '',
             dec_combustible: '',
             volumen: 0,
-            fecha_abastecimiento: fecha_emision,
+            fecha_abastecimiento: (0, date_values_1.getTodayDateFormat)(fecha_emision),
             tiempo_abastecimiento: 0,
             volumen_tanque: 0
         };
@@ -412,6 +354,24 @@ const getComprobante = (req, res) => __awaiter(void 0, void 0, void 0, function*
     }
 });
 exports.getComprobante = getComprobante;
+const getFechaUltimoComprobante = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { tipo_comprobante, proposito } = req.query;
+    const { serie, hasError: hasErrorSerie, message: messageSerie } = yield (0, comprobante_1.obtieneSerie)(tipo_comprobante ? tipo_comprobante.toString() : '', proposito ? proposito.toString() : '');
+    if (hasErrorSerie) {
+        res.json({ hasError: true, respuesta: messageSerie });
+        return;
+    }
+    try {
+        const data = yield (0, comprobante_1.obtieneFechaUltimoComprobante)(serie);
+        res.json(data);
+    }
+    catch (error) {
+        res.json({
+            error
+        });
+    }
+});
+exports.getFechaUltimoComprobante = getFechaUltimoComprobante;
 const getNotasDespacho = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id, rs, fecIni, fecFin, limite = 2000, desde = 0 } = req.query;
     try {
@@ -455,8 +415,8 @@ const getNotasDespacho = (req, res) => __awaiter(void 0, void 0, void 0, functio
 });
 exports.getNotasDespacho = getNotasDespacho;
 const obtieneDescuentos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { items = [], codigo_producto = '', cliente: { numero_documento = '' } } = req.body;
-    const { hasError, message, descuento } = yield (0, comprobante_1.getDescuentoPorItem)(numero_documento, codigo_producto, items);
+    const { items = [], codigo_producto = '', tipo = '', cliente: { numero_documento = '' } } = req.body;
+    const { hasError, message, descuento } = yield (0, comprobante_1.getDescuentoPorItem)(numero_documento, tipo, codigo_producto, items);
     res.json({
         descuento,
         hasError: hasError,
