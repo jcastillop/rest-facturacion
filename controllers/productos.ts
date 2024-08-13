@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import Producto from '../models/producto';
 import { log4js } from "../helpers";
+import { Op } from "sequelize";
 
 
 export const getProductos = async (req: Request, res: Response) => {
@@ -36,14 +37,16 @@ export const getProductosTipo = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     try {
-
-        const um = (id=='USER_ROLE')?'NIU':'GLL'
-
+        let parameters;
+        if(id=='USER_ROLE'){
+            parameters = { medida: { [Op.not]: 'GLL' } }
+        }else{
+            parameters = { medida: 'GLL' }
+        }
         const data: any = await Producto.findAndCountAll({      
-            where: { medida: um },
+            where: parameters,
             raw:    true
         });
-
         res.json({
             message: "Consulta getProductosTipo realizada satisfactoriamente",
             total: data.count, 

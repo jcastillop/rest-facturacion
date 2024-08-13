@@ -93,6 +93,7 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
             "TXT_VERS_ESTRUCT_UBL": "2.0",
             "COD_ANEXO_EMIS": "0000",
             "COD_TIP_OPE_SUNAT": "0101",
+            "COD_TIP_NC": (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) ? "01" : "",
             "TXT_DESC_MTVO": (tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito) ? "anulacion de comprobante" : "",
             "items": arr_items,
             "docs_referenciado": [
@@ -144,7 +145,7 @@ const createOrderApiMiFact = (comprobante, receptor, tipo_comprobante, correlati
 });
 exports.createOrderApiMiFact = createOrderApiMiFact;
 const consultaRucMiFact = (ruc) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b;
+    var _a;
     try {
         const body = {
             "TOKEN": `${process.env.CONSULTA_RUC_TOKEN}`,
@@ -175,7 +176,7 @@ const consultaRucMiFact = (ruc) => __awaiter(void 0, void 0, void 0, function* (
         if (axios_1.default.isAxiosError(error)) {
             return {
                 hasErrorMiFact: true,
-                messageMiFact: "createOrderApiMiFact: " + ((_b = error.response) === null || _b === void 0 ? void 0 : _b.data.message),
+                messageMiFact: "createOrderApiMiFact: " + ((_a = error.response) === null || _a === void 0 ? void 0 : _a.data.message),
                 razon_social: null,
                 direccion: null
             };

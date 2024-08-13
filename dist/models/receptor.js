@@ -26,9 +26,14 @@ const obtieneReceptor = (numero_documento, tipo_documento, razon_social, direcci
         //         placa: placa,
         //     }
         //   });
-        const receptor = yield Receptor.findOne({ where: { numero_documento: numero_documento, tipo_documento: tipo_documento } }).then(function (obj) {
+        const receptor = yield Receptor.findOne({
+            where: {
+                numero_documento: numero_documento,
+                tipo_documento: tipo_documento,
+            },
+        }).then(function (obj) {
             // update
-            if (obj)
+            if (obj && numero_documento != "0")
                 return obj.update({
                     razon_social: razon_social,
                     direccion: direccion,
@@ -49,11 +54,11 @@ const obtieneReceptor = (numero_documento, tipo_documento, razon_social, direcci
         return {
             hasErrorReceptor: false,
             messageReceptor: `Receptor obtenido correctamente`,
-            receptor: receptor
+            receptor: receptor,
         };
     }
     catch (error) {
-        (0, helpers_1.log4js)("obtieneReceptor: " + error.toString(), 'error');
+        (0, helpers_1.log4js)("obtieneReceptor: " + error.toString(), "error");
         (0, helpers_1.log4js)("Fin obtieneReceptor");
         return {
             hasErrorReceptor: true,
@@ -62,23 +67,23 @@ const obtieneReceptor = (numero_documento, tipo_documento, razon_social, direcci
     }
 });
 exports.obtieneReceptor = obtieneReceptor;
-const Receptor = config_1.Sqlcn.define('Receptores', {
+const Receptor = config_1.Sqlcn.define("Receptores", {
     id: {
         type: sequelize_1.DataTypes.INTEGER,
         autoIncrement: true,
-        primaryKey: true
+        primaryKey: true,
     },
     numero_documento: {
         type: sequelize_1.DataTypes.STRING,
-        primaryKey: true
+        primaryKey: true,
     },
     tipo_documento: {
         type: sequelize_1.DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
     },
     razon_social: {
         type: sequelize_1.DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
     },
     direccion: {
         type: sequelize_1.DataTypes.STRING,
@@ -93,7 +98,7 @@ const Receptor = config_1.Sqlcn.define('Receptores', {
         allowNull: true,
     },
 }, {
-    timestamps: false
+    timestamps: false,
 });
 exports.default = Receptor;
 //# sourceMappingURL=receptor.js.map

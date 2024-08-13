@@ -98,6 +98,7 @@ export const createOrderApiMiFact = async(comprobante : any, receptor: any, tipo
             "TXT_VERS_ESTRUCT_UBL":"2.0",
             "COD_ANEXO_EMIS":"0000",
             "COD_TIP_OPE_SUNAT": "0101",
+            "COD_TIP_NC": (tipo_comprobante == Constantes.TipoComprobante.NotaCredito)?"01":"",
             "TXT_DESC_MTVO": (tipo_comprobante == Constantes.TipoComprobante.NotaCredito)?"anulacion de comprobante":"",
             "items": arr_items,
             "docs_referenciado": [

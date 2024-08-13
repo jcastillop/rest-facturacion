@@ -39,7 +39,7 @@ exports.log4js = void 0;
 const winston = __importStar(require("winston"));
 const winston_1 = require("winston");
 const winston_daily_rotate_file_1 = __importDefault(require("winston-daily-rotate-file"));
-const log4js = (data, logLevel = 'debug') => __awaiter(void 0, void 0, void 0, function* () {
+const log4js = (data_1, ...args_1) => __awaiter(void 0, [data_1, ...args_1], void 0, function* (data, logLevel = 'debug') {
     logger.info(JSON.stringify(data));
     logger.log({
         level: logLevel,

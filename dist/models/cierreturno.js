@@ -20,7 +20,7 @@ const date_values_1 = require("../helpers/date-values");
 const helpers_1 = require("../helpers");
 const gastos_1 = __importDefault(require("./gastos"));
 const depositos_1 = __importDefault(require("./depositos"));
-const cerrarTurno = ({ sessionID, turno, isla, efectivo, tarjeta, yape }) => __awaiter(void 0, void 0, void 0, function* () {
+const cerrarTurno = (_a) => __awaiter(void 0, [_a], void 0, function* ({ sessionID, turno, isla, efectivo, tarjeta, yape }) {
     (0, helpers_1.log4js)("Inicio cerrarTurno");
     (0, helpers_1.log4js)(`Inicio cerrarTurno: sessionID ${sessionID},  turno ${turno},  isla ${isla},  total ${efectivo + tarjeta + yape}, efectivo ${efectivo},  tarjeta ${tarjeta},  yape ${yape}`);
     const totalSumado = (Math.round((efectivo + tarjeta + yape) * 100) / 100).toFixed(2);

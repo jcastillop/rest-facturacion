@@ -37,7 +37,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.obtieneDescuentos = exports.getNotasDespacho = exports.getFechaUltimoComprobante = exports.getComprobante = exports.cierreTurnoTotalSoles = exports.cierreTurnoTotalProducto = exports.cierreTurnoGalonaje = exports.historicoCierres = exports.listaTurnosPorCerrar = exports.createCierreDia = exports.cierreTurno = exports.historicoComprobantes = exports.modificaComprobante = exports.comprobanteNuevo = exports.generaComprobanteV2 = void 0;
 const receptor_1 = __importStar(require("../models/receptor"));
-const abastecimiento_1 = require("../models/abastecimiento");
+const abastecimiento_1 = __importStar(require("../models/abastecimiento"));
 const comprobante_1 = require("../models/comprobante");
 const correlativo_1 = require("../models/correlativo");
 const cierreturno_1 = __importStar(require("../models/cierreturno"));
@@ -50,9 +50,8 @@ const item_1 = __importDefault(require("../models/item"));
 const date_values_1 = require("../helpers/date-values");
 const generaComprobanteV2 = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { tipo_comprobante, tipo_facturacion, prefijo, Receptor } = req.body;
-    //const serie: string = '002';
     const bCreateOrderMiFact = (tipo_comprobante == constantes_1.default.TipoComprobante.Boleta || tipo_comprobante == constantes_1.default.TipoComprobante.Factura || tipo_comprobante == constantes_1.default.TipoComprobante.NotaCredito);
-    var responseMiFact;
+    let responseMiFact;
     const { serie, hasError: hasErrorSerie, message: messageSerie } = yield (0, comprobante_1.obtieneSerie)(tipo_comprobante, tipo_facturacion);
     if (hasErrorSerie) {
         res.json({ hasError: true, respuesta: messageSerie });
@@ -105,9 +104,10 @@ const generaComprobanteV2 = (req, res) => __awaiter(void 0, void 0, void 0, func
 });
 exports.generaComprobanteV2 = generaComprobanteV2;
 const comprobanteNuevo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { billing: { cliente, tipo_comprobante, tipo_facturacion, numeracion_comprobante, fecha_emision, fecha_actual, total_gravadas, total_igv, total_venta, pago_tarjeta, pago_efectivo, pago_yape, usuario, items, tipo_documento_afectado, numeracion_documento_afectado, fecha_documento_afectado, id_abastecimiento } } = req.body;
+    const { billing: { cliente, tipo_comprobante, tipo_facturacion, numeracion_comprobante, fecha_emision, fecha_actual, total_gravadas, total_igv, total_venta, pago_tarjeta, pago_efectivo, pago_yape, usuario, items, tipo_documento_afectado, numeracion_documento_afectado, fecha_documento_afectado, id_abastecimiento, comentario } } = req.body;
     const { client: { tipo_documento, numero_documento, razon_social, direccion, correo, placa } } = req.body;
-    console.log((0, date_values_1.getTodayDateFormat)(fecha_emision));
+    const abastecimiento = yield abastecimiento_1.default.findByPk(id_abastecimiento, { raw: true });
+    console.log(abastecimiento);
     const { hasError: errorAbastecimiento, message: messageAbastecimiento } = yield (0, comprobante_1.validaComprobanteAbastecimiento)(id_abastecimiento, tipo_comprobante);
     if (errorAbastecimiento) {
         res.json({
@@ -157,7 +157,8 @@ const comprobanteNuevo = (req, res) => __awaiter(void 0, void 0, void 0, functio
             volumen: 0,
             fecha_abastecimiento: (0, date_values_1.getTodayDateFormat)(fecha_emision),
             tiempo_abastecimiento: 0,
-            volumen_tanque: 0
+            volumen_tanque: 0,
+            comentario
         };
         const { comprobante } = yield (0, comprobante_1.saveComprobanteMaster)(billing);
         if (comprobante) {
@@ -226,11 +227,12 @@ exports.modificaComprobante = modificaComprobante;
 const historicoComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const comprobanteParams = req.query;
     const queryAnd = [];
-    var queryWhere = {};
+    let queryWhere = {};
     const usuario = yield usuario_1.default.findByPk(comprobanteParams.idUsuario, { raw: true });
     if (usuario) {
         if (usuario.rol == 'ADMIN_ROLE') {
             queryAnd.push({ numeracion_comprobante: { [sequelize_1.Op.ne]: null } });
+            queryAnd.push({ fecha_emision: comprobanteParams.fecha });
         }
         else if (usuario.rol == 'USER_ROLE') {
             queryAnd.push({ UsuarioId: comprobanteParams.idUsuario });
@@ -239,6 +241,7 @@ const historicoComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, fu
         else {
             queryAnd.push({ CierreturnoId: { [sequelize_1.Op.ne]: null } });
         }
+        console.log(queryAnd);
         queryWhere = { [sequelize_1.Op.and]: queryAnd };
         const data = yield comprobante_1.Comprobante.findAndCountAll({
             include: [
@@ -250,9 +253,7 @@ const historicoComprobantes = (req, res) => __awaiter(void 0, void 0, void 0, fu
             where: queryWhere,
             order: [
                 ['id', 'DESC']
-            ],
-            offset: Number(comprobanteParams.offset),
-            limit: 5000
+            ]
         });
         res.json({
             total: data.count,

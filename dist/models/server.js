@@ -22,6 +22,7 @@ const receptores_1 = __importDefault(require("../routes/receptores"));
 const productos_1 = __importDefault(require("../routes/productos"));
 const gastos_1 = __importDefault(require("../routes/gastos"));
 const depositos_1 = __importDefault(require("../routes/depositos"));
+const descuentos_1 = __importDefault(require("../routes/descuentos"));
 const cron_1 = require("cron");
 const app_helpers_1 = require("../helpers/app-helpers");
 class Server {
@@ -33,7 +34,8 @@ class Server {
             receptores: '/api/receptores',
             productos: '/api/productos',
             gastos: '/api/gastos',
-            depositos: '/api/depositos'
+            depositos: '/api/depositos',
+            descuentos: '/api/descuentos'
         };
         this.app = (0, express_1.default)();
         this.port = process.env.PORT || '8800';
@@ -70,6 +72,7 @@ class Server {
         this.app.use(this.apiPaths.productos, productos_1.default);
         this.app.use(this.apiPaths.gastos, gastos_1.default);
         this.app.use(this.apiPaths.depositos, depositos_1.default);
+        this.app.use(this.apiPaths.descuentos, descuentos_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {

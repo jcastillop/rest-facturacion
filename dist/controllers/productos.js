@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteProducto = exports.updateProducto = exports.putProducto = exports.getProducto = exports.getProductosTipo = exports.getProductos = void 0;
 const producto_1 = __importDefault(require("../models/producto"));
 const helpers_1 = require("../helpers");
+const sequelize_1 = require("sequelize");
 const getProductos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { estado = 1, limite = 15, desde = 0 } = req.query;
     try {
@@ -40,9 +41,15 @@ exports.getProductos = getProductos;
 const getProductosTipo = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     try {
-        const um = (id == 'USER_ROLE') ? 'NIU' : 'GLL';
+        let parameters;
+        if (id == 'USER_ROLE') {
+            parameters = { medida: { [sequelize_1.Op.not]: 'GLL' } };
+        }
+        else {
+            parameters = { medida: 'GLL' };
+        }
         const data = yield producto_1.default.findAndCountAll({
-            where: { medida: um },
+            where: parameters,
             raw: true
         });
         res.json({

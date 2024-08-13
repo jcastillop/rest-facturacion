@@ -16,7 +16,7 @@ exports.cerrarDia = void 0;
 const sequelize_1 = require("sequelize");
 const config_1 = require("../database/config");
 const cierreturno_1 = __importDefault(require("./cierreturno"));
-const cerrarDia = ({ sessionID, fecha }) => __awaiter(void 0, void 0, void 0, function* () {
+const cerrarDia = (_a) => __awaiter(void 0, [_a], void 0, function* ({ sessionID, fecha }) {
     var montoCierre = 0;
     yield config_1.Sqlcn.query('SELECT ROUND(SUM(CONVERT(float,total)),2) as suma from Cierreturnos where CierrediaId is null', {
         replacements: { sessionID },

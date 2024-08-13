@@ -8,6 +8,7 @@ import receptorRoutes from '../routes/receptores';
 import productoRoutes from '../routes/productos';
 import gastoRoutes from '../routes/gastos';
 import depositoRoutes from '../routes/depositos';
+import descuentosRoutes from '../routes/descuentos';
 import { CronJob } from 'cron';
 import { automatismosCambiarComprobantesInternos, automatismosReiniciarConsumoActual, procesarComprobantes } from '../helpers/app-helpers';
 
@@ -22,7 +23,8 @@ class Server{
         receptores: '/api/receptores',
         productos: '/api/productos',
         gastos: '/api/gastos',
-        depositos: '/api/depositos'
+        depositos: '/api/depositos',
+        descuentos: '/api/descuentos'
     }
 
     constructor(){
@@ -62,6 +64,7 @@ class Server{
         this.app.use(this.apiPaths.productos, productoRoutes);
         this.app.use(this.apiPaths.gastos, gastoRoutes);
         this.app.use(this.apiPaths.depositos, depositoRoutes);
+        this.app.use(this.apiPaths.descuentos, descuentosRoutes);
     }
 
     listen(){

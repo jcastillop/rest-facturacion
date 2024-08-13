@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
 import Receptor, { obtieneReceptor } from "../models/receptor";
 
-import { actualizaAbastecimiento } from "../models/abastecimiento";
-import { Comprobante, actualizarComprobante, getDescuentoPorItem, nuevoComprobante, nuevoComprobanteV2, obtieneComprobante, obtieneFechaUltimoComprobante, obtieneSerie, saveComprobanteMaster, validaComprobanteAbastecimiento } from "../models/comprobante";
+import Abastecimiento, { actualizaAbastecimiento } from "../models/abastecimiento";
+import { Comprobante, actualizarComprobante, getDescuentoPorItem, nuevoComprobanteV2, obtieneComprobante, obtieneFechaUltimoComprobante, obtieneSerie, saveComprobanteMaster, validaComprobanteAbastecimiento } from "../models/comprobante";
 import { generaCorrelativo } from "../models/correlativo";
 import Cierreturno, { cerrarTurno, obtenerCierreTurno, obtieneCierreTurnoGalonaje, obtieneCierreTurnoTotalProducto, obtieneCierreTurnoTotalSoles } from "../models/cierreturno";
 
@@ -18,9 +18,9 @@ import { getTodayDateFormat } from "../helpers/date-values";
 export const generaComprobanteV2 = async (req: Request, res: Response) => {
 
     const { tipo_comprobante, tipo_facturacion, prefijo, Receptor } = req.body;
-    //const serie: string = '002';
+
     const bCreateOrderMiFact = (tipo_comprobante == Constantes.TipoComprobante.Boleta || tipo_comprobante == Constantes.TipoComprobante.Factura || tipo_comprobante == Constantes.TipoComprobante.NotaCredito)
-    var responseMiFact;
+    let responseMiFact;
 
     const { serie, hasError:hasErrorSerie, message:messageSerie } = await obtieneSerie(tipo_comprobante, tipo_facturacion)
     if(hasErrorSerie){ res.json({ hasError: true, respuesta: messageSerie}); return; }
@@ -64,9 +64,11 @@ export const generaComprobanteV2 = async (req: Request, res: Response) => {
 
 export const comprobanteNuevo = async (req: Request, res: Response) => {
 
-    const { billing: { cliente, tipo_comprobante, tipo_facturacion, numeracion_comprobante,fecha_emision, fecha_actual, total_gravadas, total_igv, total_venta, pago_tarjeta, pago_efectivo, pago_yape, usuario, items, tipo_documento_afectado, numeracion_documento_afectado, fecha_documento_afectado, id_abastecimiento } } = req.body;
+    const { billing: { cliente, tipo_comprobante, tipo_facturacion, numeracion_comprobante,fecha_emision, fecha_actual, total_gravadas, total_igv, total_venta, pago_tarjeta, pago_efectivo, pago_yape, usuario, items, tipo_documento_afectado, numeracion_documento_afectado, fecha_documento_afectado, id_abastecimiento, comentario } } = req.body;
     const { client: { tipo_documento, numero_documento, razon_social, direccion, correo, placa } } = req.body;
-    console.log(getTodayDateFormat(fecha_emision))
+    
+    const abastecimiento: any = await Abastecimiento.findByPk(id_abastecimiento,{ raw: true });
+    console.log(abastecimiento);
     const { hasError:errorAbastecimiento, message: messageAbastecimiento } = await validaComprobanteAbastecimiento(id_abastecimiento, tipo_comprobante);
 
     if(errorAbastecimiento){
@@ -113,7 +115,8 @@ export const comprobanteNuevo = async (req: Request, res: Response) => {
             volumen: 0,
             fecha_abastecimiento: getTodayDateFormat(fecha_emision),
             tiempo_abastecimiento: 0,
-            volumen_tanque: 0
+            volumen_tanque: 0,
+            comentario
         }
     
     
@@ -178,27 +181,23 @@ export const modificaComprobante = async (req: Request, res: Response) => {
 }
 interface ComprobanteParams {
     idUsuario?: number;
-    idReceptor?: number;
-    idCierreTurno?: number;
-    desde?:Date;
-    hasta?:Date;
-    limit?: number;
-    offset?: number;
+    fecha?: string;
 }
 
 export const historicoComprobantes = async (req: Request, res: Response) => {
-
     const comprobanteParams: ComprobanteParams = req.query;
 
     const queryAnd = [];
 
-    var queryWhere = { };
+
+    let queryWhere = { };
 
     const usuario: any = await Usuario.findByPk(comprobanteParams.idUsuario,{ raw: true });
 
     if(usuario){
         if(usuario.rol == 'ADMIN_ROLE'){
             queryAnd.push({ numeracion_comprobante: { [Op.ne]: null } });
+            queryAnd.push({ fecha_emision: comprobanteParams.fecha });
         }else if(usuario.rol == 'USER_ROLE'){
             queryAnd.push({ UsuarioId: comprobanteParams.idUsuario });
             queryAnd.push({ CierreturnoId: null });
@@ -206,6 +205,7 @@ export const historicoComprobantes = async (req: Request, res: Response) => {
             queryAnd.push({ CierreturnoId: { [Op.ne]: null } });
         }
     
+        console.log(queryAnd)
         queryWhere = { [Op.and] : queryAnd }
     
         const data: any = await Comprobante.findAndCountAll({
@@ -218,9 +218,7 @@ export const historicoComprobantes = async (req: Request, res: Response) => {
             where:  queryWhere,
             order: [
                 ['id', 'DESC']
-            ],            
-            offset: Number(comprobanteParams.offset),
-            limit:  5000
+            ]
         });
     
         res.json({

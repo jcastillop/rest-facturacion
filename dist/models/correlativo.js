@@ -13,7 +13,7 @@ exports.generaComprobanteFirstStep = exports.generaCorrelativo = void 0;
 const config_1 = require("../database/config");
 const sequelize_1 = require("sequelize");
 const helpers_1 = require("../helpers");
-const generaCorrelativo = (tipo, serie, prefijo = "") => __awaiter(void 0, void 0, void 0, function* () {
+const generaCorrelativo = (tipo_1, serie_1, ...args_1) => __awaiter(void 0, [tipo_1, serie_1, ...args_1], void 0, function* (tipo, serie, prefijo = "") {
     (0, helpers_1.log4js)("Inicio generaCorrelativo: tipo: " + tipo + " - serie: " + serie + " - prefijo: " + prefijo);
     var correlativo = '';
     const ruc = process.env.EMISOR_RUC;

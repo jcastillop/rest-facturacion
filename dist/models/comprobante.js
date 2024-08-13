@@ -33,7 +33,7 @@ const date_values_1 = require("../helpers/date-values");
 const gastos_1 = __importDefault(require("./gastos"));
 const depositos_1 = __importDefault(require("./depositos"));
 const receptorplaca_1 = __importDefault(require("./receptorplaca"));
-const nuevoComprobante = (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tipo_afectado, numeracion_afectado, fecha_afectado, tarjeta = 0, efectivo = 0, yape = 0, billete = 0) => __awaiter(void 0, void 0, void 0, function* () {
+const nuevoComprobante = (idAbastecimiento_1, tipo_1, receptor_2, correlativo_1, placa_1, usuario_2, producto_1, comentario_1, tipo_afectado_1, numeracion_afectado_1, fecha_afectado_1, ...args_1) => __awaiter(void 0, [idAbastecimiento_1, tipo_1, receptor_2, correlativo_1, placa_1, usuario_2, producto_1, comentario_1, tipo_afectado_1, numeracion_afectado_1, fecha_afectado_1, ...args_1], void 0, function* (idAbastecimiento, tipo, receptor, correlativo, placa, usuario, producto, comentario, tipo_afectado, numeracion_afectado, fecha_afectado, tarjeta = 0, efectivo = 0, yape = 0, billete = 0) {
     (0, helpers_1.log4js)("Inicio nuevoComprobante");
     try {
         const abastecimiento = yield abastecimiento_1.default.findByPk(idAbastecimiento);
